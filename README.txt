@@ -6,3 +6,4 @@ Team members:
 - Elise Zhang (Products Guru) --> Main designer of products, tags, and categories table
 
 Everyone worked together to finalize the database designs and the page-by-page design. 
+https://gitlab.oit.duke.edu/query-quokkas/quokkazon 

@@ -82,7 +82,7 @@ BEGIN
       RAISE EXCEPTION 'A user cannot leave any feedback for a seller they have not purchased from.';
     END IF; 
     -- the prior constraint applies to both insert and update statements
-    -- the next constraint applies only with insert statements 
+    -- the next constraint applies only to insertions 
     IF TG_OP = 'INSERT' THEN
         IF NEW.sid IN (SELECT f.sid from SellerFeedback as f where f.uid = NEW.uid) THEN
         -- constraint that each user can submit only one rating/review for a seller 
@@ -97,7 +97,7 @@ BEGIN
       RAISE EXCEPTION 'A user cannot leave any feedback for a product they have never purchased.';
     END IF;     
     -- the prior constraint applies to both insert and update statements
-    -- the next constraint applies only with insert statements 
+    -- the next constraint applies only to insertions 
     IF TG_OP = 'INSERT' THEN
         IF NEW.pid IN (SELECT f.pid from ProductFeedback as f where f.uid = NEW.uid) THEN
         -- constraint that each user can submit only one rating/review for a product 

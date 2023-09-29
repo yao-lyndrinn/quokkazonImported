@@ -32,13 +32,13 @@ CREATE TABLE Seller (
 );
 
 CREATE TABLE Product (
-    pid INTEGER PRIMARY KEY NOT NULL
+  pid INTEGER PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE Purchases(
-    uid INTEGER NOT NULL REFERENCES Users(uid),
+  uid INTEGER NOT NULL REFERENCES Users(uid),
 	sid INTEGER NOT NULL REFERENCES Seller(sid),
-    pid INTEGER NOT NULL REFERENCES Product(pid), 
+  pid INTEGER NOT NULL REFERENCES Product(pid), 
 	order_id INTEGER NOT NULL,
 	PRIMARY KEY (sid, pid, uid, order_id)
 );
@@ -47,9 +47,9 @@ CREATE TABLE SellerFeedback(
 	uid INTEGER NOT NULL REFERENCES Users(uid), 
 	sid INTEGER NOT NULL REFERENCES Seller(sid),
 	rating INTEGER NOT NULL CHECK(rating BETWEEN 1 and 5), -- should a user leave any feedback, they must leave a rating 
-    review VARCHAR(4096), -- can be null because leaving a review is optional 
-    date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
-    PRIMARY KEY (uid, sid)  
+  review VARCHAR(4096), -- can be null because leaving a review is optional 
+  date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
+  PRIMARY KEY (uid, sid)  
 );
 
 CREATE TABLE ProductFeedback(
@@ -57,16 +57,16 @@ CREATE TABLE ProductFeedback(
 	pid INTEGER NOT NULL REFERENCES Product(pid),
 	rating INTEGER NOT NULL CHECK(rating BETWEEN 1 and 5), -- should a user leave any feedback, they must leave a rating 
 	review VARCHAR(4096), -- can be null because leaving a review is optional 
-    date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
-    PRIMARY KEY (uid, pid) 	
+  date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
+  PRIMARY KEY (uid, pid) 	
 );
 
 CREATE TABLE Message(
 	sender_id INTEGER NOT NULL REFERENCES Users(uid),
 	receiver_id INTEGER NOT NULL REFERENCES Users(uid),
-    date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
+  date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
 	msg VARCHAR(4096) NOT NULL, -- cannot be null because a message must occur in order for it be recorded in this table  
-    PRIMARY KEY (sender_id, receiver_id, date_time) 
+  PRIMARY KEY (sender_id, receiver_id, date_time) 
 );
 
 

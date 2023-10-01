@@ -24,7 +24,13 @@
 -- );
 
 CREATE TABLE Users(
-	uid INTEGER PRIMARY KEY NOT NULL
+	uid INTEGER PRIMARY KEY NOT NULL, 
+	email VARCHAR(100) UNIQUE NOT NULL, 
+	full_name VARCHAR(150) NOT NULL,
+	address TEXT NOT NULL,
+	password VARCHAR(256) NOT NULL,
+  phone_number VARCHAR(10) NOT NULL, 
+	balance DECIMAL(10, 2) DEFAULT 0 
 );
 
 CREATE TABLE Seller (
@@ -32,7 +38,24 @@ CREATE TABLE Seller (
 );
 
 CREATE TABLE Product (
-  pid INTEGER PRIMARY KEY NOT NULL
+  pid INTEGER PRIMARY KEY NOT NULL,
+	name VARCHAR(400)NOT NULL,
+  description VARCHAR(4096) NOT NULL,
+  image VARCHAR(400) NOT NULL,
+  altTxt VARCHAR(4096) NOT NULL,
+  CreatedAt DATETIME,
+  UpdatedAt DATETIME
+
+);
+
+CREATE TABLE Category (
+pid INTEGER PRIMARY KEY NOT NULL REFERENCES Product(pid), 
+	name VARCHAR(400)NOT NULL
+);
+
+CREATE TABLE Tag (
+pid INTEGER PRIMARY KEY NOT NULL REFERENCES Product(pid),
+name VARCHAR(400)NOT NULL
 );
 
 CREATE TABLE Purchases(
@@ -40,7 +63,19 @@ CREATE TABLE Purchases(
 	sid INTEGER NOT NULL REFERENCES Seller(sid),
   pid INTEGER NOT NULL REFERENCES Product(pid), 
 	order_id INTEGER NOT NULL,
+  date_purchased TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	quantity INTEGER NOT NULL,
+	date_fulfilled TIMESTAMP,
 	PRIMARY KEY (sid, pid, uid, order_id)
+);
+
+CREATE TABLE Inventory (
+	sid INTEGER NOT NULL REFERENCES Seller(sid),
+	pid INTEGER NOT NULL REFERENCES Product(pid),
+	quantity INTEGER NOT NULL,	
+	num_for_sale INTEGER NOT NULL,
+	price INTEGER NOT NULL
+	PRIMARY KEY (sid, pid)
 );
 
 CREATE TABLE SellerFeedback(
@@ -67,6 +102,20 @@ CREATE TABLE Message(
   date_time TIMESTAMP NOT NULL, -- YYYY-MM-DD hh:mm:ss
 	msg VARCHAR(4096) NOT NULL, -- cannot be null because a message must occur in order for it be recorded in this table  
   PRIMARY KEY (sender_id, receiver_id, date_time) 
+);
+
+CREATE TABLE Cart(
+	uid INTEGER NOT NULL REFERENCES User(uid), 
+	sid INTEGER NOT NULL REFERENCES Seller(sid),
+  pid INTEGER NOT NULL REFERENCES Product(pid),
+  quantity INTEGER NOT NULL,
+  unit_price INTEGER NOT NULL REFERENCES UserPrice(unit_price),
+  total_price INTEGER NOT NULL,
+  saved_for_later BIT DEFAULT 0;
+  PRIMARY KEY (uid, sid, pid) 
+  -- total price is quantity x price of item
+  -- saved for later vs in cart (default)
+  -- one line is identified by user, seller, and product which is for one quantity of item in that user’s cart
 );
 
 
@@ -121,3 +170,39 @@ CREATE TRIGGER ProductFeedbackConstraints
   EXECUTE PROCEDURE FeedbackConstraints();
 
 ----------------------------------------------------------------------
+-- inventory constraints
+
+CREATE FUNCTION InventoryConstraints() RETURNS TRIGGER AS $$
+BEGIN
+  -- constraints the numeric values in quantity, price, and num_for_sale
+  IF NEW.quantity < 0 THEN
+    RAISE EXCEPTION 'Quantity of an product cannot be less than 0.';
+  IF NEW.price < 0 THEN
+    RAISE EXCEPTION 'Price of a product cannot be less than 0.';
+  IF NEW.num_for_sale < 0 OR NEW.num_for_scale > NEW.quanity THEN
+    RAISE EXCEPTION 'Number of product for sale cannot be less than 0 or exceed the quantity of the product.';
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER InventoryConstraints
+  BEFORE INSERT OR UPDATE ON Inventory
+  FOR EACH ROW
+  EXECUTE PROCEDURE InventoryConstraints();
+
+----------------------------------------------------------------------
+-- purchases constraints
+
+CREATE FUNCTION PurchaseConstraints() RETURNS TRIGGER AS $$
+BEGIN
+  
+  IF NEW.price < 0 THEN
+  RAISE EXCEPTION 'Price of a product cannot be less than 0.';
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER PurchaseConstraints
+  BEFORE INSERT OR UPDATE ON Purchases
+  FOR EACH ROW
+  EXECUTE PROCEDURE PurchaseConstraints();

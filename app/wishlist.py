@@ -3,6 +3,7 @@ from flask import render_template
 from flask_login import current_user
 from flask import redirect, url_for
 import datetime
+from humanize import naturaltime
 
 from .models.wishlist import WishListItem
 
@@ -19,10 +20,16 @@ def wishlist():
     else:
         return jsonify({}), 404
     # render the page by adding information to the index.html file
-    return jsonify([item.__dict__ for item in items])
+    return render_template('wishlist.html',
+                      items=items,
+                      humanize_time=humanize_time)
+
 
 @bp.route('/wishlist/add/<int:product_id>', methods=['POST'])
 def wishlist_add(product_id):
     current_dateTime = datetime.datetime.now()
     WishListItem.add_item(current_user.id, product_id, current_dateTime)
     return redirect(url_for('wishlist.wishlist'))
+
+def humanize_time(dt):
+    return naturaltime(datetime.datetime.now() - dt)

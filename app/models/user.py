@@ -5,23 +5,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .. import login
 
 class User(UserMixin):
-    def __init__(self, id, email, firstname, lastname, address, password, phone_number, balance):
+    def __init__(self, id, email, firstname, lastname, address, phone_number, balance):
         self.id = id
         self.email = email
         self.firstname = firstname
         self.lastname = lastname
         self.address = address
-        self.password = password
         self.phone_number = phone_number
         self.balance = balance
 
     @staticmethod
     def get_by_auth(email, password):
         rows = app.db.execute("""
-SELECT *
-FROM Users
-WHERE email = :email
-""",
+                SELECT password, id, email, firstname, lastname, address, phone_number, balance
+                FROM Users
+                WHERE email = :email
+                """,
                               email=email)
         if not rows:  # email not found
             return None
@@ -68,7 +67,7 @@ RETURNING id
     @login.user_loader
     def get(id):
         rows = app.db.execute("""
-SELECT *
+SELECT id, email, firstname, lastname, address, phone_number, balance
 FROM Users
 WHERE id = :id
 """,

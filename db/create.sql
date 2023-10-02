@@ -56,7 +56,7 @@ CREATE TABLE Inventory (
 	pid INTEGER NOT NULL REFERENCES Products(pid),
 	quantity INTEGER NOT NULL,	
 	num_for_sale INTEGER NOT NULL,
-	price INTEGER NOT NULL,
+	price DECIMAL(6,2) NOT NULL,
 	PRIMARY KEY (sid, pid)
 );
 
@@ -161,10 +161,10 @@ BEGIN
   IF NEW.price < 0 THEN
     RAISE EXCEPTION 'Price of a product cannot be less than 0.';
   END IF;
-  IF NEW.num_for_sale < 0 OR NEW.num_for_scale > NEW.quanity THEN
+  IF NEW.num_for_sale < 0 OR NEW.num_for_sale > NEW.quantity THEN
     RAISE EXCEPTION 'Number of product for sale cannot be less than 0 or exceed the quantity of the product.';
   END IF;
-
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

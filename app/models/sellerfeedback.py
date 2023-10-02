@@ -46,6 +46,17 @@ class SellerFeedback:
         return [SellerFeedback(*row) for row in rows]
     
     @staticmethod
+    def get_all_by_sid_sort_rating(sid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM SellerFeedback
+        WHERE sid = :sid
+        ORDER BY rating DESC
+        ''',
+        sid=sid)
+        return [SellerFeedback(*row) for row in rows]
+    
+    @staticmethod
     def get_all():
         rows = app.db.execute('''
         SELECT *

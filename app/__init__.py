@@ -26,5 +26,7 @@ def create_app():
 
     from .sellerfeedback import bp as sfeedback_bp
     app.register_blueprint(sfeedback_bp)
-    
+
+    from .productfeedback import bp as pfeedback_bp
+    app.register_blueprint(pfeedback_bp)
     return app

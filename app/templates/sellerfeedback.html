@@ -17,9 +17,9 @@
   <tbody>
     {% for item in items %}
       <tr>
-        <th scope="row">{{item.sid}}</th>
-        <th scope="row">{{item.rating}}</th>
-        <th scope="row">{{item.review}}</th>
+        <td>{{item.sid}}</td>
+        <td>{{item.rating}}</td>
+        <td>{{item.review}}</td>
         <td>{{humanize_time(item.date_time)}}</td>
       </tr>
     {% endfor %}

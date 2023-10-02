@@ -1,9 +1,9 @@
 from flask import current_app as app
 
-class SellerFeedback:
-    def __init__(self,uid,sid,rating,review,date_time):
+class ProductFeedback:
+    def __init__(self,uid,pid,rating,review,date_time):
         self.uid = uid
-        self.sid = sid
+        self.pid = pid
         self.rating = rating
         self.review = review
         self.date_time = date_time
@@ -12,49 +12,49 @@ class SellerFeedback:
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
         SELECT *
-        FROM SellerFeedback
+        FROM ProductFeedback
         WHERE uid = :uid
         AND date_time >= :since
         ORDER BY date_time DESC
         ''',
         uid=uid,
         since=since)
-        return [SellerFeedback(*row) for row in rows]
+        return [ProductFeedback(*row) for row in rows]
 
     @staticmethod
     def get_all_by_uid_sort_rating(uid):
         rows = app.db.execute('''
         SELECT *
-        FROM SellerFeedback
+        FROM ProductFeedback
         WHERE uid = :uid
         ORDER BY rating DESC
         ''',
         uid=uid)
-        return [SellerFeedback(*row) for row in rows]
+        return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
-    def get_all_by_sid_since(sid, since):
+    def get_all_by_pid_since(pid, since):
         rows = app.db.execute('''
         SELECT *
-        FROM SellerFeedback
-        WHERE sid = :sid
+        FROM ProductFeedback
+        WHERE pid = :pid
         AND date_time >= :since
         ORDER BY date_time DESC
         ''',
-        sid=sid,
+        pid=pid,
         since=since)
-        return [SellerFeedback(*row) for row in rows]
+        return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
-    def get_all_by_sid_sort_rating(sid):
+    def get_all_by_pid_sort_rating(pid):
         rows = app.db.execute('''
         SELECT *
-        FROM SellerFeedback
-        WHERE sid = :sid
+        FROM ProductFeedback
+        WHERE pid = :pid
         ORDER BY rating DESC
         ''',
-        sid=sid)
-        return [SellerFeedback(*row) for row in rows]
+        sid=pid)
+        return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
     def get_all():
@@ -62,4 +62,4 @@ class SellerFeedback:
         SELECT *
         FROM SellerFeedback
         ''')
-        return [SellerFeedback(*row) for row in rows]
+        return [ProductFeedback(*row) for row in rows]

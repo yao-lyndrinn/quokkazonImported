@@ -22,6 +22,23 @@ class SellerFeedback:
         return [SellerFeedback(*row) for row in rows]
 
     @staticmethod
+    def get_n_most_recent_by_uid(uid, n):
+        rows = app.db.execute('''
+        SELECT *
+        FROM SellerFeedback
+        WHERE uid = :uid
+        ORDER BY date_time DESC
+        ''',
+        uid=uid)
+        n_recent = []
+        count = 0
+        for row in rows: 
+            count += 1 
+            n_recent.append(SellerFeedback(*row))
+            if count == n: break
+        return n_recent
+    
+    @staticmethod
     def get_all_by_uid_sort_rating(uid):
         rows = app.db.execute('''
         SELECT *

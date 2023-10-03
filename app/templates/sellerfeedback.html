@@ -5,9 +5,45 @@
 <br><br>
 {% if current_user.is_authenticated %}
 <h2>My Feedback for Sellers:</h2>
-<p><a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_date') }}">View</a> all your feedback for sellers</p>
-<p><a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_rating') }}">View</a> all your feedback for sellers sorted by rating</p>
-
+<style>
+  .dropdown {
+    display: inline-block;
+    position: relative;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    width: 100%;
+    overflow: auto;
+    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+  }
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  .dropdown-content a {
+    display: block;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 5px;
+    text-decoration: none;
+  }
+  .dropdown-content a:hover {
+    color: #FFFFFF;
+    background-color: #137a56;
+  }
+  </style>
+  </head>
+  <body style="background-color:white;">
+  
+  <div class="dropdown">
+    <button>View Options</button>
+    <div class="dropdown-content">
+      <a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_date') }}">Sort By Date</a>
+      <a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_date_top5') }}">Five Most Recent</a>
+      <a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_rating') }}">Sort By Rating</a>
+    </div>
+  </div>
+  <br><br>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>

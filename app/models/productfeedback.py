@@ -38,6 +38,17 @@ class ProductFeedback:
             if count == n: break
         return n_recent
     
+    def get_by_uid_filter_by_rating(uid, rating):
+        rows = app.db.execute('''
+        SELECT *
+        FROM ProductFeedback
+        WHERE uid = :uid
+        AND rating = :rating
+        ORDER BY date_time DESC
+        ''',
+        uid=uid, rating=rating)
+        return [ProductFeedback(*row) for row in rows]
+    
     @staticmethod
     def get_all_by_uid_sort_rating(uid):
         rows = app.db.execute('''

@@ -33,4 +33,7 @@ def create_app():
     from .allpurchases import bp as allpurchases_bp
     app.register_blueprint(allpurchases_bp)
 
+    from .inventory import bp as inventory_bp
+    app.register_blueprint(inventory_bp)
+
     return app

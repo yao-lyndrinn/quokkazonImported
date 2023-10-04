@@ -4,13 +4,17 @@
 
 <br><br>
 
-<h2>Products for sale:</h2>
+<h2>Top {{k}} Expensive Products for sale:</h2>
 <form action="{{ url_for('products.products') }}" 
       method="POST" >
   <label for="k">Enter K:</label>
   <input type="number" name="k" id="k" required>
   <input type="submit" value="Search">
 </form>
+<form action="{{ url_for('products.products') }}"
+                  method="GET">
+                  <input type="submit" value="Cancel"/> 
+            </form>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
@@ -21,19 +25,11 @@
     </tr>
   </thead>
   <tbody>
-    {% for product in items%}
+    {% for product in k_prod%}
       <tr>
         <td>{{product.pid}}</td>
         <td>{{product.name}}</td>
-        <td>
-          {% if product.pid in product_prices %}
-            {%for price in product_prices[product.pid]%}
-              ${{ price }}
-            {% endfor %}
-          {% else %}
-            Not in stock
-          {% endif %}
-        </td>
+        <td>{{product.price}}</td>
         {% if current_user.is_authenticated %}
         <td>
             <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}"

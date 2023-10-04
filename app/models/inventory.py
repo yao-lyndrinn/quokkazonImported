@@ -10,7 +10,6 @@ class Inventory:
 
     @staticmethod
     def get_all_by_sid(sid):
-        print("SID:",sid)
         rows = app.db.execute('''
         SELECT *
         FROM Inventory

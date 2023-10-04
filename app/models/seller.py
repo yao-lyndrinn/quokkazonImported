@@ -13,3 +13,9 @@ class Seller:
         ''',
         sid=sid)
         return Seller(*(rows[0])) if rows else None
+        
+    @staticmethod
+    def is_seller(user):
+        if hasattr(user,"id"):
+            return Seller.get(user.id) != None
+        return False

@@ -15,7 +15,7 @@
   <tbody>
     {% for item in items %}
       <tr>
-        <th scope="row">{{item.pid}}</th>
+        <td>{{item.pid}}</td>
         <td>{{humanize_time(item.time_added)}}</td>
       </tr>
     {% endfor %}

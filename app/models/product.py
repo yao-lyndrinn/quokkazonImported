@@ -26,3 +26,11 @@ class Product:
         FROM Products
         ''')
         return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_name(pid):
+        product = Product.get(pid)
+        if product != None:
+            return product.name
+        else:
+            return None

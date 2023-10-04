@@ -29,8 +29,6 @@ def products():
         k = int(request.form['k'])
         for i in range(k):
             k_prod.append(products[i])
-        print("KPROODDDDD", k_prod)
-        print("PRODUCTSSSSS", products)
         return render_template('topProducts.html',
                     k_prod = k_prod, k = k)
     

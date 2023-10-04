@@ -39,4 +39,7 @@ def create_app():
     from .inventory import bp as inventory_bp
     app.register_blueprint(inventory_bp)
 
+    from .cart import bp as cart_bp
+    app.register_blueprint(cart_bp)
+
     return app

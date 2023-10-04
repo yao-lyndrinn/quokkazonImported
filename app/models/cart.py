@@ -38,7 +38,7 @@ WHERE uid = :uid
         uid=uid,
         sid = sid,
         pid = pid,
-        quantity = quantity
-        saved_for_later = saved_for_later)
+        quantity = 1,
+        saved_for_later = 0)
         return CartItem.get(uid, sid, pid)
 

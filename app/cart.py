@@ -26,6 +26,6 @@ def cart():
 
 @bp.route('/cart/add/<int:product_id>', methods=['POST'])
 def cart_add(seller_id, product_id, quantity, saved_for_later):
-    CartItem.add_item(current_user.id, product_id, current_dateTime)
+    CartItem.add_item(current_user.id, seller_id, product_id, quantity, saved_for_later)
     return redirect(url_for('cart.cart'))
 

@@ -13,7 +13,7 @@ class Product:
     @staticmethod
     def get(pid):
         rows = app.db.execute('''
-        SELECT pid, name, description, image, altTxt
+        SELECT *
         FROM Products
         WHERE pid = :pid
         ''', pid=pid)

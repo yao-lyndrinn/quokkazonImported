@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
   <style>
     body {
-        font-family: "Lato", sans-serif;
+        font-family: "Verdana", sans-serif;
     }
 
     .main-head {
@@ -19,7 +19,7 @@
 
     .sidenav {
         height: 100%;
-        background-color: #000;
+        background-color: #804a03;
         overflow-x: hidden;
         padding-top: 20px;
     }
@@ -42,13 +42,22 @@
         background-color: #000 !important;
         color: #fff;
     }
+    .quokka-brown{
+      background-color: #422808;
+      color: white;
+    }
+
+
   </style>
 </head>
 
 <body>
   <div class="sidenav">
     {% block msg %}
-      <h1 style="color:aliceblue">Welcome to Quokkazon!</h1>
+      <img src="/static/images/banner.jpg" alt = "5 images of quokkas smiling and eating" width="1280" height = "200">
+      <br><br>
+      <h1 style="color:rgb(255, 255, 255)"><a href="{{ url_for('index.index') }}" style = "color: white;">Welcome to Quokkazon!</a></h1>
+
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>

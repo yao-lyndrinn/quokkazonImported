@@ -42,10 +42,12 @@ class RegistrationForm(FlaskForm):
     firstname = StringField('First Name', validators=[DataRequired()])
     lastname = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    address = StringField('Address', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(),
                                        EqualTo('password')])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
     submit = SubmitField('Register')
 
     def validate_email(self, email):
@@ -59,9 +61,9 @@ def register():
         return redirect(url_for('index.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        if User.register(form.email.data,
-                         form.firstname.data,
+        if User.register(form.firstname.data,
                          form.lastname.data,
+                         form.email.data,
                          form.address.data,
                          form.password.data,
                          form.phone_number.data

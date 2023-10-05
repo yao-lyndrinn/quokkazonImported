@@ -1,6 +1,9 @@
 Team members:
 - Phillip Ding (User Guru) --> Main designer of user and purchases tables
-- Jonathan Shi (Seller Guru) --> Main designer of seller and inventory tables
+- Jonathan Shi (Seller Guru) --> Main designer of seller and inventory tables. For milestone 3, Jonathan wrote app/inventory.py,
+app/models/inventory.py, app/template/inventory.html, and updated index.html, and app/models/seller.py. Users registered as sellers
+in the database have access to an inventory button which shows their personal inventory, while signed out users or non-seller users
+will not have access to such a page.
 - Amy Weng (Social Guru) --> Main designer of feedback and messages tables. For milestone 3, Amy wrote the app/feedback.py, 
 models/feedback.py, allfeedback.html, and myfeedback.html files, and she put the corresponding links into index.html. 
 IMPORTANT: Since recording the demo video, Amy has improved her endpoints for this milestone by allowing a user to view all 

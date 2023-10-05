@@ -7,8 +7,14 @@
   {% if current_user.is_authenticated and is_seller%}
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
   {% endif %}
-</div>
+  {% if current_user.is_authenticated%}
+  <a href="{{ url_for('feedback.pfeedback_uid_sorted_date') }}" type="button" class="btn btn-dark">My feedback for products</a>
+  {% endif %}
+  {% if current_user.is_authenticated%}
+  <a href="{{ url_for('feedback.sfeedback_uid_sorted_date') }}" type="button" class="btn btn-dark">My feedback for sellers</a>
+  {% endif %}
 
+</div>
 <form action="/allpurchases">
   <button id = "purchases" button style = "height:50px;width:100px;margin:5px;">User Milestone</button>
 </form>
@@ -63,10 +69,6 @@
     {% endfor %}
   </tbody>
 </table>
-<h2>Ratings and Reviews:</h2>
-<p>Click <a href="{{ url_for('sellerfeedback.sfeedback_uid_sorted_date') }}">here</a> to view your feedback for sellers!</p>
-<p>Click <a href="{{ url_for('productfeedback.pfeedback_uid_sorted_date') }}">here</a> to view your feedback for products!</p>
-
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history and feedback!</p>
 

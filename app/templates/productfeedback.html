@@ -5,7 +5,19 @@
 <br><br>
 {% if current_user.is_authenticated %}
 <h2>My Feedback for Products:</h2>
-<style>
+<form action="{{ url_for('feedback.pfeedback_uid_sorted_date') }}" 
+      method="POST" >
+  <label for="k">To find the k most recent feedback sorted by date, enter k here:</label>
+  <input type="number" name="k" id="k" required>
+  <input type="submit" value="Search">
+</form>
+<form action="{{ url_for('feedback.pfeedback_uid_sorted_rating') }}" 
+      method="POST" >
+  <label for="k">To find the k most recent feedback sorted by rating, enter k here:</label>
+  <input type="number" name="k" id="k" required>
+  <input type="submit" value="Search">
+<br>
+  <style>
   .dropdown {
     display: inline-block;
     position: relative;
@@ -33,18 +45,17 @@
   }
   </style>
   </head>
-  <body style="background-color:white;">
+  <body style="background-color:#ffffff;">
   
   <div class="dropdown">
-    <button>View Options</button>
+    <button>Show All and Sort By</button>
     <div class="dropdown-content">
-      <a href="{{ url_for('productfeedback.pfeedback_uid_sorted_date') }}">Sort By Date</a>
-      <a href="{{ url_for('productfeedback.pfeedback_uid_sorted_date_top5') }}">Five Most Recent</a>
-      <a href="{{ url_for('productfeedback.pfeedback_uid_sorted_rating') }}">Sort By Rating</a>
+      <a href="{{ url_for('feedback.pfeedback_uid_sorted_date') }}">Date</a>
+      <a href="{{ url_for('feedback.pfeedback_uid_sorted_rating') }}">Rating</a>
     </div>
   </div>
-  <br><br>
 
+  <br><br>
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
@@ -70,3 +81,5 @@
 {% endif %}
 
 {% endblock %}
+
+

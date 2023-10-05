@@ -27,11 +27,8 @@ def create_app():
     from .products import bp as products_bp
     app.register_blueprint(products_bp)
 
-    from .sellerfeedback import bp as sfeedback_bp
-    app.register_blueprint(sfeedback_bp)
-
-    from .productfeedback import bp as pfeedback_bp
-    app.register_blueprint(pfeedback_bp)
+    from .feedback import bp as feedback_bp
+    app.register_blueprint(feedback_bp)
 
     from .allpurchases import bp as allpurchases_bp
     app.register_blueprint(allpurchases_bp)

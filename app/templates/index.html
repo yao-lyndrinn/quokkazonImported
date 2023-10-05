@@ -7,11 +7,10 @@
   {% if current_user.is_authenticated and is_seller%}
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
   {% endif %}
+
+  <a href="{{ url_for('feedback.all_feedback_uid') }}" type="button" class="btn btn-dark">All Feedback</a>
   {% if current_user.is_authenticated%}
-  <a href="{{ url_for('feedback.pfeedback_uid_sorted_date') }}" type="button" class="btn btn-dark">My feedback for products</a>
-  {% endif %}
-  {% if current_user.is_authenticated%}
-  <a href="{{ url_for('feedback.sfeedback_uid_sorted_date') }}" type="button" class="btn btn-dark">My feedback for sellers</a>
+  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
   {% endif %}
 
 </div>

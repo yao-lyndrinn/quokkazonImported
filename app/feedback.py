@@ -12,54 +12,75 @@ bp = Blueprint('feedback', __name__)
 
 def kmostrecent(items,k):
     k_feedback = []
-    for i in range(k): 
-        k_feedback.append(items[i])
+    count = 0
+    for item in items: 
+        count += 1 
+        k_feedback.append(item)
+        if count == k: break
     return k_feedback
 
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
-    
-@bp.route('/productfeedback', methods=['GET','POST'])
-def pfeedback_uid_sorted_date():
-    items = ProductFeedback.get_by_uid_since( # sorted by posting time 
+@bp.route('/uidfeedbacktop5', methods=['GET','POST'])
+def all_feedback_uid_top5():
+    pfeedback = ProductFeedback.get_all() 
+    sfeedback = SellerFeedback.get_all()
+    if request.method == 'POST': 
+        uid = int(request.form['uid'])
+        pfeedback = ProductFeedback.get_by_uid_since( # sorted by posting time 
+                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        sfeedback = SellerFeedback.get_by_uid_since( # sorted by posting time 
+                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        pfeedback = kmostrecent(pfeedback,5)
+        sfeedback = kmostrecent(sfeedback,5)
+        return render_template('allfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+    return render_template('allfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+
+@bp.route('/uidfeedback',methods = ['GET','POST'])
+def all_feedback_uid():
+    pfeedback = ProductFeedback.get_all() 
+    sfeedback = SellerFeedback.get_all()
+    if request.method == 'POST': 
+        uid = int(request.form['uid'])
+        pfeedback = ProductFeedback.get_by_uid_since( # sorted by posting time 
+                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        sfeedback = SellerFeedback.get_by_uid_since( # sorted by posting time 
+                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        return render_template('allfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+    return render_template('allfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+
+@bp.route('/myfeedback')
+def my_feedback():
+    pfeedback = ProductFeedback.get_by_uid_since( # sorted by posting time 
                     current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
-    if request.method == 'POST': 
-        k = int(request.form['k'])
-        items = kmostrecent(items,k)
-    return render_template('productfeedback.html',
-                      items=items,
-                      humanize_time=humanize_time)
-
-@bp.route('/productfeedback_byrating', methods=['GET','POST'])
-def pfeedback_uid_sorted_rating():
-    items = ProductFeedback.get_by_uid_sort_rating( # sorted by rating 
-                    current_user.id)
-    if request.method == 'POST': 
-        k = int(request.form['k'])
-        items = kmostrecent(items,k)
-    return render_template('productfeedback.html',
-                      items=items,
-                      humanize_time=humanize_time)
-
-@bp.route('/sellerfeedback', methods=['GET','POST'])
-def sfeedback_uid_sorted_date():
-    items = SellerFeedback.get_by_uid_since( # sorted by posting time 
+    sfeedback = SellerFeedback.get_by_uid_since( # sorted by posting time 
                     current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
-    if request.method == 'POST': 
-        k = int(request.form['k'])
-        items = kmostrecent(items,k)
-    return render_template('sellerfeedback.html',
-                      items=items,
-                      humanize_time=humanize_time)
+    return render_template('myfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
 
-@bp.route('/sellerfeedback_byrating', methods=['GET','POST'])
-def sfeedback_uid_sorted_rating():
-    items = SellerFeedback.get_by_uid_sort_rating( # sorted by rating 
+@bp.route('/myfeedback_sorted_rating')
+def my_feedback_sorted_rating():
+    pfeedback = ProductFeedback.get_by_uid_sort_rating( # sorted by rating 
                     current_user.id)
-    if request.method == 'POST': 
-        k = int(request.form['k'])
-        items = kmostrecent(items,k)
-    return render_template('sellerfeedback.html',
-                      items=items,
-                      humanize_time=humanize_time)
+    sfeedback = SellerFeedback.get_by_uid_sort_rating( # sorted by rating 
+                    current_user.id)
+    return render_template('myfeedback.html',
+                        pfeedback=pfeedback,
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+

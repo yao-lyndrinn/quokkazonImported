@@ -4,19 +4,7 @@
 
 <br><br>
 {% if current_user.is_authenticated %}
-<h2>My Feedback for Sellers:</h2>
-<form action="{{ url_for('feedback.sfeedback_uid_sorted_date') }}" 
-      method="POST" >
-  <label for="k">To find the k most recent feedback sorted by date, enter k here:</label>
-  <input type="number" name="k" id="k" required>
-  <input type="submit" value="Search">
-</form>
-<form action="{{ url_for('feedback.sfeedback_uid_sorted_rating') }}" 
-      method="POST" >
-  <label for="k">To find the k most recent feedback sorted by rating, enter k here:</label>
-  <input type="number" name="k" id="k" required>
-  <input type="submit" value="Search">
-<br>
+<h2>My Feedback for Sellers</h2>
 <style>
   .dropdown {
     display: inline-block;
@@ -48,7 +36,7 @@
   <body style="background-color:white;">
   
   <div class="dropdown">
-    <button>Show All and Sort By</button>
+    <button>Sort By</button>
     <div class="dropdown-content">
       <a href="{{ url_for('feedback.sfeedback_uid_sorted_date') }}">Date</a>
       <a href="{{ url_for('feedback.sfeedback_uid_sorted_rating') }}">Rating</a>

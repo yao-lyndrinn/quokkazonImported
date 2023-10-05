@@ -10,7 +10,11 @@ The team's repository currently does not include the code for the older endpoint
 For the newest feedback endpoints, please see the Addendum (linked below) for a short video demonstration. 
 These revisions were made to better fit the given instructions.
 
-- Lyndrinn Yao (Carts Guru) --> Main designer of carts table
+- Lyndrinn Yao (Carts Guru) --> Main designer of carts table. For Milestone 3, Lyndrinn wrote app/cart.py, app/models/cart.py,
+app/templates/cart.html, and updated index.html accordingly. This allows for a Cart button that appears for signed in users
+that starts a query for items in the Cart table by the user ID of the logged in user. Currently, the files
+contain incomplete code for an Add to Cart feature that is commented out.
+
 - Elise Zhang (Products Guru) --> Main designer of products, tags, and categories table. For milestone 3, Elise wrote the app/products.py
 app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
 

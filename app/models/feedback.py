@@ -51,7 +51,7 @@ class SellerFeedback:
         SELECT f.uid, s.firstname, s.lastname, f.sid, f.rating, f.review, f.date_time
         FROM SellerFeedback as f, Users as s
         WHERE f.uid = :uid
-        AND s.sid = f.sid
+        AND s.id = f.sid
         AND f.date_time >= :since
         ORDER BY f.date_time DESC
         ''',
@@ -65,7 +65,7 @@ class SellerFeedback:
         SELECT f.uid, s.firstname, s.lastname, f.sid, f.rating, f.review, f.date_time
         FROM SellerFeedback as f, Users as s
         WHERE f.uid = :uid
-        AND s.sid = f.sid
+        AND s.id = f.sid
         ORDER BY f.rating DESC
         ''',
         uid=uid)

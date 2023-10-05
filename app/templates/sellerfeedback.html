@@ -58,16 +58,18 @@
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
-      <th scope="col">Seller ID</th>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
       <th scope="col">Rating</th>
       <th scope="col">Review</th>
-      <th scope="col">Time Added</th>
+      <th scope="col">Time Added or Updated</th>
     </tr>
   </thead>
   <tbody>
     {% for item in items %}
       <tr>
-        <td>{{item.sid}}</td>
+        <td>{{item.firstname}}</td>
+        <td>{{item.lastname}}</td>
         <td>{{item.rating}}</td>
         <td>{{item.review}}</td>
         <td>{{humanize_time(item.date_time)}}</td>

@@ -1,5 +1,5 @@
 Team members:
-- Phillip Ding (User Guru) --> Main designer of user and purchases tables
+- Phillip Ding (User Guru) --> Main designer of user and purchases tables. For milestone 3, Phillip wrote app/allpurchases.py and app/templates/allpurchases.html which allows someone to enter a uid and receive a table of all purchases by that user. Phillip also updated app/__init__.py to include this additional page as well as app/templates/index.html to include a button widget to access the allpurchases page.
 - Jonathan Shi (Seller Guru) --> Main designer of seller and inventory tables. For milestone 3, Jonathan wrote app/inventory.py,
 app/models/inventory.py, app/template/inventory.html, and updated index.html, and app/models/seller.py. Users registered as sellers
 in the database have access to an inventory button which shows their personal inventory, while signed out users or non-seller users

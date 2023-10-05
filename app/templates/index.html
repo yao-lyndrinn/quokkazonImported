@@ -25,7 +25,10 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
+      {% if current_user.is_authenticated %}
       <th scope="col">Add To Wishlist</th>
+      {% endif %}
+      
     </tr>
   </thead>
   <tbody>

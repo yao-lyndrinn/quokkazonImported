@@ -2,6 +2,8 @@ from werkzeug.security import generate_password_hash
 import csv
 from faker import Faker
 import random
+from collections import defaultdict
+from datetime import datetime
 
 num_users = 100
 num_products = 2000
@@ -35,26 +37,19 @@ def gen_users(num_users):
         print(f'{num_users} generated')
     return
 
+def get_available_products(file):
+    available = defaultdict(list)
+    with open(file,"r") as f: 
+        info = f.readlines()
+        for line in info: 
+            # (sid, pid)
+            sid = line.split(',')[0]
+            pid = line.split(',')[1]
+            available[pid].append(sid)
+    return available 
 
-def gen_products(num_products):
-    available_pids = []
-    with open('Products.csv', 'w') as f:
-        writer = get_csv_writer(f)
-        print('Products...', end=' ', flush=True)
-        for pid in range(num_products):
-            if pid % 100 == 0:
-                print(f'{pid}', end=' ', flush=True)
-            name = fake.sentence(nb_words=4)[:-1]
-            price = f'{str(fake.random_int(max=500))}.{fake.random_int(max=99):02}'
-            available = fake.random_element(elements=('true', 'false'))
-            if available == 'true':
-                available_pids.append(pid)
-            writer.writerow([pid, name, price, available])
-        print(f'{num_products} generated; {len(available_pids)} available')
-    return available_pids
-
-
-def gen_purchases(num_purchases, available_pids):
+# uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled 
+def gen_purchases(num_purchases, available):
     with open('Purchases.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Purchases...', end=' ', flush=True)
@@ -62,11 +57,28 @@ def gen_purchases(num_purchases, available_pids):
             if id % 100 == 0:
                 print(f'{id}', end=' ', flush=True)
             uid = fake.random_int(min=0, max=num_users-1)
-            pid = fake.random_element(elements=available_pids)
-            time_purchased = fake.date_time()
-            writer.writerow([id, uid, pid, time_purchased])
+            pid = fake.random_element(elements=available.keys())
+            sid = random.choice(available[pid])
+            quantity_available = len(available[pid])
+            # ensure that items cannot be re-purchased 
+            available[pid].remove(sid)
+            if len(available[pid]) == 0: 
+                del available[pid]
+
+            time_purchased = fake.date_this_month().strftime("%Y-%m-%d %H:%M:%S")
+            
+            quantity = fake.random_int(min=0,max=quantity_available)
+            # print([uid, sid, pid, time_purchased,quantity])
+            writer.writerow([uid, sid, pid, time_purchased,quantity])
         print(f'{num_purchases} generated')
     return
+
+if __name__ == "__main__": 
+    # gen_users(num_users)
+    available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
+    gen_purchases(2, available)
+
+
 
 def gen_sellers(num_users):
     with open('Sellers.csv','w') as f:
@@ -80,9 +92,27 @@ def gen_sellers(num_users):
                 num_sellers += 1
         print(f'{num_sellers} users designated as sellers')
     return
-        
-    
 
-gen_users(num_users)
-# available_pids = gen_products(num_products)
-# gen_purchases(num_purchases, available_pids)
+def get_sellers(file):
+    with open(file,'r') as f:
+        return [int(sid) for sid in f.readlines()]
+
+"""def gen_inventory():
+    with open('Inventory.csv','w') as f:
+        writer = get_csv_writer(f)
+        print('Inventory...', end=' ', flush=True)
+        random.seed('quokka')
+        rows_added = 0
+        for sid in get_sellers('/home/ubuntu/quokkazozn/db/data/Sellers.csv'):
+            num_items = randint(1,10)
+            products = random.sample(get_pids('/home/ubuntu/quokkazon/db/data/Products.csv',num_items)
+            for product in products:
+                quantity = randint(0,1000)
+                num_for_sale = randint(0,quantity)
+                price = randint(0,30) + 0.99
+                writer.writerow([sid, pid, quantity, num_for_sale, price])
+                rows_added += 1
+        print(f'{rows_added} enntries added to Inventory')
+    return   """
+
+

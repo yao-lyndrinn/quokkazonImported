@@ -88,7 +88,11 @@ def gen_sellers(num_users):
 
 def get_sellers(file):
     with open(file,'r') as f:
-        return [int(sid) for sid in f.readlines()]
+        return [int(sid.replace('"','').strip()) for sid in f.readlines()]
+
+def get_pids(file):
+    with open(file,'r') as f:
+        return [int(line.split(',')[0]) for line in f.readlines()]
 
 def gen_inventory():
     with open('Inventory.csv','w') as f:
@@ -96,10 +100,10 @@ def gen_inventory():
         print('Inventory...', end=' ', flush=True)
         random.seed('quokka')
         rows_added = 0
-        for sid in get_sellers('/home/ubuntu/quokkazozn/db/data/Sellers.csv'):
+        for sid in get_sellers('/home/ubuntu/quokkazon/db/data/Sellers.csv'):
             num_items = random.randint(1,10)
-            products = random.sample(get_pids('/home/ubuntu/quokkazon/db/data/Products.csv',num_items))
-            for product in products:
+            products = random.sample(get_pids('/home/ubuntu/quokkazon/db/data/Products.csv'),num_items)
+            for pid in products:
                 quantity = random.randint(0,1000)
                 num_for_sale = random.randint(0,quantity)
                 price = random.randint(0,30) + 0.99
@@ -109,7 +113,7 @@ def gen_inventory():
     return
 
 if __name__ == "__main__": 
-    gen_sellers(100)
+    gen_inventory()
     # gen_users(num_users)
     #available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
     #gen_purchases(2, available)

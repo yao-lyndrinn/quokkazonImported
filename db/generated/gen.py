@@ -73,13 +73,6 @@ def gen_purchases(num_purchases, available):
         print(f'{num_purchases} generated')
     return
 
-if __name__ == "__main__": 
-    # gen_users(num_users)
-    available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
-    gen_purchases(2, available)
-
-
-
 def gen_sellers(num_users):
     with open('Sellers.csv','w') as f:
         writer = get_csv_writer(f)
@@ -87,7 +80,7 @@ def gen_sellers(num_users):
         random.seed('quokka')
         num_sellers = 0
         for id in range(num_users):
-            if random() < 0.2:
+            if random.random() < 0.2:
                 writer.writerow([id])
                 num_sellers += 1
         print(f'{num_sellers} users designated as sellers')
@@ -97,22 +90,26 @@ def get_sellers(file):
     with open(file,'r') as f:
         return [int(sid) for sid in f.readlines()]
 
-"""def gen_inventory():
+def gen_inventory():
     with open('Inventory.csv','w') as f:
         writer = get_csv_writer(f)
         print('Inventory...', end=' ', flush=True)
         random.seed('quokka')
         rows_added = 0
         for sid in get_sellers('/home/ubuntu/quokkazozn/db/data/Sellers.csv'):
-            num_items = randint(1,10)
-            products = random.sample(get_pids('/home/ubuntu/quokkazon/db/data/Products.csv',num_items)
+            num_items = random.randint(1,10)
+            products = random.sample(get_pids('/home/ubuntu/quokkazon/db/data/Products.csv',num_items))
             for product in products:
-                quantity = randint(0,1000)
-                num_for_sale = randint(0,quantity)
-                price = randint(0,30) + 0.99
+                quantity = random.randint(0,1000)
+                num_for_sale = random.randint(0,quantity)
+                price = random.randint(0,30) + 0.99
                 writer.writerow([sid, pid, quantity, num_for_sale, price])
                 rows_added += 1
         print(f'{rows_added} enntries added to Inventory')
-    return   """
+    return
 
-
+if __name__ == "__main__": 
+    gen_sellers(100)
+    # gen_users(num_users)
+    #available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
+    #gen_purchases(2, available)

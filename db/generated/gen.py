@@ -108,8 +108,35 @@ def gen_inventory():
         print(f'{rows_added} enntries added to Inventory')
     return
 
+def get_available_sellers(file):
+    available = []
+    with open(file,"r") as f: 
+        info = f.readlines()
+        for line in info: 
+            sid = line.replace("\"","").strip()
+            available.append(sid)
+    return available
+
+def gen_cart(num_users):
+    with open('Cart.csv','w') as f:
+        writer = get_csv_writer(f)
+        print('Cart...', end=' ', flush=True)
+        random.seed('quokka')
+        available_sellers = get_available_sellers("/home/ubuntu/quokkazon/db/generated/Sellers.csv")
+        for id in range(int(num_users)):
+            uid = fake.random_int(min=0, max=num_users-1)
+            sid = fake.random_element(elements=available_sellers)
+            while(sid == uid):
+                sid = fake.random_element(elements=available_sellers)
+            pid = fake.random_int(min=1, max=253)
+            quantity = fake.random_int(min = 1, max = 10)
+            saved_for_later = 0
+            writer.writerow([uid, sid, pid, quantity, saved_for_later])
+            print(f'{num_users/2} generated')
+        return
+
 if __name__ == "__main__": 
-    gen_sellers(100)
+    gen_cart(100)
     # gen_users(num_users)
     #available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
     #gen_purchases(2, available)

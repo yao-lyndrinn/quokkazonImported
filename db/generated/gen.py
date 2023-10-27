@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash
 import csv
 from faker import Faker
+import random
 
 num_users = 100
 num_products = 2000
@@ -12,7 +13,6 @@ fake = Faker()
 
 def get_csv_writer(f):
     return csv.writer(f, dialect='unix')
-
 
 def gen_users(num_users):
     with open('Users.csv', 'w') as f:
@@ -28,7 +28,10 @@ def gen_users(num_users):
             name_components = profile['name'].split(' ')
             firstname = name_components[0]
             lastname = name_components[-1]
-            writer.writerow([uid, email, password, firstname, lastname])
+            address = profile['address']
+            phone_number=fake.phone_number().replace(".","").split("x")[0]
+            # print([uid,email,firstname,lastname,address,password,phone_number,0])
+            writer.writerow([int(uid),email,firstname,lastname,address,password,phone_number,0])
         print(f'{num_users} generated')
     return
 
@@ -65,7 +68,21 @@ def gen_purchases(num_purchases, available_pids):
         print(f'{num_purchases} generated')
     return
 
+def gen_sellers(num_users):
+    with open('Sellers.csv','w') as f:
+        writer = get_csv_writer(f)
+        print('Sellers...', end=' ', flush=True)
+        random.seed('quokka')
+        num_sellers = 0
+        for id in range(num_users):
+            if random() < 0.2:
+                writer.writerow([id])
+                num_sellers += 1
+        print(f'{num_sellers} users designated as sellers')
+    return
+        
+    
 
 gen_users(num_users)
-available_pids = gen_products(num_products)
-gen_purchases(num_purchases, available_pids)
+# available_pids = gen_products(num_products)
+# gen_purchases(num_purchases, available_pids)

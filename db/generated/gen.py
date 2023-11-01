@@ -1,7 +1,6 @@
 from werkzeug.security import generate_password_hash
-import csv
+import csv,random,re
 from faker import Faker
-import random
 from collections import defaultdict
 from datetime import datetime
 
@@ -30,12 +29,21 @@ def gen_users(num_users):
             name_components = profile['name'].split(' ')
             firstname = name_components[0]
             lastname = name_components[-1]
-            address = profile['address']
-            phone_number=fake.phone_number().replace(".","").split("x")[0]
+            address = profile['address'].replace("\n"," ")
+            phone_number=random.randint(1000000000, 9999999999)
             # print([uid,email,firstname,lastname,address,password,phone_number,0])
             writer.writerow([int(uid),email,firstname,lastname,address,password,phone_number,0])
         print(f'{num_users} generated')
     return
+
+def fix_products_csv(file): 
+    with open(file,"r") as f: 
+        writer = get_csv_writer(open("Products.csv","w"))
+        for line in f.readlines(): 
+            info = line.split(",")
+            # 1,Quokka Fur Brush,grooming,,A comb or something,12:58.0,12:58.0
+            default_time = "2018-10-01 13:12:58"
+            writer.writerow([info[0],info[1],info[2],info[3],info[4],default_time,default_time])
 
 def get_available_products(file):
     available = defaultdict(list)
@@ -167,7 +175,8 @@ def gen_cart(num_users):
         return
 
 if __name__ == "__main__": 
-    gen_inventory()
+    # gen_inventory()
     # gen_users(num_users)
     #available = get_available_products("/home/ubuntu/quokkazon/db/data/Inventory.csv")
     #gen_purchases(2, available)
+    fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")

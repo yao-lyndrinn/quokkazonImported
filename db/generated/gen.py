@@ -58,6 +58,7 @@ def get_available_products():
 
 # uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled 
 def gen_purchases(num_purchases, available):
+    order_id = 0
     with open('Purchases.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Purchases...', end=' ', flush=True)
@@ -67,7 +68,7 @@ def gen_purchases(num_purchases, available):
             uid = fake.random_int(min=0, max=num_users-1)
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            order_id = 0 # discuss order_id with team 
+            order_id += 1  # discuss order_id with team 
             quantity_available = available[pid][sid]
             quantity = fake.random_int(min=0,max=quantity_available)
             # ensure that items cannot be re-purchased 
@@ -78,9 +79,10 @@ def gen_purchases(num_purchases, available):
                 del available[pid]
 
             time_purchased = "2023-10-25 13:12:58"
+            date_fulfilled = "2023-10-29 13:12:58"
             # time_purchased = fake.date_this_month().strftime("%Y-%m-%d %H:%M:%S")
             
-            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,""])
+            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
         print(f'{num_purchases} generated')
     return
 

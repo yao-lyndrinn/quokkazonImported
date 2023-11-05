@@ -43,12 +43,13 @@ for uid,info in purchases.items():
                 continue 
             # generate product rating and review (if applicable)
             p_rating = random.randint(1,5)
+            # if random.choice([True,False]) and p_rating < 5: p_rating += 0.5
             seller_product_ratings[sid].append(p_rating)
             product_ratings[pid] = p_rating 
             # leave_p_review = random.choice([True,False])
             leave_p_review = True
             if leave_p_review: 
-                product_writer.writerow([uid,pid,p_rating,sample_product_reviews[pid][p_rating],default_time])
+                product_writer.writerow([uid,pid,p_rating,sample_product_reviews[pid][int(p_rating)],default_time])
             else: 
                 product_writer.writerow([uid,pid,p_rating,"",default_time])
         # make sure that the user has not left a review for this seller already 
@@ -56,6 +57,7 @@ for uid,info in purchases.items():
         # rating for seller is the average of the ratings left for the products bought from that seller 
         s_rating = int(sum(seller_product_ratings[sid])/len(seller_product_ratings[sid]))
         seller_ratings[sid] = s_rating
+        # if random.choice([True,False]) and s_rating < 5: s_rating += 0.5
         default_time = random.choice(default_times)
         # leave_s_review = random.choice([True,False])
         leave_s_review = True

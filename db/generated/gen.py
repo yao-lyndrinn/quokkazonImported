@@ -5,8 +5,8 @@ from collections import defaultdict
 from datetime import datetime
 
 num_users = 100
-num_products = 2000
-num_purchases = 200
+num_products = 200
+num_purchases = 1000
 
 Faker.seed(0)
 fake = Faker()
@@ -59,11 +59,15 @@ def get_available_products():
 # uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled 
 def gen_purchases(num_purchases, available):
     order_id = 0
+    count = 0 
     with open('Purchases.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Purchases...', end=' ', flush=True)
         for id in range(num_purchases):
-            if id % 10 == 0:
+            if len(available) == 0: 
+                # no more inventory left 
+                break
+            if id % 100 == 0:
                 print(f'{id}', end=' ', flush=True)
             uid = fake.random_int(min=0, max=num_users-1)
             pid = fake.random_element(elements=list(available.keys()))
@@ -79,11 +83,12 @@ def gen_purchases(num_purchases, available):
                 del available[pid]
 
             time_purchased = "2023-10-25 13:12:58"
-            date_fulfilled = "2023-10-29 13:12:58"
+            date_fulfilled = "2023-10-27 13:12:58"
             # time_purchased = fake.date_this_month().strftime("%Y-%m-%d %H:%M:%S")
             
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
-        print(f'{num_purchases} generated')
+            count += 1 
+        print(f'{count} generated')
     return
 
 def gen_sellers(num_users):

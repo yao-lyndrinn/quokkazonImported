@@ -10,56 +10,37 @@ from .models.feedback import ProductFeedback, SellerFeedback
 from flask import Blueprint
 bp = Blueprint('feedback', __name__)
 
-def kmostrecent(items,k):
-    k_feedback = []
-    count = 0
-    for item in items: 
-        count += 1 
-        k_feedback.append(item)
-        if count == k: break
-    return k_feedback
-
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
-@bp.route('/uidfeedbacktop5', methods=['GET','POST'])
-def all_feedback_uid_top5():
+@bp.route('/product/feedback',methods = ['GET','POST'])
+def product_feedback():
     pfeedback = ProductFeedback.get_all() 
-    sfeedback = SellerFeedback.get_all()
+    pid = None
+    name = None
     if request.method == 'POST': 
-        uid = int(request.form['uid'])
-        pfeedback = ProductFeedback.get_by_uid_since( # sorted by posting time 
-                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
-        sfeedback = SellerFeedback.get_by_uid_since( # sorted by posting time 
-                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
-        pfeedback = kmostrecent(pfeedback,5)
-        sfeedback = kmostrecent(sfeedback,5)
-        return render_template('allfeedback.html',
+        pid = request.form['pid']
+        name = request.form['name']
+        pfeedback = ProductFeedback.get_by_pid(pid)# sorted by posting time
+    return render_template('productfeedback.html',
                         pfeedback=pfeedback,
-                        sfeedback=sfeedback,
-                        humanize_time=humanize_time)
-    return render_template('allfeedback.html',
-                        pfeedback=pfeedback,
-                        sfeedback=sfeedback,
+                        pid=pid, 
+                        name=name,
                         humanize_time=humanize_time)
 
-@bp.route('/uidfeedback',methods = ['GET','POST'])
-def all_feedback_uid():
+@bp.route('/product/feedback/sorted',methods = ['GET','POST'])
+def product_feedback_sorted_rating():
+    pid = None
+    name = None
     pfeedback = ProductFeedback.get_all() 
-    sfeedback = SellerFeedback.get_all()
     if request.method == 'POST': 
-        uid = int(request.form['uid'])
-        pfeedback = ProductFeedback.get_by_uid_since( # sorted by posting time 
-                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
-        sfeedback = SellerFeedback.get_by_uid_since( # sorted by posting time 
-                    uid, datetime.datetime(1980, 9, 14, 0, 0, 0))
-        return render_template('allfeedback.html',
+        pid = request.form['pid']
+        name = request.form['name']
+        pfeedback = ProductFeedback.get_by_pid_sort_rating(pid)# sorted by posting time
+    return render_template('productfeedback.html',
                         pfeedback=pfeedback,
-                        sfeedback=sfeedback,
-                        humanize_time=humanize_time)
-    return render_template('allfeedback.html',
-                        pfeedback=pfeedback,
-                        sfeedback=sfeedback,
+                        pid=pid,
+                        name=name,
                         humanize_time=humanize_time)
 
 @bp.route('/myfeedback')

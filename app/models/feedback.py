@@ -17,7 +17,7 @@ class ProductFeedback:
         WHERE f.uid = :uid
         AND p.pid = f.pid
         AND f.date_time >= :since
-        ORDER BY f.date_time DESC
+        ORDER BY f.date_time DESC, p.name
         ''',
         uid=uid,
         since=since)
@@ -30,9 +30,33 @@ class ProductFeedback:
         FROM ProductFeedback as f, Products as p
         WHERE f.uid = :uid
         AND p.pid = f.pid
-        ORDER BY f.rating DESC
+        ORDER BY f.rating DESC, p.name
         ''',
         uid=uid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    @staticmethod
+    def get_by_pid(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.date_time DESC, name
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    @staticmethod
+    def get_by_pid_sort_rating(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.rating DESC, name
+        ''',
+        pid=pid)
         return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
@@ -114,7 +138,7 @@ class SellerFeedback:
         WHERE f.uid = :uid
         AND s.id = f.sid
         AND f.date_time >= :since
-        ORDER BY f.date_time DESC
+        ORDER BY f.date_time DESC, name
         ''',
         uid=uid,
         since=since)
@@ -127,7 +151,7 @@ class SellerFeedback:
         WHERE f.uid = :uid
         AND s.id = f.sid
         AND f.sid = :sid
-        ORDER BY f.date_time DESC
+        ORDER BY f.date_time DESC,name
         ''',
         uid=uid,
         sid=sid)
@@ -140,7 +164,7 @@ class SellerFeedback:
         FROM SellerFeedback as f, Users as s
         WHERE f.uid = :uid
         AND s.id = f.sid
-        ORDER BY f.rating DESC
+        ORDER BY f.rating DESC,name
         ''',
         uid=uid)
         return [SellerFeedback(*row) for row in rows]

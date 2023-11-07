@@ -37,10 +37,10 @@
         {% if product.pid not in summary %}
         <td></td>
         <td></td>
+        <td></td>
         {% else %}
         <td>{{summary[product.pid][0]}}</td>
         <td>{{summary[product.pid][1]}}</td>
-        {% endif %}
         <td> 
           <form action="{{ url_for('feedback.product_feedback') }}"
           method="POST">
@@ -49,6 +49,7 @@
               <input type="submit" value="Feedback"/> 
           </form>
         </td>
+        {% endif %}
         {% if current_user.is_authenticated %}
         <td>
             <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}"

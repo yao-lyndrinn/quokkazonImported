@@ -48,10 +48,11 @@
  <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
 <br><input type="submit" value="Submit"> 
     </form>
-    <form action="{{ url_for('feedback.product_remove_review',product_id=item.pid) }}"
-    method="POST">
-        <input type="submit" value="Delete Review"/> 
-    </form>
+<form action="{{ url_for('feedback.product_remove_review') }}"
+method="POST">
+    <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
+    <input type="submit" value="Delete Review"/> 
+</form>
 <br><br>
 </body>
 {% endfor %}
@@ -82,6 +83,11 @@
  <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
 <br><input type="submit" value="Submit"> 
     </form>
+<form action="{{ url_for('feedback.seller_remove_review',seller_id=item.sid) }}"
+method="POST">
+    <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
+    <input type="submit" value="Delete Review"/> 
+</form>
 </body>
 {% endfor %}
 

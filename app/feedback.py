@@ -116,11 +116,14 @@ def product_remove_feedback(product_id):
         ProductFeedback.remove_feedback(current_user.id,product_id)
     return redirect(url_for('feedback.my_feedback_sorted_rating'))
 
-@bp.route('/myfeedback/delete/review/<int:product_id>', methods=['POST','GET'])
-def product_remove_review(product_id):
+@bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
+def product_remove_review():
     if request.method == 'POST': 
-        ProductFeedback.remove_review(current_user.id, product_id)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=product_id))
+        pid = int(request.form['pid'])
+        current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
+    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
 
 @bp.route('/myfeedback/edit/seller/<int:seller_id>', methods=['POST','GET'])
 def seller_feedback_edit(seller_id):
@@ -154,8 +157,10 @@ def seller_remove_feedback(seller_id):
         SellerFeedback.remove_feedback(current_user.id,seller_id)
     return redirect(url_for('feedback.my_feedback_sorted_rating'))
 
-@bp.route('/myfeedback/delete/review/<int:seller_id>', methods=['POST','GET'])
-def seller_remove_review(seller_id):
+@bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
+def seller_remove_review():
     if request.method == 'POST': 
-        SellerFeedback.remove_review(current_user.id, seller_id)
+        seller_id = int(request.form['sid'])
+        current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))

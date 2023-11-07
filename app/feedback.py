@@ -147,3 +147,15 @@ def seller_review_edit():
         sid = int(request.form['sid'])
         SellerFeedback.edit_review(current_user.id, sid, review, current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
+
+@bp.route('/myfeedback/delete/<int:seller_id>', methods=['POST','GET'])
+def seller_remove_feedback(seller_id):
+    if request.method == 'POST': 
+        SellerFeedback.remove_feedback(current_user.id,seller_id)
+    return redirect(url_for('feedback.my_feedback_sorted_rating'))
+
+@bp.route('/myfeedback/delete/review/<int:seller_id>', methods=['POST','GET'])
+def seller_remove_review(seller_id):
+    if request.method == 'POST': 
+        SellerFeedback.remove_review(current_user.id, seller_id)
+    return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))

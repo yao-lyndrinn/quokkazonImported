@@ -110,6 +110,17 @@ def product_review_edit():
         ProductFeedback.edit_review(current_user.id, pid, review, current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
+@bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
+def product_remove_feedback(product_id):
+    if request.method == 'POST': 
+        ProductFeedback.remove_feedback(current_user.id,product_id)
+    return redirect(url_for('feedback.my_feedback_sorted_rating'))
+
+@bp.route('/myfeedback/delete/review/<int:product_id>', methods=['POST','GET'])
+def product_remove_review(product_id):
+    if request.method == 'POST': 
+        ProductFeedback.remove_review(current_user.id, product_id)
+    return redirect(url_for('feedback.product_feedback_edit',product_id=product_id))
 
 @bp.route('/myfeedback/edit/seller/<int:seller_id>', methods=['POST','GET'])
 def seller_feedback_edit(seller_id):

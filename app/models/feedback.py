@@ -84,6 +84,28 @@ class ProductFeedback:
         pid=pid,
         review=review,
         time_updated = time_updated)
+    
+    @staticmethod
+    def remove_feedback(uid,pid):
+        app.db.execute("""
+        DELETE from ProductFeedback 
+        WHERE uid = :uid 
+        AND pid = :pid 
+        """,
+        uid=uid,
+        pid=pid)
+    
+    @staticmethod
+    def remove_review(uid,pid,time_updated):
+        app.db.execute("""
+        UPDATE ProductFeedback 
+        SET review = null, date_time = :time_updated                       
+        WHERE uid = :uid 
+        AND pid = :pid 
+        """,
+        uid=uid,
+        pid=pid,
+        time_updated = time_updated)
 
 
 class SellerFeedback:
@@ -167,4 +189,26 @@ class SellerFeedback:
         uid=uid,
         sid=sid,
         review=review,
+        time_updated = time_updated)
+
+    @staticmethod
+    def remove_feedback(uid,sid):
+        app.db.execute("""
+        DELETE from SellerFeedback 
+        WHERE uid = :uid 
+        AND sid = :sid 
+        """,
+        uid=uid,
+        sid=sid)
+    
+    @staticmethod
+    def remove_review(uid,sid,time_updated):
+        app.db.execute("""
+        UPDATE SellerFeedback  
+        SET review = null, date_time = :time_updated                       
+        WHERE uid = :uid 
+        AND sid = :sid 
+        """,
+        uid=uid,
+        sid=sid,
         time_updated = time_updated)

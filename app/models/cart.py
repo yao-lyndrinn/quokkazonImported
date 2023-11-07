@@ -40,7 +40,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         FROM C
         """,
         uid=uid)
-        return float(rows[0][0]) if rows else 0
+        return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
     
     @staticmethod
     def add_item(uid, sid, pid, quantity, saved_for_later):

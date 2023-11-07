@@ -53,7 +53,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         pid = pid,
         quantity = 1,
         saved_for_later = '0')
-        return CartItem.get(uid, sid, pid)
+        return
     
     @staticmethod
     def remove_item(uid, sid, pid):

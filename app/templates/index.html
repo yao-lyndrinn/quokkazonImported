@@ -34,8 +34,13 @@
       <tr>
         <td>{{product.pid}}</td>
         <td>{{product.name}}</td>
+        {% if product.pid not in summary %}
         <td></td>
         <td></td>
+        {% else %}
+        <td>{{summary[product.pid][0]}}</td>
+        <td>{{summary[product.pid][1]}}</td>
+        {% endif %}
         <td> 
           <form action="{{ url_for('feedback.product_feedback') }}"
           method="POST">

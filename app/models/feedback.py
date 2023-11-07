@@ -9,6 +9,20 @@ class ProductFeedback:
         self.review = review
         self.date_time = date_time
 
+    def summary_ratings(pid): 
+        info = app.db.execute('''
+        SELECT COUNT(f.rating), AVG(f.rating)
+        FROM ProductFeedback as f
+        WHERE f.pid = :pid
+        ''', pid=pid)
+        num = info[0][0]
+        avg = round(info[0][1],1)
+        return (avg,num)
+
+    def all_pids(): 
+        info = app.db.execute('SELECT pid FROM ProductFeedback')
+        return info
+    
     @staticmethod
     def get_by_uid_since(uid, since):
         rows = app.db.execute('''

@@ -22,10 +22,12 @@ def product_feedback():
         pid = request.form['pid']
         name = request.form['name']
         pfeedback = ProductFeedback.get_by_pid(pid)# sorted by posting time
+        summary = ProductFeedback.summary_ratings(pid)
     return render_template('productfeedback.html',
                         pfeedback=pfeedback,
                         pid=pid, 
                         name=name,
+                        summary=summary,
                         humanize_time=humanize_time)
 
 @bp.route('/product/feedback/sorted',methods = ['GET','POST'])
@@ -37,10 +39,12 @@ def product_feedback_sorted_rating():
         pid = request.form['pid']
         name = request.form['name']
         pfeedback = ProductFeedback.get_by_pid_sort_rating(pid)# sorted by posting time
+        summary = ProductFeedback.summary_ratings(pid)
     return render_template('productfeedback.html',
                         pfeedback=pfeedback,
                         pid=pid,
                         name=name,
+                        summary=summary,
                         humanize_time=humanize_time)
 
 @bp.route('/myfeedback')

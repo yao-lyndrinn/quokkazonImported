@@ -18,6 +18,15 @@ class Inventory:
         return [Inventory(*row) for row in rows]
 
     @staticmethod
+    def get_all_by_pid(pid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Inventory
+        WHERE pid = :pid
+        ''', pid=pid)
+        return [Inventory(*row) for row in rows]
+
+    @staticmethod
     def get_all():
         rows = app.db.execute('''
         SELECT *

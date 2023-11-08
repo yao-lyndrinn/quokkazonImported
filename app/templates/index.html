@@ -25,7 +25,7 @@
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
       {% if current_user.is_authenticated %}
-      <th scope="col">Add To Wishlist</th>
+      <th scope="col">Add to</th>
       {% endif %}
       
     </tr>
@@ -38,9 +38,17 @@
         {% if current_user.is_authenticated %}
         <td>
             <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}"
-                  method="POST">
-                  <input type="submit" value="+"/> 
+                  method="POST"
+                  style="display:inline-block">
+                  <input type="submit" value="Wishlist"/> 
             </form>
+            {% if is_seller%}
+            <form action="{{ url_for('inventory.add', product_id=product.pid) }}"
+                  method="POST"
+                  style="display:inline-block">
+                  <input type="submit" value="Inventory"/> 
+            </form>
+            {% endif %}
         </td>
         {% endif %}
 

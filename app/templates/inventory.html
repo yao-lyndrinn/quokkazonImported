@@ -4,7 +4,10 @@
 
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-  <a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Home</a>
+  {% if current_user.is_authenticated and is_seller %}
+    <a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Add items</a>
+  {% endif %}
+  <!--<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Home</a>-->
 </div>
 
 {% if current_user.is_authenticated %}
@@ -43,24 +46,40 @@
     $(document).ready(function(){ $('#sortable').DataTable(); });
   </script>
   
+  <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li style="color:red">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </p>
+
   <table class='table table-hover table-bordered container' id='sortable'>
     <thead class="quokka-brown">
       <tr>
-        <th scope="col" style="width: 10%">Product ID</th>
         <th scope="col">Product Name</th>
         <th scope="col">Price</th>
         <th scope="col">Quantity</th>
         <th scope="col">Number for sale</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       {% for item in avail_inventory %}
         <tr>
-          <th scope="row">{{item.pid}}</th>
           <th scope="row">{{product_class.get_name(item.pid)}}</th>
           <td>{{item.price}}</td>
           <td>{{item.quantity}}</td>
           <td>{{item.num_for_sale}}</td>
+          <td>
+              <form action="{{ url_for('inventory.edit', product_id=item.pid, oq=item.quantity, on=item.num_for_sale, op=item.price) }}">
+                    <input type="submit" value="Edit"/> 
+              </form>
+          </td>
         </tr>
       {% endfor %}
     </tbody>

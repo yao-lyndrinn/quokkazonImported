@@ -72,7 +72,7 @@ def gen_purchases(num_purchases, available):
             uid = fake.random_int(min=0, max=num_users-1)
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            order_id += 1  # discuss order_id with team 
+            order_id += 1  # TODO: order_id is not unique, should group purchases into orders
             quantity_available = available[pid][sid]
             quantity = fake.random_int(min=0,max=quantity_available)
             # ensure that items cannot be re-purchased 
@@ -83,7 +83,7 @@ def gen_purchases(num_purchases, available):
                 del available[pid]
 
             time_purchased = "2023-10-25 13:12:58"
-            date_fulfilled = "2023-10-27 13:12:58"
+            date_fulfilled = "2023-10-27 13:12:58"  # TODO: change times, have some empty times for unfulfilled orders
             # time_purchased = fake.date_this_month().strftime("%Y-%m-%d %H:%M:%S")
             
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])

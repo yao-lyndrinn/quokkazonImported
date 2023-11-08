@@ -29,20 +29,39 @@
     </div>
 
     <div class="item-info-parent">
-        <!-- main info -->
         <div class="main-info">
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
             <div class="star-rating">
                 <span>★★★★</span>★            
             </div>
-            <p>Price: <span id="price">₹ 449.00</span></p>
-        </div>
-        <div class="select-items">
-            <div class="description">
-                <p>{{product.description}}</p>
+            <div class="select-items">
+                <div class="description">
+                    <p>Description: {{product.description}}</p>
+                </div>
             </div>
+            <p>Select an option:</p>
+            <div name="selected_option">
+                {% if inv_len == 0 %}
+                    <p style="color:red;"> This item is out of stock</p>
+                {% else %}
+                    {% for i in inventory %}
+                        <p style="text-align: center;">{{ i.sid }}: ${{i.price}}</p>
+                        {% set default_quantity = 1 %}
+                        <form action="{{ url_for('cart.cart_add', product_id=i.pid, quantity=default_quantity, seller_id=i.sid, saved_for_later=0)}}" method="POST">
+                            <input type="hidden" name="product_id" value="{{ i.pid }}"/>
+                            <input type="hidden" name="seller_id" value="{{ i.sid }}"/>
+                            <input type="hidden" name="saved_for_later" value="0"/>
+                            
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="quantity" id="quantity" value="{{ default_quantity }}" min="1" max="10" step="1" required/>
+                            
+                            <input type="submit" value="Add to Cart"/>
+                        </form>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
         </div>
-        <button class="add-to-cart-button">Add to Cart</button>
     </div>
 </section>
 

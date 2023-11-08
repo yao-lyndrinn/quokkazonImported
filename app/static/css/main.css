@@ -1,3 +1,42 @@
+body {
+    font-family: "Verdana", sans-serif;
+}
+
+.main-head {
+    height: 150px;
+    background: #FFF;
+}
+
+.sidenav {
+    height: 100%;
+    background-color: #804a03;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.main {
+    padding: 0px 10px;
+}
+
+.login-main-text {
+    margin-top: 20%;
+    padding: 60px;
+    color: #fff;
+}
+
+.login-main-text h2 {
+    font-weight: 300;
+}
+
+.btn-black {
+    background-color: #000 !important;
+    color: #fff;
+}
+.quokka-brown{
+  background-color: #422808;
+  color: white;
+}
+
 section {
     color: #fff;
     text-align: center;
@@ -96,6 +135,7 @@ section {
     width: 95%;
     margin: 0 auto;
     padding-top: 50px;
+    padding-bottom: 50px;
 }
 
 .item-image-parent {
@@ -158,10 +198,12 @@ section {
     color: gray;
     font-size: 24px;
     border-bottom: 0.4px solid rgba(194, 194, 194, 0.829);
+    text-align:center;
 }
 
 .star-rating span {
     color: gold;
+    text-align:center;
 }
 
 .main-info p {
@@ -192,8 +234,10 @@ section {
     margin-top: 10px;
 }
 
-.description ul {
+.description{
+    margin-top:25px;
     padding-left: 17px;
     font-size: 15px;
     line-height: 1.3rem;
+    color: black;
 }

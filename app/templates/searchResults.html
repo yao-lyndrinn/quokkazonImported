@@ -9,7 +9,20 @@
 {% else %}
     <p style= "margin-top: 10px; padding-left: 25px">Showing {{len_products}} search results for "{{search_term}}"</p>
 {% endif %}
-<table class='table table-hover table-bordered container'>
+
+<script>
+  $(document).ready(function(){
+    $('#sortable').DataTable({
+      "bFilter": false,  
+      "oLanguage": {     
+        "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+        "sInfoEmpty": "Showing 0 to 0 of 0 entries",
+        "sEmptyTable": "No data available in table"
+      }
+    });
+  });
+</script>
+<table class='table table-hover table-bordered container' id='sortable'>
     <thead class="quokka-brown">
       <tr>
         <th scope="col">Product ID</th>
@@ -51,26 +64,6 @@
       {% endfor %}
     </tbody>
   </table>
-  <div class = "pagination">
-    {% if total_pages > 1 %}
-        {% if page > 1 %}
-            <a id = "page" href="{{ url_for('products.search_results', page=page - 1, search_term=search_term) }}">Previous Page</a>
-        {% endif %}
-    
-        {% for p in range(page, total_pages + 1) %}
-            {% if p == page %}
-                <span>{{ p }}</span>
-            {% else %}
-                <a id = "page" href="{{ url_for('products.search_results', page=p, search_term=search_term) }}">{{ p }}</a>
-            {% endif %}
-        {% endfor %}
-    
-        {% if page < total_pages %}
-            <a id = "page" href="{{ url_for('products.search_results', page=page + 1, search_term=search_term) }}">Next Page</a>
-        {% endif %}
-    {% endif %}
-  
-  </div>
 </html>
 
 {% endblock %}

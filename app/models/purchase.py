@@ -28,6 +28,7 @@ class Purchase:
         WHERE uid = :uid
         AND time_purchased >= :since
         ORDER BY time_purchased DESC
+        LIMIT 10
         ''',
                               uid=uid,
                               since=since)

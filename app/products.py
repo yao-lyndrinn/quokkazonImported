@@ -31,9 +31,14 @@ def product_detail(product_id):
     image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
     random_image = random.choice(image_files)
     
+    inventory = Inventory.get_all_by_pid(product_id)
+    inv_len = len(inventory)
+    
     return render_template('productDetail.html',
                            product=product, 
-                           image="product_images/"+random_image)
+                           image="product_images/"+random_image,
+                           inventory=inventory,
+                           inv_len = inv_len)
         
 ROWS = 10
 @bp.route('/products', methods=['GET','POST'])
@@ -51,7 +56,7 @@ def products():
     paginated_items = items[start_idx:end_idx]
     total_pages = len(items)//10 + 1
     return render_template('products.html',
-                      items=paginated_items, 
+                      items=items, 
                       inventory=inventory, 
                       product_prices = product_prices, 
                       page=page,
@@ -82,7 +87,7 @@ def search_results():
     paginated_items = products[start_idx:end_idx]
     total_pages = len(products)//10 + 1
     return render_template('searchResults.html',
-                            items = paginated_items,
+                            items = products,
                             inventory = inventory,
                             product_prices = product_prices,
                             page=page,

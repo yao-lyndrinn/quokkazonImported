@@ -32,3 +32,16 @@ class Purchase:
                               uid=uid,
                               since=since)
         return [Purchase(*row) for row in rows]
+    
+    def get_top_ten():
+        rows = app.db.execute('''
+        SELECT pid, COUNT(*)
+        FROM Purchases
+        GROUP BY pid
+        ORDER BY COUNT(*) DESC
+        LIMIT 10''')
+        top_purchases = []
+        for row in rows:
+            pid, count = row
+            top_purchases.append(pid)
+        return top_purchases

@@ -1,5 +1,7 @@
 from flask import render_template
 from flask_login import current_user
+from flask import redirect, request, url_for, session
+from flask_session import Session
 import datetime
 
 from .models.product import Product
@@ -10,11 +12,26 @@ from .models.feedback import ProductFeedback
 from flask import Blueprint
 bp = Blueprint('index', __name__)
 
+@bp.before_request
+def activate_session():
+    if request.path in ['/products/search_results']:
+        session.modified = True
+
+@bp.after_request
+def deactivate_session(response):
+    if request.path in ['', '/products']:
+        session['search_term'] = ''
+    return response
 
 @bp.route('/')
 def index():
     # get all available products for sale:
-    products = Product.get_all()
+    top_pid = Purchase.get_top_ten()
+    top_all = []
+    
+    for product in top_pid:
+        top_all.append(Product.get(product))
+    # products = Product.get_all()
     pids = ProductFeedback.all_pids()
     summary_ratings = {} 
     for row in pids: 
@@ -29,7 +46,7 @@ def index():
         purchases = None
     # render the page by adding information to the index.html file
     return render_template('index.html',
-                        avail_products=products,
+                        avail_products=top_all,
                         purchase_history=purchases,
                         summary=summary_ratings,
                         is_seller=Seller.is_seller(current_user))

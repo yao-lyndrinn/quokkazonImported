@@ -241,3 +241,53 @@ section {
     line-height: 1.3rem;
     color: black;
 }
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .card {
+    width: 23%; /* Adjust the width as needed to fit 4 cards in a row */
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-body {
+    padding: 10px;
+  }
+  .card-image {
+    width: 90%;
+    display: block;
+    margin: auto;
+  }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .card-subtitle {
+    font-size: 1rem;
+    color: #333;
+    margin-top: 5px;
+  }
+  
+  .card-text {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  form {
+    margin-top: 10px;
+  }
+  
+  .clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  

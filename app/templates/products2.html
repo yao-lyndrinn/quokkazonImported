@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h2>Products for sale:</h2>
+<script>
+  $(document).ready(function() {
+    $('#sort-button').click(function() {
+      window.location.href = '/products?sort=1'; // Add a sorting parameter to the URL
+    });
+  });
+</script>
+<button id="sort-button">Sort by Price</button>
+<div class="card-container">
+    {% for product in items %}
+      <div class="card">
+        <div class="card-body">
+          <img class = "card-image" src="{{url_for('static', filename=image)}}" alt="default" />
+          <h5 class="card-title">Product ID: {{ product.pid }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
+          </h6>
+          <p class="card-text">
+            {% if product.pid in product_prices %}
+              {% for price in product_prices[product.pid] %}
+                ${{ price }}<br>
+              {% endfor %}
+            {% else %}
+              Not in stock
+            {% endif %}
+          </p>
+          {% if current_user.is_authenticated %}
+            <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}" method="POST">
+              <input type="submit" value="Add to Wishlist">
+            </form>
+            <form action="{{ url_for('cart.cart_select', product_id=product.pid) }}" method="POST">
+              <input type="submit" value="View">
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% if loop.index % 4 == 0 %}
+        <div class="clearfix"></div> <!-- Add clearfix every 4 cards to start a new row -->
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class = "pagination" >
+    {% if total_pages > 1%}
+      {% if page > 1 %}
+        <a id="page" href="{{ url_for('products.products', page=page-1)}}">Previous Page</a>
+      {% endif %}
+
+      {% for p in range(page, total_pages + 1) %}
+        {% if p == page %}
+          <span> {{ p }}</span>
+        {% else %}
+          <a id="page" href="{{ url_for('products.products', page=p)}}">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+        <a id="page" href="{{ url_for('products.products', page=page+1)}}"> Next page</a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+{% endblock %}

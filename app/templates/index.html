@@ -15,62 +15,49 @@
 </form>
 
 <h2><a href="{{ url_for('products.products') }}" style = "color: #804a03">Top selling products:</a></h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="quokka-brown">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Average Rating</th>
-      <th scope="col">Number of Ratings</th>
-      <th scope="col">See Feedback</th>
-      {% if current_user.is_authenticated %}
-      <th scope="col">Add To Wishlist</th>
-      <th scope="col">View Sellers</th>
-      {% endif %}
-      
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <td>{{product.pid}}</td>
-        <td><a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{product.name}}</a></td>
-        {% if product.pid not in summary %}
-        <td></td>
-        <td></td>
-        <td></td>
-        {% else %}
-        <td>{{summary[product.pid][0]}}</td>
-        <td>{{summary[product.pid][1]}}</td>
-        <td> 
-          <form action="{{ url_for('feedback.product_feedback') }}"
-          method="POST">
-            <input type="hidden" id="pid" name="pid" value="{{product.pid}}">
-            <input type="hidden" id="name" name="name" value="{{product.name}}">
-              <input type="submit" value="Feedback"/> 
-          </form>
-        </td>
-        {% endif %}
-        {% if current_user.is_authenticated %}
-        <td>
-            <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}"
-                  method="POST">
-                  <input type="submit" value="+"/> 
+
+<div class="card-container">
+  {% for product in avail_products %}
+    <div class="card">
+      <div class="card-body">
+        <img class = "card-image" src="{{url_for('static', filename=image)}}" alt="default" />
+        <h5 class="card-title">Product ID: {{ product.pid }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
+        </h6>
+        <p class="card-text">
+          {% if product.pid in product_prices %}
+            {% for price in product_prices[product.pid] %}
+              ${{ price }}<br>
+            {% endfor %}
+          {% else %}
+            Not in stock
+          {% endif %}
+          {% if product.pid in summary %}
+            <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
+            <form action="{{ url_for('feedback.product_feedback') }}"
+            method="POST">
+              <input type="hidden" id="pid" name="pid" value="{{product.pid}}">
+              <input type="hidden" id="name" name="name" value="{{product.name}}">
+                <input type="submit" value="Feedback"/> 
             </form>
-        </td>
-        <td>
-          <form action="{{ url_for('cart.cart_select', product_id=product.pid)}}"
-                method="POST">
-                <input type="submit" value="View"/> 
+          {% endif %}
+        </p>
+        {% if current_user.is_authenticated %}
+          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="Add to Wishlist">
           </form>
-        </td>
+          <form action="{{ url_for('cart.cart_select', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="View">
+          </form>
         {% endif %}
-
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+      </div>
+    </div>
+    {% if loop.index % 4 == 0 %}
+      <div class="clearfix"></div> <!-- Add clearfix every 4 cards to start a new row -->
+    {% endif %}
+  {% endfor %}
+</div>
 
 <br><br>
 {% if current_user.is_authenticated %}

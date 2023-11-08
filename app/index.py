@@ -2,6 +2,7 @@ from flask import render_template
 from flask_login import current_user
 from flask import redirect, request, url_for, session
 from flask_session import Session
+import os, random
 import datetime
 
 from .models.product import Product
@@ -37,6 +38,10 @@ def index():
     for row in pids: 
         pid = row[0]
         summary_ratings[pid] = ProductFeedback.summary_ratings(pid)
+        
+    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
+    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    random_image = random.choice(image_files)
 
     # find the products current user has bought:
     if current_user.is_authenticated:
@@ -48,6 +53,7 @@ def index():
     return render_template('index.html',
                         avail_products=top_all,
                         purchase_history=purchases,
+                        image="product_images/"+random_image,
                         summary=summary_ratings,
                         is_seller=Seller.is_seller(current_user))
     

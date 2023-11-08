@@ -8,6 +8,7 @@ import os, random
 from .models.product import Product
 from .models.inventory import Inventory
 from .models.stock import Stock
+from .models.category import Category
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
@@ -40,37 +41,58 @@ def product_detail(product_id):
                            inventory=inventory,
                            inv_len = inv_len)
         
-ROWS = 10
+ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():
-    page = request.args.get('page', 1, type=int)
-    items = Product.get_all()
+    print("THESE ARE HERE", Category.get_all())
+    page = request.args.get("page", 1, type=int)
+    start = (page-1) * ROWS
+    end = start + ROWS
+    
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
-    start_idx = (page - 1) * ROWS
-    end_idx = start_idx + ROWS
+    items = Stock.get_all_in_stock()
+    
+    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
+    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    random_image = random.choice(image_files)
+    
+    sort_by_price = request.args.get('sort', type=int)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
         
-    paginated_items = items[start_idx:end_idx]
-    total_pages = len(items)//10 + 1
-    return render_template('products.html',
-                      items=items, 
-                      inventory=inventory, 
-                      product_prices = product_prices, 
-                      page=page,
-                      total_pages = total_pages)
+    if sort_by_price:
+        items = Stock.get_stock_desc()
     
+    paginated = items[start:end]
+    total_pages = len(items)//24 + 1
+    return render_template('products2.html',
+                      items=paginated, 
+                      image="product_images/"+random_image,
+                      inventory=inventory, 
+                      product_prices = product_prices,
+                      page=page,
+                      total_pages=total_pages)
+    
+def sort_by_min_value(prices):
+    return min(prices[1])
+    
+
 @bp.route('/products/search_results', methods=['GET','POST'])
 def search_results():
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get("page", 1, type=int)
+    start = (page-1) * ROWS
+    end = start + ROWS
+    
     search_term = request.args.get('search_term', '')
     # items = Product.get_all()
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
-    start_idx = (page - 1) * ROWS
-    end_idx = start_idx + ROWS
+    
+    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
+    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    random_image = random.choice(image_files)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
@@ -83,20 +105,20 @@ def search_results():
         search_term = session.get('search_term')
     products = search_products(search_term)
 
-        
-    paginated_items = products[start_idx:end_idx]
-    total_pages = len(products)//10 + 1
-    return render_template('searchResults.html',
+    paginated = products[start:end]
+    total_pages = len(products)//24 + 1
+    return render_template('searchResults2.html',
                             items = products,
                             inventory = inventory,
+                            image="product_images/"+random_image,
                             product_prices = product_prices,
-                            page=page,
-                            total_pages = total_pages,
                             search_term = search_term,
-                            len_products = len(products))
+                            len_products = len(products),
+                            page=page,
+                            total_pages=total_pages)
     
 def search_products(search_term):
     products = Product.get_all()
-    search_results = [product for product in products if search_term.lower() in product.name.lower()]
+    search_results = [product for product in products if (search_term.lower() in product.name.lower()) or (search_term.lower() in product.description.lower())]
     return search_results
     

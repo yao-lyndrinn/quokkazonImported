@@ -40,7 +40,7 @@ class Purchase:
         FROM Purchases
         GROUP BY pid
         ORDER BY COUNT(*) DESC
-        LIMIT 10''')
+        LIMIT 8''')
         top_purchases = []
         for row in rows:
             pid, count = row

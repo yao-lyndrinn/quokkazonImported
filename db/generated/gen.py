@@ -25,7 +25,8 @@ def gen_users(num_users):
             profile = fake.profile()
             email = profile['mail']
             plain_password = f'pass{uid}'
-            password = generate_password_hash(plain_password)
+            #password = generate_password_hash(plain_password)
+            password = generate_password_hash("1234")
             name_components = profile['name'].split(' ')
             firstname = name_components[0]
             lastname = name_components[-1]
@@ -177,8 +178,8 @@ def gen_cart(num_users):
         return
 
 if __name__ == "__main__": 
-    # gen_inventory()
-    # gen_users(num_users)
+    #gen_inventory()
+    gen_users(num_users)
     available = get_available_products()
     gen_purchases(num_purchases, available)
     # fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")

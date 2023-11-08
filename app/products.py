@@ -1,11 +1,13 @@
 from flask import render_template
 from flask import redirect, request, url_for
+from flask_login import current_user
 from humanize import naturaltime
 from collections import defaultdict
 
 from .models.product import Product
 from .models.inventory import Inventory
 from .models.stock import Stock
+from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
@@ -33,5 +35,5 @@ def products():
                     k_prod = k_prod, k = k)
     
     return render_template('products.html',
-                      items=items, inventory=inventory, product_prices = product_prices)
+                      items=items, inventory=inventory, product_prices = product_prices, is_seller=Seller.is_seller(current_user))
     

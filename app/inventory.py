@@ -60,6 +60,6 @@ def add(product_id):
 
 @bp.route('/inventory/delete/<int:product_id>', methods=['GET', 'POST'])
 def delete(product_id):
-    flash(Product.get_name(product_id) + ' deleted!')
+    flash(Product.get_name(product_id) + ' deleted from inventory!')
     Inventory.delete(product_id, current_user.id)
     return redirect(url_for('inventory.inventory'))

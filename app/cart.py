@@ -7,6 +7,7 @@ from humanize import naturaltime
 
 from .models.cart import CartItem
 from .models.inventory import Inventory
+from .models.purchase import Purchase
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -60,3 +61,21 @@ def cart_update_quantity():
     product_id = request.form['product_id']
     CartItem.update_quantity(current_user.id, seller_id, product_id, quantity)
     return redirect(url_for('cart.cart'))
+
+@bp.route('/cart/submit', methods=['POST'])
+def cart_submit():
+    neworder = CartItem.newOrderId(current_user.id)
+    CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id)
+    CartItem.decrease_balance(current_user.id)
+    items = CartItem.get_all_by_uid(
+                        current_user.id)
+    for item in items:
+        CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, None)
+    CartItem.submit(current_user.id)
+    return redirect(url_for('cart.cart_order', order_id = neworder))
+
+@bp.route('/cart/<int:order_id>')
+def cart_order(order_id):
+    items = Purchase.get_order(current_user.id, order_id)
+    totalprice = Purchase.get_total_price_order(current_user.id, order_id)
+    return render_template('buyerOrder.html', items = items, totalprice = totalprice)

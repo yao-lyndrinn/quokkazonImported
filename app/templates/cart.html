@@ -33,7 +33,6 @@
         <td>
           <form action="{{ url_for('cart.cart_remove', seller_id=item.sid, product_id=item.pid)}}"
             method="POST">
-            <input type="hidden" name="product_id" value="{{item.pid}}"/> 
             <input type="submit" value="Remove"/> 
           </form></td>
       </tr>
@@ -44,4 +43,8 @@
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}
 <h2> Total Price: ${{totalprice}}</h2>
+<form action="{{ url_for('cart.cart_submit')}}"
+            method="POST">
+            <input type="submit" value="Submit Order"/>
+</form>
 {% endblock %}

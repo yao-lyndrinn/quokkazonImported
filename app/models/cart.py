@@ -79,3 +79,66 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         quantity=quantity)
         return
 
+    @staticmethod
+    def submit(uid):
+        rows = app.db.execute("""
+        DELETE FROM CART
+        WHERE uid = :uid
+        """,
+        uid=uid)
+        return
+
+    @staticmethod
+    def newOrderId(uid):
+        rows = app.db.execute("""
+        WITH orders(ids) AS (SELECT order_id
+        FROM PURCHASES
+        WHERE uid = :uid)
+        SELECT MAX(orders.ids)
+        FROM orders
+        """, uid = uid)
+        return int(rows[0][0]+1) if rows and rows[0][0] is not None else 1
+    @staticmethod
+    def newPurchase(uid, sid, pid, order_id, quantity, date_fulfilled):
+        rows = app.db.execute("""
+        INSERT INTO PURCHASES(uid, sid, pid, order_id, quantity, date_fulfilled)
+        VALUES(:uid, :sid, :pid, :order_id, :quantity, :date_fulfilled)
+        """, uid = uid, sid = sid, pid = pid, order_id=order_id, quantity = quantity, date_fulfilled= date_fulfilled
+        )
+        return
+    
+    @staticmethod
+    def get_all_sids(uid):
+        rows = app.db.execute('''
+        SELECT DISTINCT sid
+        FROM Cart
+        WHERE uid = :uid
+        ''', uid = uid)
+        return [row[0] for row in rows]
+
+    @staticmethod
+    def increase_balances(sids, uid):
+        for sid in sids:
+            rows = app.db.execute('''
+            WITH C(total) AS
+            (SELECT Cart.quantity * price FROM Cart, Inventory
+            WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid)
+            UPDATE USERS
+            SET balance = balance + (SELECT SUM(total) FROM C)
+            WHERE id = :sid
+            ''', sid = sid, uid = uid)
+        return
+
+    @staticmethod
+    def decrease_balance(uid):
+        rows = app.db.execute('''
+        WITH C(total) AS
+            (SELECT Cart.quantity * price FROM Cart, Inventory
+            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid)
+        UPDATE USERS
+        SET balance = balance - (SELECT SUM(total) FROM C)
+        WHERE id = :uid
+        ''', uid = uid)
+        return
+
+    

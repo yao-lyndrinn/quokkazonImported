@@ -76,3 +76,24 @@ class Purchase:
             return date_fulfilled
         except Exception as e:
             print(str(e))
+            
+    @staticmethod
+    def get_order(uid, order_id):
+        rows = app.db.execute('''
+        SELECT *
+        FROM PURCHASES
+        WHERE uid = :uid AND order_id = :order_id
+        ''', uid = uid, order_id=order_id)
+        return [Purchase(*row) for row in rows]
+
+    @staticmethod
+    def get_total_price_order(uid, order_id):
+        rows = app.db.execute("""
+        WITH C(total) AS
+            (SELECT Purchases.quantity * price FROM Purchases, Inventory
+            WHERE uid = :uid AND Purchases.sid = Inventory.sid AND Purchases.pid = Inventory.pid AND Purchases.order_id = :order_id)
+        SELECT SUM(total)
+        FROM C
+        """,
+        uid=uid, order_id=order_id)
+        return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0

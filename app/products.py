@@ -1,7 +1,7 @@
 from flask import render_template
 from flask import redirect, request, url_for, session
 from flask_session import Session
-from flast_login import current_user
+from flask_login import current_user
 from humanize import naturaltime
 import datetime
 from collections import defaultdict

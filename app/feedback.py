@@ -42,9 +42,10 @@ def product_submission_form(product_id,name):
     return render_template('myfeedback_add.html',
                             product_id=product_id,
                             name=name,
+                            type="product",
                             humanize_time=humanize_time)
 
-@bp.route('/myfeedback/add', methods=['POST','GET'])
+@bp.route('/myfeedback/add/product', methods=['POST','GET'])
 def product_add_feedback():
     if request.method == 'POST': 
         pid = int(request.form['pid'])
@@ -139,3 +140,25 @@ def seller_remove_review():
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
 
+@bp.route('/myfeedback/add/seller', methods=['POST','GET'])
+def seller_add_feedback():
+    if request.method == 'POST': 
+        sid = int(request.form['sid'])
+        rating = int(request.form['rating'])
+        review = request.form['review']
+        current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        SellerFeedback.add_feedback(current_user.id,sid,rating,review,current_dateTime)
+        sfeedback = SellerFeedback.get_by_uid_sid(current_user.id, sid)
+    return render_template('myfeedback_edit.html',
+                        sfeedback=sfeedback,
+                        humanize_time=humanize_time)
+
+@bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
+def seller_submission_form(seller_id):
+    name = SellerFeedback.get_seller_name(seller_id)
+    print(name)
+    return render_template('myfeedback_add.html',
+                            seller_id=seller_id,
+                            name=name,
+                            type="seller",
+                            humanize_time=humanize_time)

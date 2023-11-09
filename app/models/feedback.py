@@ -400,3 +400,24 @@ class SellerFeedback:
         """,
         uid=uid,
         sid=sid)
+    
+    @staticmethod 
+    def add_feedback(uid,sid,rating,review,time): 
+        app.db.execute("""
+        INSERT INTO SellerFeedback VALUES (:uid,:sid,:rating,:review,:date_time)
+        """,
+        uid=uid,
+        sid=sid,
+        rating=rating,
+        review=review,
+        date_time=time)
+
+    @staticmethod 
+    def get_seller_name(sid): 
+        name = app.db.execute("""
+        SELECT (firstname || ' ' || lastname) AS name 
+        FROM Users
+        WHERE id = :sid
+        """,
+        sid=sid)
+        return name[0][0] 

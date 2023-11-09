@@ -10,21 +10,21 @@
     <div class="item-image-parent">
         <div class="item-list-vertical">
             <div class="thumb-box">
-                <img src="{{url_for('static', filename=image)}}" alt="thumbnail" />
+                <img src="{{url_for('static', filename=product.image)}}" alt="thumbnail" />
             </div>
             <div class="thumb-box">
-                <img src="{{url_for('static', filename=image)}}" alt="thumbnail" />
+                <img src="{{url_for('static', filename=product.image)}}" alt="thumbnail" />
             </div>
             <div class="thumb-box">
-                <img src="{{url_for('static', filename=image)}}" alt="thumbnail" />
+                <img src="{{url_for('static', filename=product.image)}}" alt="thumbnail" />
             </div>
             <div class="thumb-box">
-                <img src="{{url_for('static', filename=image)}}" alt="thumbnail" />
+                <img src="{{url_for('static', filename=product.image)}}" alt="thumbnail" />
             </div>
 
         </div>
         <div class="item-image-main">
-            <img src="{{url_for('static', filename=image)}}" alt="default" />
+            <img src="{{url_for('static', filename=product.image)}}" alt="default" />
         </div>
     </div>
 
@@ -108,16 +108,12 @@
   <div class="dropdown">
     <button>Sort By</button>
     <div class="dropdown-content">
-        <form action="{{ url_for('feedback.product_feedback') }}"
+        <form action="{{ url_for('products.product_detail',product_id=product.pid) }}"
           method="POST">
-            <input type="hidden" id="pid" name="pid" value="{{product_id}}">
-            <input type="hidden" id="name" name="name" value="{{product.name}}">
               <input type="submit" value="Date"/> 
           </form>
-          <form action="{{ url_for('feedback.product_feedback_sorted_rating') }}"
+          <form action="{{ url_for('products.product_detail_sorted_rating',product_id=product.pid) }}"
           method="POST">
-            <input type="hidden" id="pid" name="pid" value="{{product_id}}">
-            <input type="hidden" id="name" name="name" value="{{product.name}}">
               <input type="submit" value="Rating"/> 
           </form>
     </div>

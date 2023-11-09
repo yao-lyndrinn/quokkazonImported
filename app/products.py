@@ -29,14 +29,25 @@ def deactivate_session(response):
         session['search_term'] = ''
     return response
 
-@bp.route('/products/<int:product_id>')
+@bp.route('/products/<int:product_id>',methods = ['GET','POST'])
 def product_detail(product_id):
     product = Product.get(product_id)
+    inventory = Inventory.get_all_by_pid(product_id)
+    inv_len = len(inventory)
+    pfeedback = ProductFeedback.get_by_pid(product_id)# sorted by posting time
+    summary = ProductFeedback.summary_ratings(product_id)
     
-    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
-    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
-    random_image = random.choice(image_files)
-    
+    return render_template('productDetail.html',
+                           product=product,
+                           pfeedback=pfeedback,
+                           summary=summary,
+                           humanize_time=humanize_time,
+                           inventory=inventory,
+                           inv_len = inv_len)
+
+@bp.route('/products/sort_rating/<int:product_id>',methods = ['GET','POST'])
+def product_detail_sorted_rating(product_id):
+    product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
     pfeedback = ProductFeedback.get_by_pid_sort_rating(product_id)# sorted by posting time
@@ -47,10 +58,8 @@ def product_detail(product_id):
                            pfeedback=pfeedback,
                            summary=summary,
                            humanize_time=humanize_time,
-                           image="product_images/"+random_image,
                            inventory=inventory,
-                           inv_len = inv_len)
-        
+                           inv_len = inv_len)       
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():

@@ -124,11 +124,12 @@ def seller_review_edit():
         SellerFeedback.edit_review(current_user.id, sid, review, current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
 
-@bp.route('/myfeedback/delete/<int:seller_id>', methods=['POST','GET'])
-def seller_remove_feedback(seller_id):
-    if request.method == 'POST': 
-        SellerFeedback.remove_feedback(current_user.id,seller_id)
-    return redirect(url_for('feedback.my_feedback_sorted_rating'))
+@bp.route('/myfeedback/delete', methods=['POST','GET'])
+def seller_remove_feedback():
+    if request.method == 'POST':
+        sid = int(request.form['sid'])
+        SellerFeedback.remove_feedback(current_user.id,sid)
+    return redirect(url_for('feedback.my_feedback',option=0))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
@@ -138,38 +139,3 @@ def seller_remove_review():
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
 
-
-# '''Deprecated Code'''
-# @bp.route('/product/feedback',methods = ['GET','POST'])
-# def product_feedback():
-#     pfeedback = ProductFeedback.get_all() 
-#     pid = None
-#     name = None
-#     if request.method == 'POST': 
-#         pid = int(request.form['pid'])
-#         name = request.form['name']
-#         pfeedback = ProductFeedback.get_by_pid(pid)# sorted by posting time
-#         summary = ProductFeedback.summary_ratings(pid)
-#     return render_template('productfeedback.html',
-#                         pfeedback=pfeedback,
-#                         pid=pid, 
-#                         name=name,
-#                         summary=summary,
-#                         humanize_time=humanize_time)
-
-# @bp.route('/product/feedback/sorted',methods = ['GET','POST'])
-# def product_feedback_sorted_rating():
-#     pid = None
-#     name = None
-#     pfeedback = ProductFeedback.get_all() 
-#     if request.method == 'POST': 
-#         pid = int(request.form['pid'])
-#         name = request.form['name']
-#         pfeedback = ProductFeedback.get_by_pid_sort_rating(pid)# sorted by posting time
-#         summary = ProductFeedback.summary_ratings(pid)
-#     return render_template('productfeedback.html',
-#                         pfeedback=pfeedback,
-#                         pid=pid,
-#                         name=name,
-#                         summary=summary,
-#                         humanize_time=humanize_time)

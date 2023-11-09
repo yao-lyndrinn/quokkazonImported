@@ -59,8 +59,9 @@ method="POST">
 <!-- Seller Feedback Editing Page -->
 {% for item in sfeedback %}
 <h3>My Feedback for Seller {{item.sid}}: {{item.name}}</h3>
-<form action="{{ url_for('feedback.seller_remove_feedback',seller_id=item.sid) }}"
+<form action="{{ url_for('feedback.seller_remove_feedback') }}"
                 method="POST">
+                <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
                 <input type="submit" value="Delete"/> 
 </form>
 <p>Time Updated: {{item.date_time}}</p>

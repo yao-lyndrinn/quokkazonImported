@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<!--doctype html-->
+<html>
+<head>
+    <title>{{ current_user.firstname }} {{ current_user.lastname }} - Profile</title>
+</head>
+<body>
+    <div class="container profile">
+        <h1>My Profile</h1>
+        <div class="row">
+            <div class="col-md-8">
+                <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+                <p><strong>Email:</strong> {{ current_user.email }}</p>
+                <p><strong>Phone Number:</strong> {{ current_user.phone_number }}</p>
+                <p><strong>Address:</strong> {{ current_user.address }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% else %}
+<p>User is not authenticated.</p>
+{% endif %}
+{% endblock %}

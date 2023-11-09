@@ -49,7 +49,9 @@ for uid,info in purchases.items():
             # leave_p_review = random.choice([True,False])
             leave_p_review = True
             if leave_p_review: 
-                product_writer.writerow([uid,pid,p_rating,sample_product_reviews[pid][int(p_rating)],default_time])
+                length = random.randint(6,10)
+                review = fake.sentence(nb_words=length)[:-1] + ". " + sample_product_reviews[pid][int(p_rating)] + " " + fake.sentence(nb_words=length)[:-1] + "." 
+                product_writer.writerow([uid,pid,p_rating,review,default_time])
             else: 
                 product_writer.writerow([uid,pid,p_rating,"",default_time])
         # make sure that the user has not left a review for this seller already 

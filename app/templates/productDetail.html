@@ -2,8 +2,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <a style="color:grey;" href="{{ url_for('products.search_results', page=p, search_term=search_term) }}"> < Back to results</a>
+
+<!-- {% if scrollToReviews == 1 %}
+<script>
+    document.getElementById("reviews").scrollIntoView();
+</script>
+<button onclick="document.getElementById('reviews').scrollIntoView()">Scroll to Feedback</button>
+{% endif %} -->
 
 <section id="product-info">
 
@@ -27,13 +33,23 @@
             <img src="{{url_for('static', filename=product.image)}}" alt="default" />
         </div>
     </div>
-
     <div class="item-info-parent">
         <div class="main-info">
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
             <div class="star-rating">
-                <span>★★★★</span>★            
+                {% if 1 <= summary[0] < 2 %}
+                <span>★</span>★★★★   
+                {% elif 2 <= summary[0] < 3 %}
+                <span>★★</span>★★★   
+                {% elif 3 <= summary[0] < 4 %}
+                <span>★★★</span>★★       
+                {% elif 4 <= summary[0] < 5 %}
+                <span>★★★★</span>★       
+                {% elif summary[0] == 5 %}
+                <span>★★★★★</span> 
+                {% endif %}               
             </div>
+            
             <div class="select-items">
                 <div class="description">
                     <p>Description: {{product.description}}</p>
@@ -66,15 +82,7 @@
 </section>
 
 <br><br>
-  
-<h4 style="color: black;">Reviews</h4>
-{% if current_user.is_authenticated %}
-<div style="text-align:right">
-    <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
-    </div>
-{% endif %}
-
-  <style>
+    <style>
   .dropdown {
     display: inline-block;
     position: relative;
@@ -104,20 +112,26 @@
   </style>
 
   <body style="background-color:#ffffff;">
-  
+
+  <div id="reviews">
+    <h4 style="color: black;">Reviews</h4>
+    {% if current_user.is_authenticated %}
+    <div style="text-align:right">
+        <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
+        </div>
+    {% endif %}
+
+    <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
   <div class="dropdown">
-    <button>Sort By</button>
+    <button>Sort Feedback By</button>
     <div class="dropdown-content">
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0) }}" type="button">Date (Newest to Oldest)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=1) }}" type="button">Date (Oldest to Newest)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=2) }}" type="button">Rating (High to Low)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=3) }}" type="button">Rating (Low to High)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0,scrollToReviews=1) }}" type="button">Date (Newest to Oldest)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=1,scrollToReviews=1) }}" type="button">Date (Oldest to Newest)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=2,scrollToReviews=1) }}" type="button">Rating (High to Low)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=3,scrollToReviews=1) }}" type="button">Rating (Low to High)</a>
     </div>
   </div>
   
-
-  <br><br>
-  <div id="products">
   <table class='table table-hover table-bordered container'>
     <thead class="quokka-brown">
       <tr>

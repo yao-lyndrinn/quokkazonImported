@@ -36,7 +36,7 @@
       {% for product in items%}
         <tr>
           <td>{{product.pid}}</td>
-          <td><a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{product.name}}</a></td>
+          <td><a href="{{ url_for('products.product_detail', product_id=product.pid,option=0) }}">{{product.name}}</a></td>
           <td>
             {% if product.pid in product_prices %}
               {%for price in product_prices[product.pid]%}
@@ -45,6 +45,7 @@
             {% else %}
               Not in stock
             {% endif %}
+            <p>Rating: {{summary[0]}} by {{summary[1]}} users</p>
           </td>
           {% if current_user.is_authenticated %}
           <td>

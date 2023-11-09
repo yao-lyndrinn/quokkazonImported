@@ -24,7 +24,7 @@
         <img class = "card-image" src="{{url_for('static', filename=image)}}" alt="default" />
         <h5 class="card-title">Product ID: {{ product.pid }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">
-          <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0) }}">{{ product.name }}</a>
+          <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0,scrollToReviews=0) }}">{{ product.name }}</a>
         </h6>
         <p class="card-text">
           {% if product.pid in product_prices %}
@@ -36,12 +36,6 @@
           {% endif %}
           {% if product.pid in summary %}
             <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
-            <!-- <form action="{{ url_for('feedback.product_feedback') }}"
-            method="POST">
-              <input type="hidden" id="pid" name="pid" value="{{product.pid}}">
-              <input type="hidden" id="name" name="name" value="{{product.name}}">
-                <input type="submit" value="Feedback"/> 
-            </form> -->
           {% endif %}
         </p>
         {% if current_user.is_authenticated %}

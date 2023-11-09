@@ -15,6 +15,8 @@ class ProductFeedback:
         FROM ProductFeedback as f
         WHERE f.pid = :pid
         ''', pid=pid)
+        if info[0][1] is None:
+            return (None,0)
         num = info[0][0]
         avg = round(info[0][1],1)
         return (avg,num)
@@ -57,7 +59,7 @@ class ProductFeedback:
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
-        ORDER BY f.date_time DESC, name
+        ORDER BY f.date_time DESC, name ASC
         ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
@@ -70,7 +72,7 @@ class ProductFeedback:
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
-        ORDER BY f.date_time, name
+        ORDER BY f.date_time ASC, name ASC
         ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
@@ -83,7 +85,7 @@ class ProductFeedback:
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
-        ORDER BY f.rating DESC, name
+        ORDER BY f.rating DESC, name ASC
         ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
@@ -96,7 +98,7 @@ class ProductFeedback:
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
-        ORDER BY f.rating, name
+        ORDER BY f.rating ASC, name ASC
         ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]

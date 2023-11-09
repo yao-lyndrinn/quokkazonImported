@@ -41,7 +41,7 @@ def product_detail(product_id,option):
         pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)
     elif option == 2: 
         # sort by rating from high to low 
-        pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)# sorted by posting time
+        pfeedback = ProductFeedback.get_by_pid_sort_rating_descending(product_id)# sorted by posting time
     elif option == 3:
         # sort by rating from low to high 
         pfeedback = ProductFeedback.get_by_pid_sort_rating_ascending(product_id)
@@ -50,7 +50,7 @@ def product_detail(product_id,option):
         pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
 
     summary = ProductFeedback.summary_ratings(product_id)
-    
+    print(summary)
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,
@@ -69,13 +69,14 @@ def products():
     
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
+    summary = defaultdict(list)
     items = Stock.get_all_in_stock()
     
     sort_by_price = request.args.get('sort', type=int)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
-        
+        summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
     if sort_by_price:
         items = Stock.get_stock_desc()
     
@@ -86,6 +87,7 @@ def products():
     return render_template('products2.html',
                       items=paginated,
                       inventory=inventory, 
+                      summary=summary,
                       product_prices = product_prices,
                       page=page,
                       total_pages=total_pages)
@@ -104,13 +106,15 @@ def search_results():
     # items = Product.get_all()
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
-    
+    summary = defaultdict(list)
+
     image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
     image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
     random_image = random.choice(image_files)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
+        summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
     if request.method == 'POST':
         search_term = request.form['search_term']
         session['search_term'] = search_term
@@ -128,6 +132,7 @@ def search_results():
                             image="product_images/"+random_image,
                             product_prices = product_prices,
                             search_term = search_term,
+                            summary=summary,
                             len_products = len(products),
                             page=page,
                             total_pages=total_pages)

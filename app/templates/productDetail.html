@@ -10,6 +10,17 @@
 </script>
 <button onclick="document.getElementById('reviews').scrollIntoView()">Scroll to Feedback</button>
 {% endif %} -->
+<br>
+<div style="color: aliceblue; text-align: right; margin-bottom: 25px">
+    {% if current_user.is_authenticated and is_seller%}
+      <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
+      <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
+    {% endif %}
+    <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
+    <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
+    
+  
+  </div>
 
 <section id="product-info">
 
@@ -116,8 +127,13 @@
   <div id="reviews">
     <h4 style="color: black;">Reviews</h4>
     {% if current_user.is_authenticated %}
+    
+    <form action="{{ url_for('feedback.product_submission_form', product_id=product.pid,name=product.name) }}"
+    method="POST">
+    <input type="submit" value="Leave feedback for this product"/> 
+    </form>
     <div style="text-align:right">
-        <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
+        <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
         </div>
     {% endif %}
 

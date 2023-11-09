@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.is_authenticated %}∂
+{% if current_user.is_authenticated %}
 <head>
     <style>
     textarea {
@@ -14,7 +14,7 @@
 <body>   
 <br><br>
 <div style="text-align:right">
-    <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
+    <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
     </div>
 
 <!-- Product Feedback Editing Page -->

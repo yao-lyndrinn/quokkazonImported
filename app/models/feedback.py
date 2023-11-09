@@ -25,28 +25,54 @@ class ProductFeedback:
         info = app.db.execute('SELECT pid FROM ProductFeedback')
         return info
     
+    # current user's ratings and reviews (sorted in reverse chronological order)
     @staticmethod
-    def get_by_uid_since(uid, since):
+    def get_by_uid_sort_date_descending(uid):
         rows = app.db.execute('''
         SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
         FROM ProductFeedback as f, Products as p
         WHERE f.uid = :uid
         AND p.pid = f.pid
-        AND f.date_time >= :since
         ORDER BY f.date_time DESC, p.name
         ''',
-        uid=uid,
-        since=since)
+        uid=uid)
         return [ProductFeedback(*row) for row in rows]
     
+    # current user's ratings and reviews (sorted in chronological order)
     @staticmethod
-    def get_by_uid_sort_rating(uid):
+    def get_by_uid_sort_date_ascending(uid):
+        rows = app.db.execute('''
+        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Products as p
+        WHERE f.uid = :uid
+        AND p.pid = f.pid
+        ORDER BY f.date_time, p.name
+        ''',
+        uid=uid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    # current user's ratings and reviews (sorted by rating from high to low)
+    @staticmethod
+    def get_by_uid_sort_rating_descending(uid):
         rows = app.db.execute('''
         SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
         FROM ProductFeedback as f, Products as p
         WHERE f.uid = :uid
         AND p.pid = f.pid
         ORDER BY f.rating DESC, p.name
+        ''',
+        uid=uid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    # current user's ratings and reviews (sorted by rating from low to high)
+    @staticmethod
+    def get_by_uid_sort_rating_ascending(uid):
+        rows = app.db.execute('''
+        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Products as p
+        WHERE f.uid = :uid
+        AND p.pid = f.pid
+        ORDER BY f.rating, p.name
         ''',
         uid=uid)
         return [ProductFeedback(*row) for row in rows]
@@ -163,6 +189,43 @@ class ProductFeedback:
         uid=uid,
         pid=pid)
     
+    @staticmethod
+    def feedback_exists(uid,pid): 
+        exists = app.db.execute("""
+        SELECT f.uid
+        FROM ProductFeedback f                         
+        WHERE f.uid = :uid
+        AND f.pid = :pid 
+        """,
+        uid=uid,
+        pid=pid)
+        return exists 
+    
+    @staticmethod
+    def has_purchased(uid,pid): 
+        purchased = app.db.execute("""
+        SELECT f.uid
+        FROM ProductFeedback f, Purchases p                           
+        WHERE f.uid = p.uid
+        AND f.uid = :uid
+        AND f.pid = :pid 
+        AND p.pid = f.pid 
+        """,
+        uid=uid,
+        pid=pid)
+        return purchased 
+
+    @staticmethod 
+    def add_feedback(uid,pid,rating,review,time): 
+        app.db.execute("""
+        INSERT INTO ProductFeedback VALUES (:uid,:pid,:rating,:review,:date_time)
+        """,
+        uid=uid,
+        pid=pid,
+        rating=rating,
+        review=review,
+        date_time=time)
+
 
 
 class SellerFeedback:
@@ -183,20 +246,58 @@ class SellerFeedback:
         num = info[0][0]
         avg = round(info[0][1],1)
         return (avg,num)
-    
+    # current user's ratings and reviews (sorted in reverse chronological order)
     @staticmethod
-    def get_by_uid_since(uid, since):
+    def get_by_uid_sort_date_descending(uid):
         rows = app.db.execute('''
         SELECT f.uid, (s.firstname || ' ' || s.lastname) AS name, f.sid, f.rating, f.review, f.date_time
         FROM SellerFeedback as f, Users as s
         WHERE f.uid = :uid
         AND s.id = f.sid
-        AND f.date_time >= :since
         ORDER BY f.date_time DESC, name
         ''',
-        uid=uid,
-        since=since)
+        uid=uid)
         return [SellerFeedback(*row) for row in rows]
+    
+    # current user's ratings and reviews (sorted in chronological order)
+    @staticmethod
+    def get_by_uid_sort_date_ascending(uid):
+        rows = app.db.execute('''
+        SELECT f.uid, (s.firstname || ' ' || s.lastname) AS name, f.sid, f.rating, f.review, f.date_time
+        FROM SellerFeedback as f, Users as s
+        WHERE f.uid = :uid
+        AND s.id = f.sid
+        ORDER BY f.date_time DESC, name
+        ''',
+        uid=uid)
+        return [SellerFeedback(*row) for row in rows]
+    
+    # current user's ratings and reviews (sorted by rating from high to low)
+    @staticmethod
+    def get_by_uid_sort_rating_descending(uid):
+        rows = app.db.execute('''
+        SELECT f.uid, (s.firstname || ' ' || s.lastname) AS name, f.sid, f.rating, f.review, f.date_time
+        FROM SellerFeedback as f, Users as s
+        WHERE f.uid = :uid
+        AND s.id = f.sid
+        ORDER BY f.rating DESC, name
+        ''',
+        uid=uid)
+        return [SellerFeedback(*row) for row in rows]
+    
+    # current user's ratings and reviews (sorted by rating from low to high)
+    @staticmethod
+    def get_by_uid_sort_rating_ascending(uid):
+        rows = app.db.execute('''
+        SELECT f.uid, (s.firstname || ' ' || s.lastname) AS name, f.sid, f.rating, f.review, f.date_time
+        FROM SellerFeedback as f, Users as s
+        WHERE f.uid = :uid
+        AND s.id = f.sid
+        ORDER BY f.rating DESC, name
+        ''',
+        uid=uid)
+        return [SellerFeedback(*row) for row in rows]
+    
     @staticmethod
     def get_by_uid_sid(uid, sid):
         rows = app.db.execute('''

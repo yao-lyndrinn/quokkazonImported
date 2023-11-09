@@ -55,15 +55,24 @@
   </style>
 
   <body style="background-color:#ffffff;">
-  
+  <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
+      {% if current_user.is_authenticated and is_seller%}
+        <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
+        <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
+      {% endif %}
+      <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
+      
+    
+    </div>
   <div class="dropdown">
-    <button>Sort By</button>
+    <button>Sort Feedback By</button>
     <div class="dropdown-content">
-      <a href="{{ url_for('feedback.my_feedback') }}">Date</a>
-      <a href="{{ url_for('feedback.my_feedback_sorted_rating') }}">Rating</a>
+      <a href="{{ url_for('feedback.my_feedback',option=0) }}">Date (Newest to Oldest)</a>
+      <a href="{{ url_for('feedback.my_feedback',option=1) }}">Date (Oldest to Newest)</a>
+      <a href="{{ url_for('feedback.my_feedback',option=2) }}">Rating (High to Low)</a>
+      <a href="{{ url_for('feedback.my_feedback',option=3) }}">Rating (High to Low)</a>
     </div>
   </div>
-  
 
   <br><br>
   <div id="products">

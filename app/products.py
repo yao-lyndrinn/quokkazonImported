@@ -41,7 +41,7 @@ def product_detail(product_id,option):
         pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)
     elif option == 2: 
         # sort by rating from high to low 
-        pfeedback = ProductFeedback.get_by_pid_sort_rating_descending(product_id)# sorted by posting time
+        pfeedback = ProductFeedback.get_by_pid_sort_rating_descending(product_id)
     elif option == 3:
         # sort by rating from low to high 
         pfeedback = ProductFeedback.get_by_pid_sort_rating_ascending(product_id)

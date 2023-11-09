@@ -53,9 +53,9 @@ def products():
     product_prices = defaultdict(list)
     items = Stock.get_all_in_stock()
     
-    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
-    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
-    random_image = random.choice(image_files)
+    # image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
+    # image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    # random_image = random.choice(image_files)
     
     sort_by_price = request.args.get('sort', type=int)
     
@@ -67,9 +67,10 @@ def products():
     
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
+    
+    print("TESTING IMAGES", items)
     return render_template('products2.html',
-                      items=paginated, 
-                      image="product_images/"+random_image,
+                      items=paginated,
                       inventory=inventory, 
                       product_prices = product_prices,
                       page=page,

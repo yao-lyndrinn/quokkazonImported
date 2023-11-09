@@ -46,14 +46,14 @@
                 {% else %}
                     {% for i in inventory %}
                         <p style="text-align: center;">{{ i.sid }}: ${{i.price}} ({{i.num_for_sale}} left!)</p>
-                        {% set default_quantity = 1 %}
-                        <form action="{{ url_for('cart.cart_add', product_id=i.pid, quantity=default_quantity, seller_id=i.sid, saved_for_later=0)}}" method="POST">
+    
+                        <form action="{{ url_for('cart.cart_add')}}" method="POST">
                             <input type="hidden" name="product_id" value="{{ i.pid }}"/>
                             <input type="hidden" name="seller_id" value="{{ i.sid }}"/>
                             <input type="hidden" name="saved_for_later" value="0"/>
                             
                             <label style="color: black;" or ="quantity">Quantity:</label>
-                            <input type="number" name="quantity" id="quantity" value="{{ default_quantity }}" min="1" max="10" step="1" required/>
+                            <input type="number" name="quantity" id="quantity"/>
                             
                             <input type="submit" value="Add to Cart"/>
                         </form>

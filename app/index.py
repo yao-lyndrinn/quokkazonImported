@@ -39,10 +39,6 @@ def index():
         pid = row[0]
         summary_ratings[pid] = ProductFeedback.summary_ratings(pid)
         
-    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
-    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
-    random_image = random.choice(image_files)
-
     products_purchased = {}
     feedback_exists = {}
     # find the products current user has bought:
@@ -64,7 +60,6 @@ def index():
                         purchase_history=purchases,
                         feedback_exists=feedback_exists,
                         products_purchased=products_purchased,
-                        image="product_images/"+random_image,
                         summary=summary_ratings,
                         is_seller=Seller.is_seller(current_user))
     

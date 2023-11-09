@@ -118,10 +118,6 @@ def search_results():
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)
-
-    image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
-    image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
-    random_image = random.choice(image_files)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
@@ -134,19 +130,21 @@ def search_results():
     if request.method == 'GET':
         search_term = session.get('search_term')
     products = search_products(search_term)
+    
+    categories = Category.get_all_categories()
 
     paginated = products[start:end]
     total_pages = len(products)//24 + 1
     return render_template('searchResults2.html',
                             items = products,
                             inventory = inventory,
-                            image="product_images/"+random_image,
                             product_prices = product_prices,
                             search_term = search_term,
                             summary=summary,
                             len_products = len(products),
                             page=page,
-                            total_pages=total_pages)
+                            total_pages=total_pages,
+                            categories=categories)
     
 def search_products(search_term):
     products = Product.get_all()

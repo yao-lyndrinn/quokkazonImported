@@ -27,7 +27,7 @@ def category_products(category_name):
     start = (page-1) * ROWS
     end = start + ROWS
     
-    cat_items = Category.get_all_by_cat(category_name)
+    cat_items = Category.get_all_by_cat(category_name[2:-3])
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)

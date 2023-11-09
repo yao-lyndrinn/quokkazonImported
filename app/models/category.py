@@ -38,6 +38,7 @@ class Category:
         SELECT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.createdAt, Products.updatedAt, Category.name as category
         FROM Products
         JOIN Category ON Products.pid = Category.pid
+        WHERE Category.name = :category
         ''', category=category)
         return [Category(*row) for row in rows]
 

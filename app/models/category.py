@@ -26,5 +26,4 @@ class Category:
         SELECT DISTINCT name
         FROM Category;
         ''')
-        
         return rows

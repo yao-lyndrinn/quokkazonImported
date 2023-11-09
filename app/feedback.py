@@ -19,7 +19,7 @@ def product_feedback():
     pid = None
     name = None
     if request.method == 'POST': 
-        pid = request.form['pid']
+        pid = int(request.form['pid'])
         name = request.form['name']
         pfeedback = ProductFeedback.get_by_pid(pid)# sorted by posting time
         summary = ProductFeedback.summary_ratings(pid)
@@ -36,7 +36,7 @@ def product_feedback_sorted_rating():
     name = None
     pfeedback = ProductFeedback.get_all() 
     if request.method == 'POST': 
-        pid = request.form['pid']
+        pid = int(request.form['pid'])
         name = request.form['name']
         pfeedback = ProductFeedback.get_by_pid_sort_rating(pid)# sorted by posting time
         summary = ProductFeedback.summary_ratings(pid)

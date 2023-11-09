@@ -5,13 +5,14 @@
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
   {% if current_user.is_authenticated and is_seller%}
+    <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-    <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
   {% endif %}
+  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
+  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
+  
 
 </div>
-<form action="/allpurchases">
-  <button id = "purchases" button style = "height:50px;width:100px;margin:5px;">User Milestone</button>
 </form>
 
 <h2><a href="{{ url_for('products.products') }}" style = "color: #804a03">Top selling products:</a></h2>

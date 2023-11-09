@@ -1,4 +1,5 @@
 from flask import current_app as app
+import datetime
 
 class Purchase:
     def __init__(self, uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled):
@@ -46,3 +47,32 @@ class Purchase:
             pid, count = row
             top_purchases.append(pid)
         return top_purchases
+    @staticmethod
+    def get_all_by_sid(sid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Purchases
+        WHERE sid = :sid
+        ORDER BY time_purchased DESC
+        ''',
+                              sid=sid)
+        return [Purchase(*row) for row in rows]
+    
+    @staticmethod
+    def fulfill(uid, sid, pid, order_id, date_fulfilled):
+        try:
+            rows = app.db.execute("""
+            UPDATE Purchases
+            SET date_fulfilled=:date_fulfilled
+            WHERE uid=:uid AND sid=:sid AND pid=:pid AND order_id=:order_id
+            """,
+                                  uid=uid,
+                                  sid=sid,
+                                  pid=pid,
+                                  order_id=order_id,
+                                  date_fulfilled=date_fulfilled
+                                )
+            print("YESSS")
+            return date_fulfilled
+        except Exception as e:
+            print(str(e))

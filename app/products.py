@@ -1,6 +1,7 @@
 from flask import render_template
 from flask import redirect, request, url_for, session
 from flask_session import Session
+from flask_login import current_user
 from humanize import naturaltime
 import datetime
 from collections import defaultdict
@@ -11,6 +12,7 @@ from .models.feedback import ProductFeedback
 from .models.inventory import Inventory
 from .models.stock import Stock
 from .models.category import Category
+from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)

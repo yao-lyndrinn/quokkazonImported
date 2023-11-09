@@ -290,4 +290,29 @@ section {
     display: table;
     clear: both;
   }
+  /* Add your styles to a separate CSS file or include them in the HTML head */
+.category-banner {
+    background-color: #f2f2f2;
+    padding: 10px;
+}
+
+.category-banner h2 {
+    color: #333;
+}
+
+.category-banner ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-banner li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.category-banner a {
+    text-decoration: none;
+    color: #007bff;
+}
+
   

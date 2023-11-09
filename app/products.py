@@ -72,7 +72,6 @@ def product_detail(product_id,option):
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():
-    print("THESE ARE HERE", Category.get_all())
     page = request.args.get("page", 1, type=int)
     start = (page-1) * ROWS
     end = start + ROWS
@@ -93,14 +92,16 @@ def products():
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
     
-    print("TESTING IMAGES", items)
+    categories = Category.get_all_categories()
+    
     return render_template('products2.html',
                       items=paginated,
                       inventory=inventory, 
                       summary=summary,
                       product_prices = product_prices,
                       page=page,
-                      total_pages=total_pages)
+                      total_pages=total_pages,
+                      categories=categories)
     
 def sort_by_min_value(prices):
     return min(prices[1])

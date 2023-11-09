@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div class="category-banner">
+  <h2>Categories</h2>
+  <ul>
+      {% for category in categories %}
+          <li><a href="{{ url_for('products.products', category_name=category) }}">{{ category }}</a></li>
+      {% endfor %}
+  </ul>
+</div>
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
   {% if current_user.is_authenticated%}

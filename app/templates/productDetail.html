@@ -66,8 +66,8 @@
 </section>
 
 <br><br>
-
-<h4 style="color: black;">Feedback</h4>
+  
+<h4 style="color: black;">Reviews</h4>
 {% if current_user.is_authenticated %}
 <div style="text-align:right">
     <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
@@ -108,14 +108,8 @@
   <div class="dropdown">
     <button>Sort By</button>
     <div class="dropdown-content">
-        <form action="{{ url_for('products.product_detail',product_id=product.pid) }}"
-          method="POST">
-              <input type="submit" value="Date"/> 
-          </form>
-          <form action="{{ url_for('products.product_detail_sorted_rating',product_id=product.pid) }}"
-          method="POST">
-              <input type="submit" value="Rating"/> 
-          </form>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid) }}" type="button">Date</a>
+        <a href="{{ url_for('products.product_detail_sorted_rating',product_id=product.pid) }}" type="button">Rating</a>
     </div>
   </div>
   

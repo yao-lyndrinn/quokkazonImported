@@ -59,6 +59,7 @@ def product_detail(product_id,option):
     else: 
         hasPurchased = False
         feedback_exists = False
+    print(hasPurchased, feedback_exists)
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,

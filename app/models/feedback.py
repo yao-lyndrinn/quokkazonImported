@@ -204,12 +204,10 @@ class ProductFeedback:
     @staticmethod
     def has_purchased(uid,pid): 
         purchased = app.db.execute("""
-        SELECT f.uid
-        FROM ProductFeedback f, Purchases p                           
-        WHERE f.uid = p.uid
-        AND f.uid = :uid
-        AND f.pid = :pid 
-        AND p.pid = f.pid 
+        SELECT p.uid
+        FROM Purchases p                           
+        WHERE p.uid = :uid
+        AND p.pid = :pid 
         """,
         uid=uid,
         pid=pid)

@@ -56,7 +56,7 @@
 
   <body style="background-color:#ffffff;">
   <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-      {% if current_user.is_authenticated and is_seller%}
+      {% if is_seller%}
         <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
         <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
       {% endif %}

@@ -4,13 +4,16 @@
 
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-  {% if current_user.is_authenticated and is_seller%}
+  {% if current_user.is_authenticated%}
+  {% if is_seller%}
     <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
+    
   {% endif %}
-  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
   <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
-  
+  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
+   {% endif %}
+
 
 </div>
 <h2>Products for sale:</h2>

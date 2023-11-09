@@ -42,4 +42,7 @@ def create_app():
     from .profile import bp as profile_bp
     app.register_blueprint(profile_bp)
     
+    from .categories import bp as categories_bp
+    app.register_blueprint(categories_bp)
+    
     return app

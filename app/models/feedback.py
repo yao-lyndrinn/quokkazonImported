@@ -49,8 +49,9 @@ class ProductFeedback:
         uid=uid)
         return [ProductFeedback(*row) for row in rows]
     
+    # get all feedback for a given product (sorted in reverse chronological order)
     @staticmethod
-    def get_by_pid(pid):
+    def get_by_pid_sort_date_descending(pid):
         rows = app.db.execute('''
         SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
         FROM ProductFeedback as f, Users as u
@@ -61,14 +62,41 @@ class ProductFeedback:
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
     
+    # get all feedback for a given product (sorted in chronological order)
     @staticmethod
-    def get_by_pid_sort_rating(pid):
+    def get_by_pid_sort_date_ascending(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.date_time, name
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    # get all feedback for a given product (sorted by rating from high to low) 
+    @staticmethod
+    def get_by_pid_sort_rating_descending(pid):
         rows = app.db.execute('''
         SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
         ORDER BY f.rating DESC, name
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    # get all feedback for a given product (sorted by rating from low to high) 
+    @staticmethod
+    def get_by_pid_sort_rating_ascending(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.rating, name
         ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
@@ -144,6 +172,16 @@ class SellerFeedback:
         self.review = review
         self.date_time = date_time
 
+    def summary_ratings(sid): 
+        info = app.db.execute('''
+        SELECT COUNT(f.rating), AVG(f.rating)
+        FROM SellectFeedback as f
+        WHERE f.sid = :sid
+        ''', sid=sid)
+        num = info[0][0]
+        avg = round(info[0][1],1)
+        return (avg,num)
+    
     @staticmethod
     def get_by_uid_since(uid, since):
         rows = app.db.execute('''
@@ -182,6 +220,31 @@ class SellerFeedback:
         ''',
         uid=uid)
         return [SellerFeedback(*row) for row in rows]
+    
+    # get all feedback for a given seller (sorted in reverse chronological order)
+    @staticmethod
+    def get_by_pid(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.date_time DESC, name
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    @staticmethod
+    def get_by_pid_sort_rating(pid):
+        rows = app.db.execute('''
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        ORDER BY f.rating DESC, name
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
     def get_all():

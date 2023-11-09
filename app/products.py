@@ -31,12 +31,24 @@ def deactivate_session(response):
         session['search_term'] = ''
     return response
 
-@bp.route('/products/<int:product_id>',methods = ['GET','POST'])
-def product_detail(product_id):
+@bp.route('/products/<int:product_id>/<int:option>',methods = ['GET','POST'])
+def product_detail(product_id,option):
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
-    pfeedback = ProductFeedback.get_by_pid(product_id)# sorted by posting time
+    if option == 1:
+        # sort in chronological order  
+        pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)
+    elif option == 2: 
+        # sort by rating from high to low 
+        pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)# sorted by posting time
+    elif option == 3:
+        # sort by rating from low to high 
+        pfeedback = ProductFeedback.get_by_pid_sort_rating_ascending(product_id)
+    else: 
+        # default: sort in reverse chronological order
+        pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
+
     summary = ProductFeedback.summary_ratings(product_id)
     
     return render_template('productDetail.html',
@@ -46,22 +58,7 @@ def product_detail(product_id):
                            humanize_time=humanize_time,
                            inventory=inventory,
                            inv_len = inv_len)
-
-@bp.route('/products/sort_rating/<int:product_id>',methods = ['GET','POST'])
-def product_detail_sorted_rating(product_id):
-    product = Product.get(product_id)
-    inventory = Inventory.get_all_by_pid(product_id)
-    inv_len = len(inventory)
-    pfeedback = ProductFeedback.get_by_pid_sort_rating(product_id)# sorted by posting time
-    summary = ProductFeedback.summary_ratings(product_id)
-    
-    return render_template('productDetail.html',
-                           product=product,
-                           pfeedback=pfeedback,
-                           summary=summary,
-                           humanize_time=humanize_time,
-                           inventory=inventory,
-                           inv_len = inv_len)       
+     
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():

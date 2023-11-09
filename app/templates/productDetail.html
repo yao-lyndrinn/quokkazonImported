@@ -108,8 +108,10 @@
   <div class="dropdown">
     <button>Sort By</button>
     <div class="dropdown-content">
-        <a href="{{ url_for('products.product_detail',product_id=product.pid) }}" type="button">Date</a>
-        <a href="{{ url_for('products.product_detail_sorted_rating',product_id=product.pid) }}" type="button">Rating</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0) }}" type="button">Date (Newest to Oldest)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=1) }}" type="button">Date (Oldest to Newest)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=2) }}" type="button">Rating (High to Low)</a>
+        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=3) }}" type="button">Rating (Low to High)</a>
     </div>
   </div>
   

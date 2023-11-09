@@ -225,7 +225,16 @@ class ProductFeedback:
         rating=rating,
         review=review,
         date_time=time)
-
+    
+    @staticmethod 
+    def get_product_name(pid): 
+        name = app.db.execute("""
+        SELECT name 
+        FROM Products
+        WHERE pid = :pid
+        """,
+        pid=pid)
+        return name 
 
 
 class SellerFeedback:

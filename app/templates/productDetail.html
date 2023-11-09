@@ -129,10 +129,17 @@
     {% if current_user.is_authenticated %}
     
     {% if hasPurchased %}
+    {% if not feedback_exists %}
     <form action="{{ url_for('feedback.product_submission_form', product_id=product.pid,name=product.name) }}"
     method="POST">
     <input type="submit" value="Leave feedback for this product"/> 
     </form>
+    {% else %}
+    <form action="{{ url_for('feedback.product_feedback_edit', product_id=product.pid) }}"
+    method="POST">
+    <input type="submit" value="Leave feedback for this product"/> 
+    </form>
+    {% endif %}
     {% endif %}
     <div style="text-align:right">
         <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>

@@ -39,13 +39,10 @@ def my_feedback(option):
 
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
 def product_submission_form(product_id,name):
-    if ProductFeedback.feedback_exists is None: 
-        return render_template('myfeedback_add.html',
+    return render_template('myfeedback_add.html',
                             product_id=product_id,
                             name=name,
                             humanize_time=humanize_time)
-    else:
-        return redirect(url_for('feedback.product_feedback_edit',product_id=product_id))
 
 @bp.route('/myfeedback/add', methods=['POST','GET'])
 def product_add_feedback():

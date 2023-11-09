@@ -50,16 +50,25 @@ def product_detail(product_id,option):
         pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
 
     summary = ProductFeedback.summary_ratings(product_id)
-    hasPurchased = ProductFeedback.has_purchased(current_user.id,product_id)
+    if len(ProductFeedback.has_purchased(current_user.id,product_id)) > 0: 
+        hasPurchased = True
+        if len(ProductFeedback.feedback_exists(current_user.id,product_id)) > 0: 
+            feedback_exists = True 
+        else: 
+            feedback_exists = False
+    else: 
+        hasPurchased = False
+        feedback_exists = False
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,
                            summary=summary,
+                           feedback_exists = feedback_exists,
                            hasPurchased=hasPurchased,
                            humanize_time=humanize_time,
                            inventory=inventory,
                            inv_len = inv_len)
-     
+
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():

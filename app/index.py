@@ -43,16 +43,27 @@ def index():
     image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
     random_image = random.choice(image_files)
 
+    products_purchased = {}
+    feedback_exists = {}
     # find the products current user has bought:
     if current_user.is_authenticated:
         purchases = Purchase.get_all_by_uid_since(
             current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
+
+        for purchase in purchases: 
+            products_purchased[purchase.pid] = ProductFeedback.get_product_name(purchase.pid)[0][0]
+            if len(ProductFeedback.feedback_exists(current_user.id,purchase.pid)) > 0: 
+                feedback_exists[purchase.pid] = True
+            else: 
+                feedback_exists[purchase.pid] = False
     else:
         purchases = None
     # render the page by adding information to the index.html file
     return render_template('index.html',
                         avail_products=top_all,
                         purchase_history=purchases,
+                        feedback_exists=feedback_exists,
+                        products_purchased=products_purchased,
                         image="product_images/"+random_image,
                         summary=summary_ratings,
                         is_seller=Seller.is_seller(current_user))

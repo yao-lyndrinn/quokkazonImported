@@ -3,10 +3,12 @@ from flask import redirect, request, url_for, session
 from flask_session import Session
 from flast_login import current_user
 from humanize import naturaltime
+import datetime
 from collections import defaultdict
 import os, random
 
 from .models.product import Product
+from .models.feedback import ProductFeedback
 from .models.inventory import Inventory
 from .models.stock import Stock
 from .models.category import Category
@@ -14,6 +16,9 @@ from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
+
+def humanize_time(dt):
+    return naturaltime(datetime.datetime.now() - dt)
 
 @bp.before_request
 def activate_session():
@@ -36,9 +41,14 @@ def product_detail(product_id):
     
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
+    pfeedback = ProductFeedback.get_by_pid_sort_rating(product_id)# sorted by posting time
+    summary = ProductFeedback.summary_ratings(product_id)
     
     return render_template('productDetail.html',
-                           product=product, 
+                           product=product,
+                           pfeedback=pfeedback,
+                           summary=summary,
+                           humanize_time=humanize_time,
                            image="product_images/"+random_image,
                            inventory=inventory,
                            inv_len = inv_len)

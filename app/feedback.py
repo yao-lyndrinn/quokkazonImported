@@ -39,7 +39,7 @@ def my_feedback(option):
 
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
 def product_submission_form(product_id,name):
-    if ProductFeedback.feedback_exists is not None: 
+    if ProductFeedback.feedback_exists is None: 
         return render_template('myfeedback_add.html',
                             product_id=product_id,
                             name=name,
@@ -89,7 +89,7 @@ def product_review_edit():
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback_sorted_rating'))
+    return redirect(url_for('feedback.my_feedback',option=0))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():

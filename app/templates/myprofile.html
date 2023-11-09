@@ -22,6 +22,11 @@
             </div>
         </div>
     </div>
+    {% if not is_seller %}
+    <form action="/register_seller">
+        <button button style="margin:10px;" name=update_info>Register as Seller</button>
+    </form>
+    {% endif %}
 </body>
 </html>
 {% else %}

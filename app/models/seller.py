@@ -19,3 +19,19 @@ class Seller:
         if hasattr(user,"id"):
             return Seller.get(user.id) != None
         return False
+
+    @staticmethod
+    def add_seller(id):
+        try:
+            app.db.execute("""
+INSERT INTO Seller(sid)
+VALUES(:id)
+RETURNING sid
+""",
+                                  id=id)
+            return None
+        except Exception as e:
+            # likely email already in use; better error checking and reporting needed;
+            # the following simply prints the error to the console:
+            print(str(e))
+            return None

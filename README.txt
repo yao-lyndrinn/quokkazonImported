@@ -25,7 +25,5 @@ Everyone worked together to customize the website.
 https://gitlab.oit.duke.edu/query-quokkas/quokkazon 
 
 We populate the database through the gen.py script: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/db/generated/gen.py?ref_type=heads
-Link to Video Demo: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Demo.mp4?ref_type=heads
-Link to Addendum: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Addendum.mp4?ref_type=heads
-
-Please see Milestone_4_Demo_final.mp4 for our Milestone 4 Demo video, or use this link: https://www.youtube.com/watch?v=ZExKCehaD2w
+Link to Milestone 4 Video Demo: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Milestone_4_Demo_final.mp4?ref_type=heads
+Or use this link: https://www.youtube.com/watch?v=ZExKCehaD2w

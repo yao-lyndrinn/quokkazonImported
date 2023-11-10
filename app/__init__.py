@@ -11,6 +11,8 @@ login.login_view = 'users.login'
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.config['UPLOAD_FOLDER'] = 'static/product_images'
+    app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
     app.db = DB(app)
     login.init_app(app)

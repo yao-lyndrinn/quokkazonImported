@@ -17,6 +17,7 @@ from .models.seller import Seller
 from flask import Blueprint
 bp = Blueprint('products', __name__)
 
+
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
@@ -150,4 +151,27 @@ def search_products(search_term):
     products = Product.get_all()
     search_results = [product for product in products if (search_term.lower() in product.name.lower()) or (search_term.lower() in product.description.lower())]
     return search_results
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
+
     
+@bp.route('/products/add_products', methods=['GET','POST'])
+def add_products():
+    if request.method == 'POST':
+        name = request.form["name"]
+        description = request.form["description"]
+        altTxt = request.form["altTxt"]
+        pid = int(Product.newPID()[0][0]) + 1
+        createdAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        updatedAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # pid = Product.newPID()
+        file = request.files['image']
+        filename = file.filename
+        filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
+        file.save(filepath)
+                
+        Product.add_product(pid, name, description, filename, altTxt, createdAt, updatedAt)
+        return redirect(url_for('inventory.inventory'))
+                
+    return render_template('add_products.html')

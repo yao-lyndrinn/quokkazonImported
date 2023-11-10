@@ -34,3 +34,25 @@ class Product:
             return product.name
         else:
             return None
+        
+    def newPID():
+        rows = app.db.execute("""
+        SELECT MAX(pid)
+        FROM Products
+        """)
+        return rows
+        
+    @staticmethod 
+    def add_product(pid, name, description, image, altTxt, createdAt, updatedAt):
+        app.db.execute("""
+        INSERT INTO Products(pid, name, description, image, altTxt, createdAt, updatedAt)
+        VALUES(:pid, :name, :description, :image, :altTxt, :createdAt, :updatedAt)
+        """, 
+        pid = pid, 
+        name=name, 
+        description=description, 
+        image=image, altTxt=altTxt, 
+        createdAt=createdAt, 
+        updatedAt=updatedAt
+        )
+        return

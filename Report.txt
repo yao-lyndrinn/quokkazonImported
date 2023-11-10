@@ -1,8 +1,0 @@
-Sellers Guru:
-- Updated the inventory display to exclude the product ID and just leave the product name
-- Added an ability to edit items in a Seller's own inventory, with the ability to adjust the quantity, number for sale,
-and price for a product, where all values must be nonnegative.
-- If a seller chooses to remove an item from their inventory, they can do so in the edit view as well by clicking Delete
-- On the products display, there is a button for adding new products that appears for sellers.
-This creates a product with all values defaulted to 0 and redirects the seller to the product edit page.
-- There is also an orders page that can be accessed from the inventory or home pages, which shows all orders 

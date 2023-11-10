@@ -2,28 +2,27 @@
 
 {% block content %}
 
-<br><br>
+<!DOCTYPE html>
+<html>
+{% if search_term == "" %}
+    <p style= "margin-top: 10px; padding-left: 25px">Showing all {{len_products}} products</p>
+{% else %}
+    <p style= "margin-top: 10px; padding-left: 25px">Showing {{len_products}} search results for "{{search_term}}"</p>
+{% endif %}
 
-<h2>Products for sale:</h2>
 <script>
   $(document).ready(function(){
     $('#sortable').DataTable({
-      "bFilter": false,  // Remove the search input and button
-      "oLanguage": {     // Customize the language and text
-        "sInfo": "Displaying _START_ to _END_ of _TOTAL_ entries",
+      "bFilter": false,  
+      "oLanguage": {     
+        "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
         "sInfoEmpty": "Showing 0 to 0 of 0 entries",
         "sEmptyTable": "No data available in table"
       }
     });
   });
 </script>
-<style>
-  #sortable {
-    margin-bottom: 25px;  /* Add margin-bottom */
-  }
-</style>
-<div style="margin-bottom: 25px;">
-  <table class='table table-hover table-bordered container' id='sortable'>
+<table class='table table-hover table-bordered container' id='sortable'>
     <thead class="quokka-brown">
       <tr>
         <th scope="col">Product ID</th>
@@ -46,9 +45,7 @@
             {% else %}
               Not in stock
             {% endif %}
-            {% if product.pid in summary %}
-            <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
-            {% endif %}
+            <p>Rating: {{summary[0]}} by {{summary[1]}} users</p>
           </td>
           {% if current_user.is_authenticated %}
           <td>
@@ -68,5 +65,6 @@
       {% endfor %}
     </tbody>
   </table>
-</div>
+</html>
+
 {% endblock %}

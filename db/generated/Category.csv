@@ -9,10 +9,10 @@
 9,Food
 10,Technology
 11,Clothing
-12,Home Appliances
-13,Kitchen Appliances
+12,Home Appliance
+13,Kitchen Appliance
 14,Home and Bedding
-15,Kitchen Appliances
+15,Kitchen Appliance
 16,Kitchenware
 17,Home and Bedding
 18,Kitchenware
@@ -37,10 +37,10 @@
 37,Science
 38,Home and bedding
 39,Books
-40,Kitchen Appliances
+40,Kitchen Appliance
 41,Home and bedding
 42,Stationery
-43,Kitchen Appliances
+43,Kitchen
 44,Entertainment
 45,Sports & Outdoor Recreation
 46,Office Supplies
@@ -50,7 +50,7 @@
 50,Kitchenware
 51,Office Supplies
 52,Kitchen Appliances
-53,Home Appliances
+53,Home Appliance
 54,Stationery
 55,Home and Garden
 56,Office Supplies

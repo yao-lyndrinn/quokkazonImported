@@ -29,11 +29,24 @@ class Purchase:
         WHERE uid = :uid
         AND time_purchased >= :since
         ORDER BY time_purchased DESC
+        LIMIT 10
         ''',
                               uid=uid,
                               since=since)
         return [Purchase(*row) for row in rows]
     
+    def get_top_ten():
+        rows = app.db.execute('''
+        SELECT pid, COUNT(*)
+        FROM Purchases
+        GROUP BY pid
+        ORDER BY COUNT(*) DESC
+        LIMIT 8''')
+        top_purchases = []
+        for row in rows:
+            pid, count = row
+            top_purchases.append(pid)
+        return top_purchases
     @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''

@@ -21,9 +21,11 @@
       <tr>
         <td>{{item.sid}}</td>
         <td>{{item.pid}}</td>
-        <td>{{item.quantity}} <form action="{{ url_for('cart.cart_update_quantity', product_id=item.pid, seller_id=item.sid)}}"
+        <td>{{item.quantity}} <form action="{{ url_for('cart.cart_update_quantity')}}"
           method="POST">
-          Change Quantity: <input type="text" name="quantity">
+          Change Quantity: <input type="number" name="quantity">
+          <input type="hidden" name="product_id" value="{{item.pid}}"/> 
+          <input type="hidden" name="seller_id" value="{{item.sid}}"/> 
           <input type="submit" value="Update">
       </form></td>
         <td>{{item.price}}</td>

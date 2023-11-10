@@ -4,82 +4,58 @@
 
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-  {% if current_user.is_authenticated and is_seller%}
+  {% if current_user.is_authenticated%}
+  {% if is_seller%}
     <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
+    
   {% endif %}
-  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
+  <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
+  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
+   {% endif %}
+
 
 </div>
-<form action="/allpurchases">
-  <button id = "purchases" button style = "height:50px;width:100px;margin:5px;">User Milestone</button>
 </form>
 
-<h2><a href="{{ url_for('products.products') }}" style = "color: #804a03">Products for sale:</a></h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="quokka-brown">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Average Rating</th>
-      <th scope="col">Number of Ratings</th>
-      <th scope="col">See Feedback</th>
-      {% if current_user.is_authenticated %}
-      <th scope="col">Add To</th>
-      <th scope="col">View Sellers</th>
-      {% endif %}
-      
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <td>{{product.pid}}</td>
-        <td>{{product.name}}</td>
-        {% if product.pid not in summary %}
-        <td></td>
-        <td></td>
-        <td></td>
-        {% else %}
-        <td>{{summary[product.pid][0]}}</td>
-        <td>{{summary[product.pid][1]}}</td>
-        <td> 
-          <form action="{{ url_for('feedback.product_feedback') }}"
-          method="POST">
-            <input type="hidden" id="pid" name="pid" value="{{product.pid}}">
-            <input type="hidden" id="name" name="name" value="{{product.name}}">
-              <input type="submit" value="Feedback"/> 
-          </form>
-        </td>
-        {% endif %}
-        {% if current_user.is_authenticated %}
-        <td>
-          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}"
-          method="POST"
-          style="display:inline-block">
-          <input type="submit" value="Wishlist"/> 
-          </form>
-          {% if is_seller%}
-          <form action="{{ url_for('inventory.add', product_id=product.pid) }}"
-                method="POST"
-                style="display:inline-block">
-                <input type="submit" value="Inventory"/> 
-          </form>
+<h2><a href="{{ url_for('products.products') }}" style = "color: #804a03">Top selling products:</a></h2>
+
+<div class="card-container">
+  {% for product in avail_products %}
+    <div class="card">
+      <div class="card-body">
+        <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
+        <h5 class="card-title">Product ID: {{ product.pid }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0) }}">{{ product.name }}</a>
+        </h6>
+        <p class="card-text">
+          {% if product.pid in product_prices %}
+            {% for price in product_prices[product.pid] %}
+              ${{ price }}<br>
+            {% endfor %}
+          {% else %}
+            Not in stock
           {% endif %}
-        </td>
-        <td>
-          <form action="{{ url_for('cart.cart_select', product_id=product.pid)}}"
-                method="POST">
-                <input type="submit" value="View"/> 
+          {% if product.pid in summary %}
+            <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
+          {% endif %}
+        </p>
+        {% if current_user.is_authenticated %}
+          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="Add to Wishlist">
           </form>
-        </td>
+          <form action="{{ url_for('cart.cart_select', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="View">
+          </form>
         {% endif %}
-
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+      </div>
+    </div>
+    {% if loop.index % 4 == 0 %}
+      <div class="clearfix"></div> <!-- Add clearfix every 4 cards to start a new row -->
+    {% endif %}
+  {% endfor %}
+</div>
 
 <br><br>
 {% if current_user.is_authenticated %}
@@ -87,17 +63,34 @@
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
-      <th scope="col">Purchase ID</th>
-      <!-- <th scope="col">Product Name</th> -->
+      <th scope="col">Product ID</th>
+      <th scope="col">Product Name</th>
       <th scope="col">Time Purchased</th>
+      <th scope="col">Manage Feedback</th>
     </tr>
   </thead>
   <tbody>
     {% for purchase in purchase_history%}
       <tr>
         <td>{{purchase.pid}}</td>
-        <!-- <td>{{purchase.name}}</td> -->
+        <td>
+          <a href="{{ url_for('products.product_detail',product_id=purchase.pid,option=0) }}">
+          {{products_purchased[purchase.pid]}}</a>
+        </td>
         <td>{{purchase.time_purchased}}</td>
+        <td>
+          {% if feedback_exists[purchase.pid] %}
+          <form action="{{ url_for('feedback.product_feedback_edit', product_id=purchase.pid) }}"
+                method="POST">
+                <input type="submit" value="Edit"/> 
+          </form>
+          {% else %}
+          <form action="{{ url_for('feedback.product_submission_form', product_id=purchase.pid,name=products_purchased[purchase.pid]) }}"
+                method="POST">
+                <input type="submit" value="Add"/> 
+          </form>
+          {% endif %}
+      </td>
       </tr>
     {% endfor %}
   </tbody>

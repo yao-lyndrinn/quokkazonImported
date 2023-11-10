@@ -5,7 +5,7 @@
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
   {% if current_user.is_authenticated and is_seller %}
-    <a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Add items</a>
+    <a href="{{ url_for('products.add_products') }}" type="button" class="btn btn-dark">Add products</a>
     <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
   {% endif %}
   <!--<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Home</a>-->

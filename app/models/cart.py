@@ -51,7 +51,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         uid=uid,
         sid = sid,
         pid = pid,
-        quantity = 1,
+        quantity = quantity,
         saved_for_later = '0')
         return
     

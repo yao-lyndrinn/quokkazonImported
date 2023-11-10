@@ -37,6 +37,11 @@ body {
   color: white;
 }
 
+.btn-red {
+    background-color: #FF0000 !important;
+    color: #fff;
+}
+
 section {
     color: #fff;
     text-align: center;

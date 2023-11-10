@@ -10,7 +10,7 @@ import datetime
 bp = Blueprint('allpurchases', __name__)
 
 @bp.route('/allpurchases', methods=['GET', 'POST'])
-def allpurchases():
+def allpurchases(): 
     if request.method == 'POST':
         uid = request.form.get('uid')
         # Fetch all purchases for the given uid since a very old date

@@ -12,6 +12,7 @@ Team members:
 - Elise Zhang (Products Guru) --> 
     - Main designer of products, tags, and categories table. For milestone 3, Elise wrote the app/products.py, app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
     - For milestone 4 Elise has:
+        - Created or updated: app/models/category.py, app/categories.py, app/products.py, app/carts.py, app/models/purchase.py, app/models/stock.py, app/static/css/main.css, app/templates/index.html, app/templates/productDetail.html, app/templates/products2.html, app/templates/searchResults2.html
         - Added a top products display on the home page,
         - Added a search bar to the header that searches through product names and description
         - Added a "add product" button on the inventory page that will allow users to add new products

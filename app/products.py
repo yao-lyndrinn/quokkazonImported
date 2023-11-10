@@ -73,6 +73,7 @@ def product_detail(product_id,option):
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
 def products():
+    
     page = request.args.get("page", 1, type=int)
     start = (page-1) * ROWS
     end = start + ROWS
@@ -102,7 +103,8 @@ def products():
                       product_prices = product_prices,
                       page=page,
                       total_pages=total_pages,
-                      categories=categories)
+                      categories=categories,
+                      is_seller=Seller.is_seller(current_user))
     
 def sort_by_min_value(prices):
     return min(prices[1])
@@ -145,7 +147,8 @@ def search_results():
                             len_products = len(products),
                             page=page,
                             total_pages=total_pages,
-                            categories=categories)
+                            categories=categories,
+                            is_seller=Seller.is_seller(current_user))
     
 def search_products(search_term):
     products = Product.get_all()
@@ -171,7 +174,7 @@ def add_products():
         filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
         file.save(filepath)
                 
-        Product.add_product(pid, name, description, filename, altTxt, createdAt, updatedAt)
+        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt)
         return redirect(url_for('inventory.inventory'))
                 
     return render_template('add_products.html')

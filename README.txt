@@ -10,10 +10,21 @@ IMPORTANT: Since recording the demo video, Amy has improved her endpoints for th
 
 - Lyndrinn Yao (Carts Guru) --> Main designer of carts table. For Milestone 3, Lyndrinn updated app/cart.py, app/models/cart.py, app/templates/cart.html, index.html, app/purchases.py, and wrote app/templates/sellerselection.html and app/templates/buyerorder.html. Features that have been added since the last milestone are the ability to view all sellers selling a product, add a product to the cart from a seller, update the quantity of an item in the cart, removing an item from the cart, displaying a calculated total price of items in the cart, and being able to submit the cart as an order, emptying the cart, updating the Purchases table and updating user balances accordingly.
 
-- Elise Zhang (Products Guru) --> Main designer of products, tags, and categories table. For milestone 3, Elise wrote the app/products.py, app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
+- Elise Zhang (Products Guru) --> 
+    - Main designer of products, tags, and categories table. For milestone 3, Elise wrote the app/products.py, app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
+    - For milestone 4 Elise has:
+        - Added a top products display on the home page,
+        - Added a search bar to the header that searches through product names and description
+        - Added a "add product" button on the inventory page that will allow users to add new products
+        - Allowed pagination on the products pages
+        - Allowed users to view certain categories
+        - Allowed users to sort products by price
+        - Made a product details page that displays product and seller information
+        - Users can choose a seller to buy from and add the product to their cart
 
 Everyone worked together to customize the website. 
 https://gitlab.oit.duke.edu/query-quokkas/quokkazon 
 
+We populate the database through the gen.py script: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/db/generated/gen.py?ref_type=heads
 Link to Video Demo: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Demo.mp4?ref_type=heads
 Link to Addendum: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Addendum.mp4?ref_type=heads

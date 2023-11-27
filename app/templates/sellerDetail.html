@@ -1,0 +1,77 @@
+<!-- https://codepen.io/himaan/pen/gOMawjq-->
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<style>
+  .dropdown {
+    display: inline-block;
+    position: relative;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    width: 100%;
+    overflow: auto;
+    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  .dropdown-content a {
+    display: block;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 5px;
+    text-decoration: none;
+  }
+  .dropdown-content a:hover {
+    color: #FFFFFF;
+    background-color: #137a56;
+  }
+  </style>
+
+  <body style="background-color:#ffffff;">
+    
+    <div style="text-align:right">
+        <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
+        <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-secondary btn-sm">My Profile</a>
+
+        </div>
+
+    <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
+  
+    <div class="dropdown">
+    <button>Sort Feedback By</button>
+    <div class="dropdown-content">
+        <a href="{{ url_for('feedback.seller_personal',option=0,seller_id=current_user.id) }}" type="button">Date (Newest to Oldest)</a>
+        <a href="{{ url_for('feedback.seller_personal',option=1,seller_id=current_user.id) }}" type="button">Date (Oldest to Newest)</a>
+        <a href="{{ url_for('feedback.seller_personal',option=2,seller_id=current_user.id) }}" type="button">Rating (High to Low)</a>
+        <a href="{{ url_for('feedback.seller_personal',option=3,seller_id=current_user.id) }}" type="button">Rating (Low to High)</a>
+    </div>
+  </div>
+
+  <table class='table table-hover table-bordered container'>
+    <thead class="quokka-brown">
+      <tr>
+        <th scope="col">User's Name</th>
+        <th scope="col">Rating</th>
+        <th scope="col">Review</th>
+        <th scope="col">Time Added or Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in sfeedback %}
+        <tr>
+          <td>{{item.name}}</td>
+          <td>{{item.rating}}</td>
+          <td>{{item.review}}</td>
+          <td>{{humanize_time(item.date_time)}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+{% endblock %}

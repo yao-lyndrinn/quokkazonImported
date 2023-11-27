@@ -156,9 +156,28 @@ def seller_add_feedback():
 @bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
 def seller_submission_form(seller_id):
     name = SellerFeedback.get_seller_name(seller_id)
-    print(name)
     return render_template('myfeedback_add.html',
                             seller_id=seller_id,
                             name=name,
                             type="seller",
+                            humanize_time=humanize_time)
+
+@bp.route('/sellerfeedback/<int:seller_id>/<int:option>', methods=['POST','GET'])
+def seller_personal(option,seller_id):
+    if option == 1:
+        # sort in chronological order  
+        sfeedback = SellerFeedback.get_by_sid_sort_date_ascending(seller_id)
+    elif option == 2: 
+        # sort by rating from high to low 
+        sfeedback = SellerFeedback.get_by_sid_sort_rating_descending(seller_id)
+    elif option == 3:
+        # sort by rating from low to high 
+        sfeedback = SellerFeedback.get_by_sid_sort_rating_ascending(seller_id)
+    else: 
+        # default: sort in reverse chronological order
+        sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
+    summary = SellerFeedback.summary_ratings(seller_id)
+    return render_template('sellerDetail.html',
+                            sfeedback=sfeedback,
+                            summary=summary,
                             humanize_time=humanize_time)

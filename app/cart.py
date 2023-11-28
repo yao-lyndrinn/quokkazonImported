@@ -8,6 +8,7 @@ from humanize import naturaltime
 from .models.cart import CartItem
 from .models.inventory import Inventory
 from .models.purchase import Purchase
+from .models.feedback import SellerFeedback
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -41,13 +42,20 @@ def cart_add():
 @bp.route('/cart/select/<int:product_id>', methods=['POST'])
 def cart_select(product_id):
     # find the sellers for this product
+    names = {}
+    summary_feedback = {}
     if current_user.is_authenticated:
         sellers = Inventory.get_all_by_pid(product_id)
+        for seller in sellers: 
+            names[seller.sid] = SellerFeedback.get_seller_name(seller.sid)
+            summary_feedback[seller.sid] = SellerFeedback.summary_ratings(seller.sid)
     else:
         return jsonify({}), 404
     # render a seller selection page with seller IDs and prices
     return render_template('sellerselection.html',
-                      sellers=sellers)
+                      sellers=sellers,
+                      names=names,
+                      summary_feedback=summary_feedback)
 
 @bp.route('/cart/remove/<int:product_id>/<int:seller_id>', methods=['POST'])
 def cart_remove(seller_id, product_id):

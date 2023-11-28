@@ -8,16 +8,18 @@
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
-      <th scope="col">Seller ID</th>
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
       <th scope="col">Price</th>
       <th scope="col">Add to Cart</th>
-      <!-- <th scope="col">Manage Feedback</th> -->
+      <th scope="col">Feedback</th>
     </tr>
   </thead>
   <tbody>
     {% for seller in sellers %}
       <tr>
         <td>{{seller.sid}}</td>
+        <td>{{names[seller.sid]}}
         <td>{{seller.price}}</td>
         <td>
             <form action="{{ url_for('cart.cart_add', product_id=seller.pid, seller_id=seller.sid, quantity=1, saved_for_later=0)}}"
@@ -28,12 +30,13 @@
             <input type="submit" value="+"/> 
             </form>
         </td>
-        <!-- <td>
-          <form action="{{ url_for('feedback.seller_submission_form', seller_id=seller.pid) }}"
-          method="POST">
-          <input type="submit" value="+"/> 
-          </form>
-        </td> -->
+        <td>
+          {{summary_feedback[seller.sid][0]}} by {{summary_feedback[seller.sid][1]}} users
+          <form action="{{ url_for('feedback.seller_personal', option=0, seller_id=seller.sid)}}"
+            method="POST">
+            <input type="submit" value="View"/> 
+            </form>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

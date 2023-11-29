@@ -3,6 +3,7 @@ from flask import render_template
 from flask_login import current_user
 from flask import request, redirect, url_for
 import datetime
+from .models.seller import Seller
 from humanize import naturaltime
 
 from .models.feedback import ProductFeedback, SellerFeedback
@@ -164,6 +165,7 @@ def seller_submission_form(seller_id):
 
 @bp.route('/sellerfeedback/<int:seller_id>/<int:option>', methods=['POST','GET'])
 def seller_personal(option,seller_id):
+    summary = []
     if option == 1:
         # sort in chronological order  
         sfeedback = SellerFeedback.get_by_sid_sort_date_ascending(seller_id)
@@ -176,8 +178,18 @@ def seller_personal(option,seller_id):
     else: 
         # default: sort in reverse chronological order
         sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
-    summary = SellerFeedback.summary_ratings(seller_id)
+    
+    a = Seller.has_products(seller_id)
+    if(a):
+        summary = SellerFeedback.summary_ratings(seller_id)
+  
+    print(a)
+    info = Seller.find(seller_id)
     return render_template('sellerDetail.html',
                             sfeedback=sfeedback,
                             summary=summary,
-                            humanize_time=humanize_time)
+                            first_name = info[2],
+                            last_name = info[3],
+                            email = info[1],
+                            humanize_time=humanize_time,
+                            has_products = a)

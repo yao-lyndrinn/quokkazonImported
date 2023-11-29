@@ -39,7 +39,9 @@
         <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-secondary btn-sm">My Profile</a>
 
         </div>
-
+    <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    {% if has_products %}
     <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
   
     <div class="dropdown">
@@ -73,5 +75,5 @@
     </tbody>
   </table>
   </div>
-
+  {% endif %}
 {% endblock %}

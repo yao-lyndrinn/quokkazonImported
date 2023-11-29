@@ -13,12 +13,32 @@ class Seller:
         ''',
         sid=sid)
         return Seller(*(rows[0])) if rows else None
+
+    @staticmethod
+    def find(sid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Users
+        WHERE id = :sid
+        ''',
+        sid=sid)
+        return ((rows[0])) if rows else None
         
     @staticmethod
     def is_seller(user):
         if hasattr(user,"id"):
             return Seller.get(user.id) != None
         return False
+
+    @staticmethod
+    def has_products(sid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM SellerFeedback
+        WHERE sid = :sid
+        ''',
+        sid=sid)
+        return True if rows else False
 
     @staticmethod
     def add_seller(id):
@@ -35,3 +55,4 @@ RETURNING sid
             # the following simply prints the error to the console:
             print(str(e))
             return None
+

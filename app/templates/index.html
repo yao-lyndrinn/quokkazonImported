@@ -8,9 +8,9 @@
   {% if is_seller%}
     <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-    <a href="{{ url_for('feedback.seller_personal',option=0,seller_id=current_user.id) }}" type="button" class="btn btn-dark">My Public Profile</a>
+    <a href="{{ url_for('feedback.seller_personal',seller_id=current_user.id) }}" type="button" class="btn btn-dark">My Public Profile</a>
   {% endif %}
-  <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
+  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
   <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
    {% endif %}
 
@@ -27,7 +27,7 @@
         <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
         <h5 class="card-title">Product ID: {{ product.pid }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">
-          <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0) }}">{{ product.name }}</a>
+          <a href="{{ url_for('products.product_detail',product_id=product.pid) }}">{{ product.name }}</a>
         </h6>
         <p class="card-text">
           {% if product.pid in product_prices %}
@@ -79,7 +79,7 @@
       <tr>
         <td>{{purchase.pid}}</td>
         <td>
-          <a href="{{ url_for('products.product_detail',product_id=purchase.pid,option=0) }}">
+          <a href="{{ url_for('products.product_detail',product_id=purchase.pid) }}">
           {{products_purchased[purchase.pid]}}</a>
         </td>
         <td>{{purchase.time_purchased}}</td>

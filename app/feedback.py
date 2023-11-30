@@ -14,24 +14,11 @@ bp = Blueprint('feedback', __name__)
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
-@bp.route('/myfeedback/<int:option>')
-def my_feedback(option):
-    if option == 1:
-        # sort in chronological order  
-        pfeedback = ProductFeedback.get_by_uid_sort_date_ascending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_date_ascending(current_user.id)
-    elif option == 2: 
-        # sort by rating from high to low 
-        pfeedback = ProductFeedback.get_by_uid_sort_rating_descending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_rating_descending(current_user.id)
-    elif option == 3:
-        # sort by rating from low to high 
-        pfeedback = ProductFeedback.get_by_uid_sort_rating_ascending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_rating_ascending(current_user.id)
-    else: 
-        # default: sort in reverse chronological order
-        pfeedback = ProductFeedback.get_by_uid_sort_date_descending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_date_descending(current_user.id)
+@bp.route('/myfeedback')
+def my_feedback():
+    # default: sort in reverse chronological order
+    pfeedback = ProductFeedback.get_by_uid_sort_date_descending(current_user.id)
+    sfeedback = SellerFeedback.get_by_uid_sort_date_descending(current_user.id)
 
     return render_template('myfeedback.html',
                         pfeedback=pfeedback,
@@ -163,27 +150,16 @@ def seller_submission_form(seller_id):
                             type="seller",
                             humanize_time=humanize_time)
 
-@bp.route('/sellerfeedback/<int:seller_id>/<int:option>', methods=['POST','GET'])
-def seller_personal(option,seller_id):
+@bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
+def seller_personal(seller_id):
     summary = []
-    if option == 1:
-        # sort in chronological order  
-        sfeedback = SellerFeedback.get_by_sid_sort_date_ascending(seller_id)
-    elif option == 2: 
-        # sort by rating from high to low 
-        sfeedback = SellerFeedback.get_by_sid_sort_rating_descending(seller_id)
-    elif option == 3:
-        # sort by rating from low to high 
-        sfeedback = SellerFeedback.get_by_sid_sort_rating_ascending(seller_id)
-    else: 
-        # default: sort in reverse chronological order
-        sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
-    
+    # default: sort in reverse chronological order
+    sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
+
     a = Seller.has_products(seller_id)
     if(a):
         summary = SellerFeedback.summary_ratings(seller_id)
   
-    print(a)
     info = Seller.find(seller_id)
     return render_template('sellerDetail.html',
                             sfeedback=sfeedback,

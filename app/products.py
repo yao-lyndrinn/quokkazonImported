@@ -32,24 +32,14 @@ def deactivate_session(response):
         session['search_term'] = ''
     return response
 
-@bp.route('/products/<int:product_id>/<int:option>',methods = ['GET','POST'])
-def product_detail(product_id,option):
+@bp.route('/products/<int:product_id>',methods = ['GET','POST'])
+def product_detail(product_id):
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
-    if option == 1:
-        # sort in chronological order  
-        pfeedback = ProductFeedback.get_by_pid_sort_date_ascending(product_id)
-    elif option == 2: 
-        # sort by rating from high to low 
-        pfeedback = ProductFeedback.get_by_pid_sort_rating_descending(product_id)
-    elif option == 3:
-        # sort by rating from low to high 
-        pfeedback = ProductFeedback.get_by_pid_sort_rating_ascending(product_id)
-    else: 
-        # default: sort in reverse chronological order
-        pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
-
+    # default: sort in reverse chronological order
+    pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
+    # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
     if len(ProductFeedback.has_purchased(current_user.id,product_id)) > 0: 
         hasPurchased = True

@@ -12,13 +12,16 @@
     </style>
 </head>
 <body>   
-<br><br>
-<div style="text-align:right">
+<br>
+
+<!-- <div style="text-align:right">
     <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
-    </div>
+    </div> -->
 
 <!-- Product Feedback Editing Page -->
 {% for item in pfeedback %}
+<a style="color:grey;" href="{{ url_for('products.product_detail',product_id=item.pid) }}"> < Product Details</a>
+
 <h3>My Feedback for Product {{item.pid}}: {{item.name}}</h3>
 
 <form action="{{ url_for('feedback.product_remove_feedback',product_id=item.pid) }}"

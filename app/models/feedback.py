@@ -126,10 +126,13 @@ class ProductFeedback:
     @staticmethod
     def has_purchased(uid,pid): 
         purchased = app.db.execute("""
-        SELECT p.uid
-        FROM Purchases p                           
-        WHERE p.uid = :uid
-        AND p.pid = :pid 
+        SELECT Purchases.time_purchased
+        FROM Purchases, Products, Users u
+        WHERE Purchases.uid = :uid
+        AND Purchases.uid = u.id
+        AND Purchases.pid = :pid
+        AND Purchases.pid = Products.pid 
+        ORDER BY Purchases.time_purchased
         """,
         uid=uid,
         pid=pid)
@@ -280,3 +283,27 @@ class SellerFeedback:
         """,
         sid=sid)
         return name[0][0] 
+    
+    @staticmethod 
+    def has_purchased(uid,sid):
+        if uid == sid: 
+            # a seller cannot leave a self-review
+            return None
+        
+        # find the products the user with the given uid has bought from the seller with the given sid
+        rows = app.db.execute("""
+        SELECT Products.pid, Products.name, Purchases.time_purchased
+        FROM Purchases, Products, Users u
+        WHERE Purchases.uid = :uid
+        AND Purchases.sid = :sid
+        AND Purchases.uid = u.id
+        AND Purchases.pid = Products.pid 
+        """,
+        sid=sid,
+        uid=uid)
+
+        if len(rows) > 0: 
+            return rows 
+        else: 
+            return rows
+

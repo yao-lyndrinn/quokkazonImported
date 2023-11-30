@@ -118,7 +118,7 @@ def seller_remove_feedback():
     if request.method == 'POST':
         sid = int(request.form['sid'])
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.my_feedback'))
+    return redirect(url_for('feedback.seller_personal',seller_id=sid))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
@@ -152,20 +152,31 @@ def seller_submission_form(seller_id):
 
 @bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
 def seller_personal(seller_id):
-    summary = []
+    summary = None
     # default: sort in reverse chronological order
     sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
 
-    a = Seller.has_products(seller_id)
+    has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+    if len(has_purchased) > 0: 
+        my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+    else: 
+        # the user has not purchased from this seller before 
+        has_purchased = False
+        my_seller_feedback = False
+
+    a = Seller.has_products(seller_id) 
     if(a):
-        summary = SellerFeedback.summary_ratings(seller_id)
+        summary = SellerFeedback.summary_ratings(seller_id)    
   
     info = Seller.find(seller_id)
     return render_template('sellerDetail.html',
                             sfeedback=sfeedback,
                             summary=summary,
+                            seller_id=seller_id,
                             first_name = info[2],
                             last_name = info[3],
                             email = info[1],
                             humanize_time=humanize_time,
-                            has_products = a)
+                            has_products = a,
+                            has_purchased = has_purchased,
+                            my_seller_feedback=my_seller_feedback)

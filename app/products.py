@@ -48,23 +48,20 @@ def product_detail(product_id):
     pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
     # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
-    if len(ProductFeedback.has_purchased(current_user.id,product_id)) > 0: 
-        hasPurchased = True
-        if len(ProductFeedback.feedback_exists(current_user.id,product_id)) > 0: 
-            feedback_exists = True 
-        else: 
-            feedback_exists = False
+    has_purchased = ProductFeedback.has_purchased(current_user.id,product_id)
+    if len(has_purchased) > 0: 
+        my_product_feedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
     else: 
-        hasPurchased = False
-        feedback_exists = False
+        my_product_feedback = False
+        has_purchased = False
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,
                            summary=summary,
                            seller_names=seller_names,
                            seller_summary=seller_summary,
-                           feedback_exists = feedback_exists,
-                           hasPurchased=hasPurchased,
+                           my_product_feedback = my_product_feedback,
+                           has_purchased=has_purchased,
                            humanize_time=humanize_time,
                            inventory=inventory,
                            inv_len = inv_len)

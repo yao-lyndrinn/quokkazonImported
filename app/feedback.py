@@ -75,7 +75,7 @@ def product_review_edit():
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback',option=0))
+    return redirect(url_for('feedback.my_feedback'))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():
@@ -118,7 +118,7 @@ def seller_remove_feedback():
     if request.method == 'POST':
         sid = int(request.form['sid'])
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.my_feedback',option=0))
+    return redirect(url_for('feedback.my_feedback'))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():

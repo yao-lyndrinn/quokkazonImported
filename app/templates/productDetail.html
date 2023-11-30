@@ -32,17 +32,19 @@
         <div class="main-info">
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
             <div class="star-rating">
-                {% if 1 <= summary[0] < 1.5 %}
-                <span>★</span>★★★★   
-                {% elif 1.5 <= summary[0] < 2.5 %}
-                <span>★★</span>★★★   
-                {% elif 2.5 <= summary[0] < 3.5 %}
-                <span>★★★</span>★★       
-                {% elif 3.5 <= summary[0] < 4.5 %}
-                <span>★★★★</span>★       
-                {% elif 4.5 <= summary[0] <= 5 %}
-                <span>★★★★★</span> 
-                {% endif %}               
+              {% if 1 <= summary[0] < 1.5 %}
+              <span>★</span>★★★★   
+              {% elif 1.5 <= summary[0] < 2.5 %}
+              <span>★★</span>★★★   
+              {% elif 2.5 <= summary[0] < 3.5 %}
+              <span>★★★</span>★★       
+              {% elif 3.5 <= summary[0] < 4.5 %}
+              <span>★★★★</span>★       
+              {% elif 4.5 <= summary[0] <= 5 %}
+              <span>★★★★★</span> 
+              {% else %}
+              ★★★★★
+              {% endif %}            
             </div>
             
             <div class="select-items">

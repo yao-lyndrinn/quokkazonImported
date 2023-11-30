@@ -8,7 +8,7 @@ from collections import defaultdict
 import os, random
 
 from .models.product import Product
-from .models.feedback import ProductFeedback
+from .models.feedback import ProductFeedback, SellerFeedback
 from .models.inventory import Inventory
 from .models.stock import Stock
 from .models.category import Category
@@ -37,6 +37,13 @@ def product_detail(product_id):
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
+    seller_names = {}
+    seller_summary = {}
+    for seller in inventory: 
+        # get the name of the seller 
+        seller_names[seller.sid] = SellerFeedback.get_seller_name(seller.sid)
+        # get summary feedback statistics for the seller 
+        seller_summary[seller.sid] = SellerFeedback.summary_ratings(seller.sid)
     # default: sort in reverse chronological order
     pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
     # get summary statistics for ratings 
@@ -54,6 +61,8 @@ def product_detail(product_id):
                            product=product,
                            pfeedback=pfeedback,
                            summary=summary,
+                           seller_names=seller_names,
+                           seller_summary=seller_summary,
                            feedback_exists = feedback_exists,
                            hasPurchased=hasPurchased,
                            humanize_time=humanize_time,

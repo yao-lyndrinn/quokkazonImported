@@ -8,7 +8,6 @@
   {% if is_seller%}
     <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-    <a href="{{ url_for('feedback.seller_personal',seller_id=current_user.id) }}" type="button" class="btn btn-dark">My Public Profile</a>
   {% endif %}
   <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
   <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>

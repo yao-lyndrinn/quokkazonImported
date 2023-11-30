@@ -5,17 +5,6 @@
 <a style="color:grey;" href="{{ url_for('products.search_results', page=p, search_term=search_term) }}"> < Back to results</a>
 
 <br>
-<!-- <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-  {% if current_user.is_authenticated%}
-  {% if is_seller%}
-    <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
-    <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-    
-  {% endif %}
-  <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
-  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
-   {% endif %}
-</div> -->
 <section id="product-info">
 
     <div class="item-image-parent">
@@ -42,15 +31,15 @@
         <div class="main-info">
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
             <div class="star-rating">
-                {% if 1 <= summary[0] < 2 %}
+                {% if 1 <= summary[0] < 1.5 %}
                 <span>★</span>★★★★   
-                {% elif 2 <= summary[0] < 3 %}
+                {% elif 1.5 <= summary[0] < 2.5 %}
                 <span>★★</span>★★★   
-                {% elif 3 <= summary[0] < 4 %}
+                {% elif 2.5 <= summary[0] < 3.5 %}
                 <span>★★★</span>★★       
-                {% elif 4 <= summary[0] < 5 %}
+                {% elif 3.5 <= summary[0] < 4.5 %}
                 <span>★★★★</span>★       
-                {% elif summary[0] == 5 %}
+                {% elif 4.5 <= summary[0] <= 5 %}
                 <span>★★★★★</span> 
                 {% endif %}               
             </div>
@@ -65,19 +54,17 @@
                 {% if inv_len == 0 %}
                     <p style="color:red;"> This item is out of stock</p>
                 {% else %}
-                    {% for i in inventory %}
-                        <form action="{{ url_for('feedback.seller_personal', option=0, seller_id=seller.sid)}}"
-                        method="POST">
-                        <input type="submit" value="View"/> 
-                        </form>
-                        
-                        <p style="text-align: center;">{{ i.sid }}: ${{i.price}} ({{i.num_for_sale}} left!)</p>
-    
+                    {% for i in inventory %}                        
+                        <p style="text-align: center; display:inline"">
+                          <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid)}}">{{ seller_names[i.sid] }}</a>
+                          (<em>id: </em>{{ i.sid }}): ${{i.price}} ({{i.num_for_sale}} left!)
+                          <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
+                        </p>
                         <form action="{{ url_for('cart.cart_add')}}" method="POST">
                             <input type="hidden" name="product_id" value="{{ i.pid }}"/>
                             <input type="hidden" name="seller_id" value="{{ i.sid }}"/>
                             <input type="hidden" name="saved_for_later" value="0"/>
-                            
+  
                             <label style="color: black;" or ="quantity">Quantity:</label>
                             <input type="number" name="quantity" id="quantity"/>
                             
@@ -111,7 +98,7 @@
     
     {% endif %}
 
-    <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
+    <p>Product's Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>

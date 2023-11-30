@@ -7,6 +7,20 @@
   <p><strong>Email:</strong> {{ email }}</p>
 
   <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
+  <div class="star-rating">
+    {% if 1 <= summary[0] < 1.5 %}
+    <span>★</span>★★★★   
+    {% elif 1.5 <= summary[0] < 2.5 %}
+    <span>★★</span>★★★   
+    {% elif 2.5 <= summary[0] < 3.5 %}
+    <span>★★★</span>★★       
+    {% elif 3.5 <= summary[0] < 4.5 %}
+    <span>★★★★</span>★       
+    {% elif 4.5 <= summary[0] <= 5 %}
+    <span>★★★★★</span> 
+    {% endif %}               
+</div>
+<br>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>

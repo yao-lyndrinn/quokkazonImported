@@ -17,7 +17,7 @@
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
     
   {% endif %}
-  <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
+  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-dark">My Feedback</a>
   <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
    {% endif %}
 
@@ -39,7 +39,7 @@
           <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
           <h5 class="card-title">Product ID: {{ product.pid }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">
-            <a href="{{ url_for('products.product_detail', product_id=product.pid,option=0) }}">{{ product.name }}</a>
+            <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
           </h6>
           <p class="card-text">
             {% if product.pid in product_prices %}
@@ -62,9 +62,6 @@
               <input type="submit" value="Add to Inventory"/> 
             </form>
             {% endif %}
-            <form action="{{ url_for('cart.cart_select', product_id=product.pid) }}" method="POST">
-              <input type="submit" value="View Available Sellers">
-            </form>
           {% endif %}
         </div>
       </div>

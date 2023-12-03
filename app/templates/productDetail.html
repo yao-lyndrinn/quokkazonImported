@@ -2,26 +2,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<br>
 <a style="color:grey;" href="{{ url_for('products.search_results', page=p, search_term=search_term) }}"> < Back to results</a>
 
-<!-- {% if scrollToReviews == 1 %}
-<script>
-    document.getElementById("reviews").scrollIntoView();
-</script>
-<button onclick="document.getElementById('reviews').scrollIntoView()">Scroll to Feedback</button>
-{% endif %} -->
 <br>
-<div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-  {% if current_user.is_authenticated%}
-  {% if is_seller%}
-    <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
-    <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-    
-  {% endif %}
-  <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-dark">My Feedback</a>
-  <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn btn-dark">My Profile</a>
-   {% endif %}
-</div>
 <section id="product-info">
 
     <div class="item-image-parent">
@@ -47,44 +31,69 @@
     <div class="item-info-parent">
         <div class="main-info">
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
+            {% if summary[0]%}
             <div class="star-rating">
-                {% if 1 <= summary[0] < 2 %}
-                <span>★</span>★★★★   
-                {% elif 2 <= summary[0] < 3 %}
-                <span>★★</span>★★★   
-                {% elif 3 <= summary[0] < 4 %}
-                <span>★★★</span>★★       
-                {% elif 4 <= summary[0] < 5 %}
-                <span>★★★★</span>★       
-                {% elif summary[0] == 5 %}
-                <span>★★★★★</span> 
-                {% endif %}               
+              {% if 1 <= summary[0] < 1.5 %}
+              <span>★</span>★★★★   
+              {% elif 1.5 <= summary[0] < 2.5 %}
+              <span>★★</span>★★★   
+              {% elif 2.5 <= summary[0] < 3.5 %}
+              <span>★★★</span>★★       
+              {% elif 3.5 <= summary[0] < 4.5 %}
+              <span>★★★★</span>★       
+              {% elif 4.5 <= summary[0] <= 5 %}
+              <span>★★★★★</span> 
+              {% endif %}
             </div>
+            {% else %}
+            <div class="star-rating">
+              ★★★★★
+            </div>
+            {% endif %}            
             
             <div class="select-items">
                 <div class="description">
                     <p>Description: {{product.description}}</p>
                 </div>
             </div>
+            {% if current_user.is_authenticated %}
             <p>Select an option:</p>
+            {% endif %}
             <div name="selected_option">
                 {% if inv_len == 0 %}
                     <p style="color:red;"> This item is out of stock</p>
                 {% else %}
-                    {% for i in inventory %}
-                        <p style="text-align: center;">{{ i.sid }}: ${{i.price}} ({{i.num_for_sale}} left!)</p>
-    
+                    {% if current_user.is_authenticated %}
+                    {% for i in inventory %}                        
+                        <p style="text-align: center; display:inline;">
+                          <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid)}}">{{ seller_names[i.sid] }}</a>:
+                          ${{i.price}} ({{i.num_for_sale}} left!)
+                          <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
+                        </p>
                         <form action="{{ url_for('cart.cart_add')}}" method="POST">
                             <input type="hidden" name="product_id" value="{{ i.pid }}"/>
                             <input type="hidden" name="seller_id" value="{{ i.sid }}"/>
                             <input type="hidden" name="saved_for_later" value="0"/>
-                            
+  
                             <label style="color: black;" or ="quantity">Quantity:</label>
                             <input type="number" name="quantity" id="quantity"/>
                             
                             <input type="submit" value="Add to Cart"/>
                         </form>
                     {% endfor %}
+                    {% else %}
+                    {% for i in inventory %}          
+                      <br><p style="text-align: center; display:inline;">
+                        <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid)}}">{{ seller_names[i.sid] }}</a>
+                        (<em>id: </em>{{ i.sid }}): ${{i.price}} ({{i.num_for_sale}} left!)
+                        <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
+                      </p>
+                      <br>
+                    {% endfor %}
+                    <p><br><b>Log in to add items to cart! </b> </p>
+                    <br>
+                    {% endif %}
+                    
                 {% endif %}
             </div>
 
@@ -92,44 +101,15 @@
     </div>
 </section>
 
-<br><br>
-    <style>
-  .dropdown {
-    display: inline-block;
-    position: relative;
-  }
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    width: 100%;
-    overflow: auto;
-    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
-  }
-
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-  .dropdown-content a {
-    display: block;
-    background-color: #ffffff;
-    color: #000000;
-    padding: 5px;
-    text-decoration: none;
-  }
-  .dropdown-content a:hover {
-    color: #FFFFFF;
-    background-color: #137a56;
-  }
-  </style>
-
-  <body style="background-color:#ffffff;">
-
   <div id="reviews">
+    <hr>
     <h4 style="color: black;">Reviews</h4>
     {% if current_user.is_authenticated %}
     
-    {% if hasPurchased %}
-    {% if not feedback_exists %}
+    {% if has_purchased %}
+    <p style="color:#804a03;  display:inline;"> You last purchased this product {{humanize_time(has_purchased[0][0])}} </p>
+
+    {% if not my_product_feedback %}
     <form action="{{ url_for('feedback.product_submission_form', product_id=product.pid,name=product.name) }}"
     method="POST">
     <input type="submit" value="Leave feedback for this product"/> 
@@ -137,28 +117,28 @@
     {% else %}
     <form action="{{ url_for('feedback.product_feedback_edit', product_id=product.pid) }}"
     method="POST">
-    <input type="submit" value="Manage feedback for this product"/> 
+    <input type="submit" value="Manage my feedback for this product"/> 
     </form>
     {% endif %}
     {% endif %}
     
-    <div style="text-align:right">
-        <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
-        </div>
     {% endif %}
 
-    <p>Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
-  <div class="dropdown">
-    <button>Sort Feedback By</button>
-    <div class="dropdown-content">
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=0,scrollToReviews=1) }}" type="button">Date (Newest to Oldest)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=1,scrollToReviews=1) }}" type="button">Date (Oldest to Newest)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=2,scrollToReviews=1) }}" type="button">Rating (High to Low)</a>
-        <a href="{{ url_for('products.product_detail',product_id=product.pid,option=3,scrollToReviews=1) }}" type="button">Rating (Low to High)</a>
-    </div>
-  </div>
-  
-  <table class='table table-hover table-bordered container'>
+    <p>Product's Average Rating: {{summary[0]}} by {{summary[1]}} users</p>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+<script>
+  $(document).ready(function(){
+    // initialize a DataTable sorted by the 'Time Added or Updated' column 
+    // in reverse chronological order by default.
+    new DataTable($('#sortable_product_reviews'), {
+    order: [[3, 'asc']] 
+  });
+  })
+</script>
+
+  <table class='table table-hover table-bordered container' id="sortable_product_reviews">
     <thead class="quokka-brown">
       <tr>
         <th scope="col">Name</th>

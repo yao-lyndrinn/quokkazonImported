@@ -25,12 +25,17 @@ with open("Sample Reviews.csv",newline='') as file:
 def get_csv_writer(f):
     return csv.writer(f, dialect='unix')
 # uid, pid/sid, rating, review, date_time 
-product_writer = get_csv_writer(open("ProductFeedback.csv","w"))
-seller_writer = get_csv_writer(open("SellerFeedback.csv","w"))
+product_file = open("ProductFeedback.csv","w")
+seller_file = open("SellerFeedback.csv","w")
+product_writer = get_csv_writer(product_file)
+seller_writer = get_csv_writer(seller_file)
 
 default_times = ["2023-11-01 13:12:58","2023-11-02 13:12:58","2023-11-03 13:12:58",
                 "2023-11-04 13:12:58","2023-11-05 13:12:58","2023-11-06 13:12:58"]
+
+users, seller_reviews, product_reviews = [],[],[]
 for uid,info in purchases.items():
+    users.append(uid)
     product_ratings = {}
     seller_ratings = {}
     seller_product_ratings = defaultdict(list)
@@ -50,6 +55,7 @@ for uid,info in purchases.items():
             leave_p_review = True
             if leave_p_review: 
                 length = random.randint(6,10)
+                product_reviews.append((uid,pid))
                 review = fake.sentence(nb_words=length)[:-1] + ". " + sample_product_reviews[pid][int(p_rating)] + " " + fake.sentence(nb_words=length)[:-1] + "." 
                 product_writer.writerow([uid,pid,p_rating,review,default_time])
             else: 
@@ -65,7 +71,35 @@ for uid,info in purchases.items():
         leave_s_review = True
         if leave_s_review: 
             length = random.randint(10,20)
+            seller_reviews.append((uid,sid))
             seller_writer.writerow([uid,sid,s_rating,fake.sentence(nb_words=length)[:-1],default_time])
         else: 
             seller_writer.writerow([uid,sid,s_rating,"",default_time])
-        
+seller_file.close()
+product_file.close()
+
+seller_file = open("SellerReviewUpvotes.csv","w")
+product_file = open("ProductReviewUpvotes.csv","w")
+seller_upvotes = get_csv_writer(seller_file)
+product_upvotes = get_csv_writer(product_file)
+cap = 100
+for user in users: 
+    s_count, p_count = 0,0
+    for uid, sid in seller_reviews: 
+        # a user cannot upvote their own reviews 
+        if user == uid: continue
+        # make sure that upvotes are slightly uncommon 
+        if random.choice([True,False,False]) == True: 
+            seller_upvotes.writerow([user,uid,sid])
+            s_count += 1 
+        if s_count == cap: break
+    for uid, pid in product_reviews: 
+        # a user cannot upvote their own reviews 
+        if user == uid: continue
+        # make sure that upvotes are slightly uncommon 
+        if random.choice([True,False,False]) == True: 
+            product_upvotes.writerow([user,uid,pid])
+            p_count += 1 
+        if p_count == cap: break
+seller_file.close()
+product_file.close()

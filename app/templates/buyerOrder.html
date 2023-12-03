@@ -9,8 +9,8 @@
   <thead class="quokka-brown">
     <tr>
       <th scope="col">Order ID</th>
-      <th scope="col">Seller ID</th>
-      <th scope="col">Product ID</th>
+      <th scope="col">Seller</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Date Fulfilled</th>
@@ -20,8 +20,37 @@
     {% for item in items %}
       <tr>
         <td>{{item.order_id}}</td>
-        <td>{{item.sid}}</td>
-        <td>{{item.pid}}</td>
+        <td> 
+          <a href="{{ url_for('feedback.seller_personal', seller_id=item.sid)}}">{{ seller_names[item.sid] }}</a>
+          <!-- Link to feedback editing or submission form  -->
+          {% if seller_feedback_exists[item.sid] %}
+          <form action="{{ url_for('feedback.seller_feedback_edit', seller_id=item.sid) }}"
+                method="POST">
+                <input type="submit" value="Edit Feedback"/> 
+          </form>
+          {% else %}
+          <form action="{{ url_for('feedback.seller_submission_form', seller_id=item.sid) }}"
+                method="POST">
+                <input type="submit" value="Add Feedback"/> 
+          </form>
+          {% endif %}
+        
+        </td>
+        <td> 
+          <a href="{{ url_for('products.product_detail',product_id=item.pid) }}">{{product_names[item.pid]}}</a>
+            <!-- Link to feedback editing or submission form  -->
+            {% if product_feedback_exists[item.pid] %}
+            <form action="{{ url_for('feedback.product_feedback_edit', product_id=item.pid) }}"
+                  method="POST">
+                  <input type="submit" value="Edit Feedback"/> 
+            </form>
+            {% else %}
+            <form action="{{ url_for('feedback.product_submission_form', product_id=item.pid,name=product_names[item.pid]) }}"
+                  method="POST">
+                  <input type="submit" value="Add Feedback"/> 
+            </form>
+            {% endif %}
+        </td>
         <td>{{item.quantity}}</td>
         <td>{{item.price}}</td>
         <td>{{item.date_fulfilled}}</td>

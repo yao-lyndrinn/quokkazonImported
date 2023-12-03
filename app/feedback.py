@@ -14,24 +14,11 @@ bp = Blueprint('feedback', __name__)
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
-@bp.route('/myfeedback/<int:option>')
-def my_feedback(option):
-    if option == 1:
-        # sort in chronological order  
-        pfeedback = ProductFeedback.get_by_uid_sort_date_ascending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_date_ascending(current_user.id)
-    elif option == 2: 
-        # sort by rating from high to low 
-        pfeedback = ProductFeedback.get_by_uid_sort_rating_descending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_rating_descending(current_user.id)
-    elif option == 3:
-        # sort by rating from low to high 
-        pfeedback = ProductFeedback.get_by_uid_sort_rating_ascending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_rating_ascending(current_user.id)
-    else: 
-        # default: sort in reverse chronological order
-        pfeedback = ProductFeedback.get_by_uid_sort_date_descending(current_user.id)
-        sfeedback = SellerFeedback.get_by_uid_sort_date_descending(current_user.id)
+@bp.route('/myfeedback')
+def my_feedback():
+    # default: sort in reverse chronological order
+    pfeedback = ProductFeedback.get_by_uid_sort_date_descending(current_user.id)
+    sfeedback = SellerFeedback.get_by_uid_sort_date_descending(current_user.id)
 
     return render_template('myfeedback.html',
                         pfeedback=pfeedback,
@@ -87,14 +74,16 @@ def product_review_edit():
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
+        ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback',option=0))
+    return redirect(url_for('feedback.my_feedback'))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():
     if request.method == 'POST': 
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
@@ -130,14 +119,16 @@ def seller_review_edit():
 def seller_remove_feedback():
     if request.method == 'POST':
         sid = int(request.form['sid'])
+        SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.my_feedback',option=0))
+    return redirect(url_for('feedback.seller_personal',seller_id=sid))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
     if request.method == 'POST': 
         seller_id = int(request.form['sid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        SellerFeedback.remove_upvotes(current_user.id, seller_id)
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
 
@@ -163,33 +154,37 @@ def seller_submission_form(seller_id):
                             type="seller",
                             humanize_time=humanize_time)
 
-@bp.route('/sellerfeedback/<int:seller_id>/<int:option>', methods=['POST','GET'])
-def seller_personal(option,seller_id):
-    summary = []
-    if option == 1:
-        # sort in chronological order  
-        sfeedback = SellerFeedback.get_by_sid_sort_date_ascending(seller_id)
-    elif option == 2: 
-        # sort by rating from high to low 
-        sfeedback = SellerFeedback.get_by_sid_sort_rating_descending(seller_id)
-    elif option == 3:
-        # sort by rating from low to high 
-        sfeedback = SellerFeedback.get_by_sid_sort_rating_ascending(seller_id)
+@bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
+def seller_personal(seller_id):
+    summary = None
+    # default: sort in reverse chronological order
+    sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
+
+    if current_user.is_authenticated: 
+        # whether the current logged-in user has purchased from this seller before 
+        has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+        if len(has_purchased) > 0: 
+            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+        else: 
+            # the user has not purchased from this seller before 
+            has_purchased = False
+            my_seller_feedback = False
     else: 
-        # default: sort in reverse chronological order
-        sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
-    
-    a = Seller.has_products(seller_id)
+        has_purchased, my_seller_feedback = False, False
+
+    a = Seller.has_products(seller_id) 
     if(a):
-        summary = SellerFeedback.summary_ratings(seller_id)
+        summary = SellerFeedback.summary_ratings(seller_id)    
   
-    print(a)
     info = Seller.find(seller_id)
     return render_template('sellerDetail.html',
                             sfeedback=sfeedback,
                             summary=summary,
+                            seller_id=seller_id,
                             first_name = info[2],
                             last_name = info[3],
                             email = info[1],
                             humanize_time=humanize_time,
-                            has_products = a)
+                            has_products = a,
+                            has_purchased = has_purchased,
+                            my_seller_feedback=my_seller_feedback)

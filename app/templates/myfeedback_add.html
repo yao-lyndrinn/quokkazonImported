@@ -14,12 +14,15 @@
 <body>   
 <br><br>
 <div style="text-align:right">
-    <a href="{{ url_for('feedback.my_feedback',option=0) }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
+    <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
     </div>
 
 <!-- Product Feedback Editing Page -->
 {% if type == "product" %}
+<a style="color:grey;" href="{{ url_for('products.product_detail',product_id=product_id) }}"> < Product Details</a>
+
 <h4>My Feedback for Product {{product_id}}: {{name}}</h4>
+
 <form action="{{ url_for('feedback.product_add_feedback') }}" method="POST">
     <label id="rating">Rating:</label>
     <input type="number" name="rating" id="rating" REQUIRED>
@@ -31,8 +34,9 @@
     <input type="submit" value="Submit"> 
     </form>
 {% elif type == "seller" %}
+<a style="color:grey;" href="{{ url_for('feedback.seller_personal', seller_id=seller_id) }}"> < Seller's Profile</a>
 <h4>My Feedback for Seller {{seller_id}}: {{name}}</h4>
-<form action="{{ url_for('feedback.product_add_feedback') }}" method="POST">
+<form action="{{ url_for('feedback.seller_add_feedback') }}" method="POST">
     <label id="rating">Rating:</label>
     <input type="number" name="rating" id="rating" REQUIRED>
     <input type="hidden" id="sid" name="sid" value="{{seller_id}}">

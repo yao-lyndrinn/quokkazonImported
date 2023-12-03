@@ -97,3 +97,13 @@ class Purchase:
         """,
         uid=uid, order_id=order_id)
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
+    
+    @staticmethod
+    def get_unique_orders_by_uid(uid):
+        rows = app.db.execute('''
+        SELECT DISTINCT order_id
+        FROM Purchases
+        WHERE uid = :uid
+        ''',
+                              uid=uid)
+        return [row[0] for row in rows]

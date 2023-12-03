@@ -78,6 +78,22 @@ CREATE TABLE ProductFeedback(
   PRIMARY KEY (uid, pid) 	
 );
 
+CREATE TABLE UpvoteProductReview(
+  uid INTEGER NOT NULL REFERENCES Users(id),
+	reviewer INTEGER NOT NULL, 
+	product INTEGER NOT NULL,
+  PRIMARY KEY (uid, reviewer, product),
+  FOREIGN KEY (reviewer,product) REFERENCES ProductFeedback(uid,pid)	
+);
+
+CREATE TABLE UpvoteSellerReview(
+  uid INTEGER NOT NULL REFERENCES Users(id),
+	reviewer INTEGER NOT NULL, 
+	seller INTEGER NOT NULL,
+  PRIMARY KEY (uid, reviewer, seller),	
+  FOREIGN KEY (reviewer,seller) REFERENCES SellerFeedback(uid,sid)
+);
+
 CREATE TABLE Message(
 	sender_id INTEGER NOT NULL REFERENCES Users(id),
 	receiver_id INTEGER NOT NULL REFERENCES Users(id),

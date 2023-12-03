@@ -5,7 +5,7 @@
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
-
+{% if summary %}
   <p style="color:#804a03";><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">
     {% if 1 <= summary[0] < 1.5 %}
@@ -18,7 +18,8 @@
     <span>★★★★</span>★       
     {% elif 4.5 <= summary[0] <= 5 %}
     <span>★★★★★</span> 
-    {% endif %}               
+    {% endif %}      
+
 </div>
 <br>
 
@@ -107,4 +108,7 @@
     </tbody>
   </table>
   </div>
+{% else %}
+<p>This user is not a seller.</p>
+{% endif %}
 {% endblock %}

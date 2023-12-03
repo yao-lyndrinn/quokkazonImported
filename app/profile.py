@@ -65,7 +65,7 @@ def edit_profile():
         address = request.form.get('address')
 
         User.update_user_info(current_user.id, email, firstname, lastname, address, phone_number)
-        flash('Profile updated successfully!')
+        #flash('Profile updated successfully!')
         return redirect(url_for('profile.my_profile'))
 
     return render_template('edit_profile.html')
@@ -78,7 +78,7 @@ def top_up():
         added_money = request.form.get("added_money")
 
         User.top_up(current_user.id, current_user.balance, added_money)
-        flash('Balance topped up successfully!')
+       # flash('Balance topped up successfully!')
         return redirect(url_for('profile.my_profile'))
 
     return render_template('top_up.html')

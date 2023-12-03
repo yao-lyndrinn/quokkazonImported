@@ -30,10 +30,10 @@
     // initialize a DataTable sorted by the 'Time Added or Updated' column 
     // in reverse chronological order by default. Break ties alphabetically by name. 
     new DataTable($('#sortable_products'), {
-      order: [[4, 'asc'],[0,'asc']] 
+      order: [[4, 'desc'],[0,'asc']] 
     });
     new DataTable($('#sortable_sellers'), {
-      order: [[4, 'asc'],[0,'asc']] 
+      order: [[4, 'desc'],[0,'asc']] 
     });
   })
 </script>

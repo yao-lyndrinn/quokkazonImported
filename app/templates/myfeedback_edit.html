@@ -35,7 +35,7 @@
 <p><b>Current Rating</b>: {{item.rating}} <br>  
 <em>New Rating:</em><br>
 <form action="{{ url_for('feedback.product_rating_edit') }}" method="POST">
-    <input type="number" name="rating" id="rating">
+    <input type="number" name="rating" id="rating" REQUIRED>
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
     <input type="submit" value="Submit"> 
     </form>
@@ -45,7 +45,7 @@
 <p><b>Review</b>:
 </p>
 <form action="{{ url_for('feedback.product_review_edit') }}" method="POST" class="my_button">
- <textarea id="review" name="review" rows="4" cols="50">{{item.review}}</textarea>
+ <textarea id="review" name="review" rows="4" cols="50" REQUIRED>{{item.review}}</textarea>
  <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
 <br><input type="submit" value="Submit"> 
     </form>
@@ -73,7 +73,7 @@ method="POST">
 <p><b>Current Rating</b>: {{item.rating}} <br>  
 <em>New Rating:</em><br>
 <form action="{{ url_for('feedback.seller_rating_edit') }}" method="POST">
-    <input type="number" name="rating" id="rating">
+    <input type="number" name="rating" id="rating" REQUIRED>
     <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
     <input type="submit" value="Submit"> 
     </form>
@@ -83,7 +83,7 @@ method="POST">
 <p><b>Review</b>:</p>
 <br>
 <form action="{{ url_for('feedback.seller_review_edit') }}" method="POST">
- <textarea id="review" name="review" rows="4" cols="50">{{item.review}}</textarea>
+ <textarea id="review" name="review" rows="4" cols="50" REQUIRED>{{item.review}}</textarea>
  <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
 <br><input type="submit" value="Submit"> 
     </form>

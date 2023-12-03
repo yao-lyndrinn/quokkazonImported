@@ -74,6 +74,7 @@ def product_review_edit():
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
+        ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
     return redirect(url_for('feedback.my_feedback'))
 
@@ -82,6 +83,7 @@ def product_remove_review():
     if request.method == 'POST': 
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
@@ -117,6 +119,7 @@ def seller_review_edit():
 def seller_remove_feedback():
     if request.method == 'POST':
         sid = int(request.form['sid'])
+        SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
     return redirect(url_for('feedback.seller_personal',seller_id=sid))
 
@@ -125,6 +128,7 @@ def seller_remove_review():
     if request.method == 'POST': 
         seller_id = int(request.form['sid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        SellerFeedback.remove_upvotes(current_user.id, seller_id)
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
 
@@ -150,19 +154,23 @@ def seller_submission_form(seller_id):
                             type="seller",
                             humanize_time=humanize_time)
 
-@bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
-def seller_personal(seller_id):
+@bp.route('/sellerfeedback/<int:seller_id>/<int:logged_in>', methods=['POST','GET'])
+def seller_personal(seller_id,logged_in):
     summary = None
     # default: sort in reverse chronological order
     sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
 
-    has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
-    if len(has_purchased) > 0: 
-        my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+    if logged_in == 1: 
+        # whether the current logged-in user has purchased from this seller before 
+        has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+        if len(has_purchased) > 0: 
+            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+        else: 
+            # the user has not purchased from this seller before 
+            has_purchased = False
+            my_seller_feedback = False
     else: 
-        # the user has not purchased from this seller before 
-        has_purchased = False
-        my_seller_feedback = False
+        has_purchased, my_seller_feedback = False, False
 
     a = Seller.has_products(seller_id) 
     if(a):

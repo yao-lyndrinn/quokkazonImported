@@ -110,7 +110,39 @@ class ProductFeedback:
         """,
         uid=uid,
         pid=pid)
-    
+
+    @staticmethod 
+    def remove_upvotes(reviewer,product):
+        # delete upvotes for this review 
+        app.db.execute("""
+        DELETE from UpvoteProductReview 
+        WHERE reviewer = :reviewer 
+        AND product = :product 
+        """,
+        reviewer=reviewer,
+        product=product)
+
+    @staticmethod 
+    def upvote_count(reviewer,product):
+        app.db.execute("""
+        SELECT Count(*)
+        FROM UpvoteProductReview 
+        WHERE reviewer = :reviewer 
+        AND product = :product 
+        """,
+        reviewer=reviewer,
+        product=product)
+
+    @staticmethod 
+    def my_upvote(uid):
+        app.db.execute("""
+        SELECT Count(*)
+        FROM UpvoteProductReview 
+        WHERE uid = :uid 
+        """,
+        uid=uid)
+
+
     @staticmethod
     def feedback_exists(uid,pid): 
         exists = app.db.execute("""
@@ -263,6 +295,38 @@ class SellerFeedback:
         uid=uid,
         sid=sid)
     
+    @staticmethod 
+    def remove_upvotes(reviewer,seller):
+        # delete upvotes for this review 
+        app.db.execute("""
+        DELETE from UpvoteSellerReview 
+        WHERE reviewer = :reviewer 
+        AND seller = :seller 
+        """,
+        reviewer=reviewer,
+        seller=seller)
+
+    @staticmethod 
+    def upvote_count(reviewer,seller):
+        app.db.execute("""
+        SELECT Count(*)
+        FROM UpvoteSellerReview 
+        WHERE reviewer = :reviewer 
+        AND seller = :seller 
+        """,
+        reviewer=reviewer,
+        seller=seller)
+
+    @staticmethod 
+    def my_upvote(uid):
+        app.db.execute("""
+        SELECT Count(*)
+        FROM UpvoteSellerReview 
+        WHERE uid = :uid 
+        """,
+        uid=uid)
+
+
     @staticmethod 
     def add_feedback(uid,sid,rating,review,time): 
         app.db.execute("""

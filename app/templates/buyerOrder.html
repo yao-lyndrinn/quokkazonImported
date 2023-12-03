@@ -9,8 +9,8 @@
   <thead class="quokka-brown">
     <tr>
       <th scope="col">Order ID</th>
-      <th scope="col">Seller ID</th>
-      <th scope="col">Product ID</th>
+      <th scope="col">Seller</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Date Fulfilled</th>
@@ -20,8 +20,10 @@
     {% for item in items %}
       <tr>
         <td>{{item.order_id}}</td>
-        <td>{{item.sid}}</td>
-        <td>{{item.pid}}</td>
+        <td>{{item.sid}}: 
+          <a href="{{ url_for('feedback.seller_personal', seller_id=item.sid, logged_in=1)}}">{{ seller_names[item.sid] }}</a></td>
+        <td>{{item.pid}}: 
+          <a href="{{ url_for('products.product_detail',product_id=item.pid,logged_in=1) }}">{{product_names[item.pid]}}</a></td>
         <td>{{item.quantity}}</td>
         <td>{{item.price}}</td>
         <td>{{item.date_fulfilled}}</td>

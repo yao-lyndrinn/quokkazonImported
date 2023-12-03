@@ -8,7 +8,7 @@ from humanize import naturaltime
 from .models.cart import CartItem
 from .models.inventory import Inventory
 from .models.purchase import Purchase
-from .models.feedback import SellerFeedback
+from .models.feedback import ProductFeedback, SellerFeedback
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -86,7 +86,18 @@ def cart_submit():
 def cart_order(order_id):
     items = Purchase.get_order(current_user.id, order_id)
     totalprice = Purchase.get_total_price_order(current_user.id, order_id)
-    return render_template('buyerOrder.html', items = items, totalprice = totalprice)
+    seller_names = {}
+    product_names = {}
+    for purchase in items: 
+        # get the name of the seller 
+        seller_names[purchase.sid] = SellerFeedback.get_seller_name(purchase.sid)
+        # get the name of the product 
+        product_names[purchase.pid] = ProductFeedback.get_product_name(purchase.pid)[0][0]
+    return render_template('buyerOrder.html', 
+                           items = items, 
+                           totalprice = totalprice,
+                           seller_names = seller_names,
+                           product_names = product_names)
 
 @bp.route('/cart/viewOrders')
 def cart_viewOrders():

@@ -32,8 +32,8 @@ def deactivate_session(response):
         session['search_term'] = ''
     return response
 
-@bp.route('/products/<int:product_id>/<int:logged_in>',methods = ['GET','POST'])
-def product_detail(product_id,logged_in):
+@bp.route('/products/<int:product_id>',methods = ['GET','POST'])
+def product_detail(product_id):
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
@@ -48,7 +48,7 @@ def product_detail(product_id,logged_in):
     pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
     # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
-    if logged_in == 1: 
+    if current_user.is_authenticated: 
         has_purchased = ProductFeedback.has_purchased(current_user.id,product_id)
         if len(has_purchased) > 0: 
             my_product_feedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)

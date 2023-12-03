@@ -154,13 +154,13 @@ def seller_submission_form(seller_id):
                             type="seller",
                             humanize_time=humanize_time)
 
-@bp.route('/sellerfeedback/<int:seller_id>/<int:logged_in>', methods=['POST','GET'])
-def seller_personal(seller_id,logged_in):
+@bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
+def seller_personal(seller_id):
     summary = None
     # default: sort in reverse chronological order
     sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
 
-    if logged_in == 1: 
+    if current_user.is_authenticated: 
         # whether the current logged-in user has purchased from this seller before 
         has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
         if len(has_purchased) > 0: 

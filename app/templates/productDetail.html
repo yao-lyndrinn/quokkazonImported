@@ -52,7 +52,9 @@
                     <p>Description: {{product.description}}</p>
                 </div>
             </div>
+            {% if current_user.is_authenticated %}
             <p>Select an option:</p>
+            {% endif %}
             <div name="selected_option">
                 {% if inv_len == 0 %}
                     <p style="color:red;"> This item is out of stock</p>

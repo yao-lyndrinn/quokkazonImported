@@ -87,3 +87,8 @@ def cart_order(order_id):
     items = Purchase.get_order(current_user.id, order_id)
     totalprice = Purchase.get_total_price_order(current_user.id, order_id)
     return render_template('buyerOrder.html', items = items, totalprice = totalprice)
+
+@bp.route('/cart/viewOrders')
+def cart_viewOrders():
+    items = Purchase.get_unique_orders_by_uid(current_user.id)
+    return render_template('viewOrders.html', items = items)

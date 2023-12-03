@@ -28,12 +28,12 @@
 <script>
   $(document).ready(function(){
     // initialize a DataTable sorted by the 'Time Added or Updated' column 
-    // in reverse chronological order by default.
+    // in reverse chronological order by default. Break ties alphabetically by name. 
     new DataTable($('#sortable_products'), {
-      order: [[3, 'asc']] 
+      order: [[4, 'asc'],[0,'asc']] 
     });
     new DataTable($('#sortable_sellers'), {
-      order: [[3, 'asc']] 
+      order: [[4, 'asc'],[0,'asc']] 
     });
   })
 </script>
@@ -47,6 +47,7 @@
         <th scope="col">Product Name</th>
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
+        <th scope="col">Upvotes for Review</th>
         <th scope="col">Time Added or Updated</th>
         <th scope="col">Edit</th>
       </tr>
@@ -59,7 +60,8 @@
           </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
-          <td>{{humanize_time(item.date_time)}}</td>
+          <td>{{pupvotes[(item.uid,item.pid)]}}</td>
+          <td>{{item.date_time}} <p style = "color:#804a03;">{{humanize_time(item.date_time)}}</p></td>
           <td>
             <form action="{{ url_for('feedback.product_feedback_edit', product_id=item.pid) }}"
                   method="POST">
@@ -81,6 +83,7 @@
         <th scope="col">Seller's Name</th>
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
+        <th scope="col">Upvotes for Review</th>
         <th scope="col">Time Added or Updated</th>
         <th scope="col">Edit</th>
       </tr>
@@ -93,7 +96,8 @@
           </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
-          <td>{{humanize_time(item.date_time)}}</td>
+          <td>{{supvotes[(item.uid,item.sid)]}}</td>
+          <td>{{item.date_time}} <p style = "color:#804a03;">{{humanize_time(item.date_time)}}</p></td>
           <td>
             <form action="{{ url_for('feedback.seller_feedback_edit', seller_id=item.sid) }}"
                   method="POST">

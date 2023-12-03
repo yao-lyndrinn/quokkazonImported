@@ -22,11 +22,14 @@ def humanize_time(dt):
 def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
+    supvotes = {}
     if a is None: 
         is_seller = False
     else:
         is_seller = True
-        sfeedback = SellerFeedback.get_by_sid_sort_date_descending(current_user.id)
+        sfeedback = SellerFeedback.get_by_sid(current_user.id)
+        for item in sfeedback:
+            supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
         summary = None
         if len(sfeedback) > 0: 
             summary = SellerFeedback.summary_ratings(current_user.id)
@@ -36,6 +39,7 @@ def my_profile():
                             is_seller = is_seller,
                            title='My Profile',
                            sfeedback = sfeedback,
+                           supvotes=supvotes,
                            summary = summary,
                            current_user=current_user,
                            humanize_time=humanize_time)

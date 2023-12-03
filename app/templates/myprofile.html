@@ -60,7 +60,7 @@
         // initialize a DataTable sorted by the 'Time Added or Updated' column 
         // in reverse chronological order by default.
         new DataTable($('#sortable'), {
-        order: [[3, 'asc']] 
+        order: [[4, 'desc'],[0,'asc']] 
     });
     })
     </script>
@@ -71,6 +71,7 @@
         <th scope="col">User's Name</th>
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
+        <th scope="col">Upvotes for Review</th>
         <th scope="col">Time Added or Updated</th>
       </tr>
     </thead>
@@ -80,7 +81,8 @@
           <td>{{item.name}}</td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
-          <td>{{humanize_time(item.date_time)}}</td>
+          <td>{{supvotes[(item.uid,item.sid)]}}</td>
+          <td>{{item.date_time}} <p style = "color:#804a03;">{{humanize_time(item.date_time)}}</p></td>
         </tr>
       {% endfor %}
     </tbody>

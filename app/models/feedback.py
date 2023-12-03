@@ -347,7 +347,18 @@ class SellerFeedback:
         """,
         sid=sid)
         return name[0][0] 
-    
+   
+    @staticmethod
+    def feedback_exists(uid,sid): 
+        exists = app.db.execute("""
+        SELECT f.uid
+        FROM SellerFeedback f                         
+        WHERE f.uid = :uid
+        AND f.sid = :sid 
+        """,
+        uid=uid,
+        sid=sid)
+        return exists 
     @staticmethod 
     def has_purchased(uid,sid):
         if uid == sid: 

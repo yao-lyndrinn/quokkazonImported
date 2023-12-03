@@ -66,8 +66,8 @@
                     {% if current_user.is_authenticated %}
                     {% for i in inventory %}                        
                         <p style="text-align: center; display:inline;">
-                          <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid, logged_in=1)}}">{{ seller_names[i.sid] }}</a>
-                          (<em>id: </em>{{ i.sid }}): ${{i.price}} ({{i.num_for_sale}} left!)
+                          <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid, logged_in=1)}}">{{ seller_names[i.sid] }}</a>:
+                          ${{i.price}} ({{i.num_for_sale}} left!)
                           <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
                         </p>
                         <form action="{{ url_for('cart.cart_add')}}" method="POST">

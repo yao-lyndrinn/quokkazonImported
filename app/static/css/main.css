@@ -348,3 +348,25 @@ section {
     background-color: #137a56;
 }
 
+.category {
+    text-align: center;
+    margin: 10px;
+}
+
+.category img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 50%;
+}
+
+.category-name {
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+

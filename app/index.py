@@ -3,12 +3,15 @@ from flask_login import current_user
 from flask import redirect, request, url_for, session
 from flask_session import Session
 import os, random
+from collections import defaultdict
 import datetime
 
 from .models.product import Product
 from .models.purchase import Purchase
 from .models.seller import Seller
 from .models.feedback import ProductFeedback
+from .models.inventory import Inventory
+from .models.category import Category
 
 from flask import Blueprint
 bp = Blueprint('index', __name__)
@@ -38,7 +41,14 @@ def index():
     for row in pids: 
         pid = row[0]
         summary_ratings[pid] = ProductFeedback.summary_ratings(pid)
+    product_prices = defaultdict(list)
+    inventory = Inventory.get_all()
+    for item in inventory:
+        product_prices[item.pid].append(item.price)
         
+    categories = Category.get_all()
+    rows = [categories[i:i+6] for i in range(0, len(categories), 6)]
+    
     products_purchased = {}
     feedback_exists = {}
     # find the products current user has bought:
@@ -54,6 +64,8 @@ def index():
                 feedback_exists[purchase.pid] = False
     else:
         purchases = None
+
+        
     # render the page by adding information to the index.html file
     return render_template('index.html',
                         avail_products=top_all,
@@ -61,5 +73,8 @@ def index():
                         feedback_exists=feedback_exists,
                         products_purchased=products_purchased,
                         summary=summary_ratings,
-                        is_seller=Seller.is_seller(current_user))
+                        is_seller=Seller.is_seller(current_user),
+                        product_prices=product_prices,
+                        rows=rows,
+                        categories=categories)
     

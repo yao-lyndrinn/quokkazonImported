@@ -15,6 +15,13 @@
     <label for="altTxt">Alt Text:</label>
     <input type="text" id="altTxt" name="altTxt" required>
     </br>
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+        {% for category in categories %}
+            <option value= "{{category.cid}}" > {{category.name}} </option>
+        {% endfor %}
+        <!-- Add more options as needed -->
+    </select>
     <input type="submit" value="Add product">
 </form>
 

@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 class Product:
-    def __init__(self, pid, name, description, image, altTxt, createdAt, updatedAt):
+    def __init__(self, pid, name, description, image, altTxt, createdAt, updatedAt, cid):
         self.pid = pid
         self.name = name
         self.description = description
@@ -9,6 +9,7 @@ class Product:
         self.altTxt = altTxt
         self.CreatedAt = createdAt
         self.UpdatedAt = updatedAt
+        self.cid = cid
 
     @staticmethod
     def get(pid):
@@ -27,6 +28,14 @@ class Product:
         ''')
         return [Product(*row) for row in rows]
     
+    def get_all_by_cat(cid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Products
+        WHERE cid = :cid
+        ''', cid=cid)
+        return [Product(*row) for row in rows]
+    
     @staticmethod
     def get_name(pid):
         product = Product.get(pid)
@@ -43,16 +52,17 @@ class Product:
         return rows
         
     @staticmethod 
-    def add_product(pid, name, description, image, altTxt, createdAt, updatedAt):
+    def add_product(pid, name, description, image, altTxt, createdAt, updatedAt, cid):
         app.db.execute("""
-        INSERT INTO Products(pid, name, description, image, altTxt, createdAt, updatedAt)
-        VALUES(:pid, :name, :description, :image, :altTxt, :createdAt, :updatedAt)
+        INSERT INTO Products(pid, name, description, image, altTxt, createdAt, updatedAt, cid)
+        VALUES(:pid, :name, :description, :image, :altTxt, :createdAt, :updatedAt, :cid)
         """, 
         pid = pid, 
         name=name, 
         description=description, 
         image=image, altTxt=altTxt, 
         createdAt=createdAt, 
-        updatedAt=updatedAt
+        updatedAt=updatedAt,
+        cid=cid
         )
         return

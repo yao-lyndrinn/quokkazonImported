@@ -74,10 +74,10 @@
     {% for purchase in purchase_history%}
       <tr>
         <td>{{purchase.pid}}</td>
-        <td>
+        <th>
         <a href="{{ url_for('products.product_detail',product_id=purchase.pid) }}">
         {{products_purchased[purchase.pid]}}</a>
-        </td>
+        </th>
         <td>{{purchase.time_purchased}}</td>
         <td>
           {% if feedback_exists[purchase.pid] %}

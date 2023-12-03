@@ -16,13 +16,19 @@ def humanize_time(dt):
 
 @bp.route('/myfeedback')
 def my_feedback():
-    # default: sort in reverse chronological order
-    pfeedback = ProductFeedback.get_by_uid_sort_date_descending(current_user.id)
-    sfeedback = SellerFeedback.get_by_uid_sort_date_descending(current_user.id)
-
+    pfeedback = ProductFeedback.get_by_uid(current_user.id)
+    pupvotes = {}
+    for item in pfeedback: 
+        pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
+    sfeedback = SellerFeedback.get_by_uid(current_user.id)
+    supvotes = {}
+    for item in sfeedback:
+        supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
     return render_template('myfeedback.html',
                         pfeedback=pfeedback,
+                        pupvotes = pupvotes,
                         sfeedback=sfeedback,
+                        supvotes=supvotes,
                         humanize_time=humanize_time)
 
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
@@ -74,6 +80,7 @@ def product_review_edit():
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
+        ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
     return redirect(url_for('feedback.my_feedback'))
 
@@ -82,10 +89,25 @@ def product_remove_review():
     if request.method == 'POST': 
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
+@bp.route('/productfeedback/remove_upvote', methods=['POST','GET'])
+def remove_upvote_product_review():
+    reviewer =  int(request.form['reviewer'])
+    product = int(request.form['reviewed'])
+    ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
+    return redirect(url_for('products.product_detail',product_id=product))
 
+@bp.route('/productfeedback/upvote', methods=['POST','GET'])
+def upvote_product_review():
+    if request.method == 'POST':
+        reviewer =  int(request.form['reviewer'])
+        product = int(request.form['reviewed'])
+        ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
+    return redirect(url_for('products.product_detail',product_id=product))
+    
 
 @bp.route('/myfeedback/edit/seller/<int:seller_id>', methods=['POST','GET'])
 def seller_feedback_edit(seller_id):
@@ -117,6 +139,7 @@ def seller_review_edit():
 def seller_remove_feedback():
     if request.method == 'POST':
         sid = int(request.form['sid'])
+        SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
     return redirect(url_for('feedback.seller_personal',seller_id=sid))
 
@@ -125,6 +148,7 @@ def seller_remove_review():
     if request.method == 'POST': 
         seller_id = int(request.form['sid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        SellerFeedback.remove_upvotes(current_user.id, seller_id)
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
     return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
 
@@ -150,19 +174,44 @@ def seller_submission_form(seller_id):
                             type="seller",
                             humanize_time=humanize_time)
 
+@bp.route('/sellerfeedback/remove_upvote', methods=['POST','GET'])
+def remove_upvote_seller_review():
+    reviewer =  int(request.form['reviewer'])
+    seller = int(request.form['seller'])
+    SellerFeedback.remove_my_upvote(current_user.id,reviewer,seller)
+    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+
+@bp.route('/sellerfeedback/upvote', methods=['POST','GET'])
+def upvote_seller_review():
+    if request.method == 'POST':
+        reviewer =  int(request.form['reviewer'])
+        seller = int(request.form['seller'])
+        SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
+    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+        
+
 @bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
 def seller_personal(seller_id):
     summary = None
-    # default: sort in reverse chronological order
-    sfeedback = SellerFeedback.get_by_sid_sort_date_descending(seller_id)
-
-    has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
-    if len(has_purchased) > 0: 
-        my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+    sfeedback = SellerFeedback.get_by_sid(seller_id)
+    supvotes = {}
+    for item in sfeedback:
+        supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+    myupvotes = {}
+    if current_user.is_authenticated: 
+        # whether the current logged-in user has purchased from this seller before 
+        has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+        if has_purchased is not None: 
+            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+        else: 
+            # the user has not purchased from this seller before 
+            has_purchased = False
+            my_seller_feedback = False
+        # which reviews the current user has upvoted 
+        for reviewer,seller in supvotes: 
+            myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
     else: 
-        # the user has not purchased from this seller before 
-        has_purchased = False
-        my_seller_feedback = False
+        has_purchased, my_seller_feedback = False, False
 
     a = Seller.has_products(seller_id) 
     if(a):
@@ -171,6 +220,8 @@ def seller_personal(seller_id):
     info = Seller.find(seller_id)
     return render_template('sellerDetail.html',
                             sfeedback=sfeedback,
+                            supvotes=supvotes,
+                            myupvotes=myupvotes,
                             summary=summary,
                             seller_id=seller_id,
                             first_name = info[2],

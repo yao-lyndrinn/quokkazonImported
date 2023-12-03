@@ -8,7 +8,7 @@ from humanize import naturaltime
 from .models.cart import CartItem
 from .models.inventory import Inventory
 from .models.purchase import Purchase
-from .models.feedback import SellerFeedback
+from .models.feedback import ProductFeedback, SellerFeedback
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -86,7 +86,32 @@ def cart_submit():
 def cart_order(order_id):
     items = Purchase.get_order(current_user.id, order_id)
     totalprice = Purchase.get_total_price_order(current_user.id, order_id)
-    return render_template('buyerOrder.html', items = items, totalprice = totalprice)
+    seller_names = {}
+    product_names = {}
+    product_feedback_exists = {}
+    seller_feedback_exists = {}
+    for purchase in items: 
+        # get the name of the seller 
+        seller_names[purchase.sid] = SellerFeedback.get_seller_name(purchase.sid)
+        # get the name of the product 
+        product_names[purchase.pid] = ProductFeedback.get_product_name(purchase.pid)[0][0]
+        # check whether we place the link to feedback editing or submission form 
+        if len(ProductFeedback.feedback_exists(current_user.id,purchase.pid)) > 0: 
+            product_feedback_exists[purchase.pid] = True
+        else: 
+            product_feedback_exists[purchase.pid] = False
+        # check whether we place the link to feedback editing or submission form 
+        if len(SellerFeedback.feedback_exists(current_user.id,purchase.sid)) > 0: 
+            seller_feedback_exists[purchase.sid] = True
+        else: 
+            seller_feedback_exists[purchase.sid] = False
+    return render_template('buyerOrder.html', 
+                           items = items, 
+                           totalprice = totalprice,
+                           seller_names = seller_names,
+                           product_names = product_names,
+                           product_feedback_exists = product_feedback_exists,
+                           seller_feedback_exists = seller_feedback_exists)
 
 @bp.route('/cart/viewOrders')
 def cart_viewOrders():

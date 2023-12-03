@@ -2,6 +2,10 @@ body {
     font-family: "Verdana", sans-serif;
 }
 
+a {
+    color:#137a56;
+}
+
 .main-head {
     height: 150px;
     background: #FFF;
@@ -186,7 +190,7 @@ section {
 
 .thumb-box:hover {
     cursor: pointer;
-    border-color: #e77600;;
+    border-color: #e77600;
     box-shadow: 0px 1px 5px 1px #e77600;
 }
 

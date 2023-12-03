@@ -45,19 +45,31 @@ def product_detail(product_id):
         seller_names[seller.sid] = SellerFeedback.get_seller_name(seller.sid)
         # get summary feedback statistics for the seller 
         seller_summary[seller.sid] = SellerFeedback.summary_ratings(seller.sid)
-    # default: sort in reverse chronological order
-    pfeedback = ProductFeedback.get_by_pid_sort_date_descending(product_id)
+    pfeedback = ProductFeedback.get_by_pid(product_id)
+    pupvotes = {}
+    for item in pfeedback:
+        pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
     # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
-    has_purchased = ProductFeedback.has_purchased(current_user.id,product_id)
-    if len(has_purchased) > 0: 
-        my_product_feedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
+   
+    myupvotes = {}
+    if current_user.is_authenticated: 
+        has_purchased = ProductFeedback.has_purchased(current_user.id,product_id)
+        if len(has_purchased) > 0: 
+            my_product_feedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
+        else: 
+            my_product_feedback = False
+            has_purchased = False
+        # which reviews the current user has upvoted 
+        for reviewer,reviewed in pupvotes: 
+            myupvotes[(reviewer,reviewed)] = ProductFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
     else: 
-        my_product_feedback = False
-        has_purchased = False
+        my_product_feedback, has_purchased = False, False
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,
+                           pupvotes=pupvotes,
+                           myupvotes=myupvotes,
                            summary=summary,
                            seller_names=seller_names,
                            seller_summary=seller_summary,

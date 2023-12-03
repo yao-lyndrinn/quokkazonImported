@@ -82,24 +82,23 @@ seller_file = open("SellerReviewUpvotes.csv","w")
 product_file = open("ProductReviewUpvotes.csv","w")
 seller_upvotes = get_csv_writer(seller_file)
 product_upvotes = get_csv_writer(product_file)
-cap = 100
+s_cap, p_cap = 100, 500
 for user in users: 
     s_count, p_count = 0,0
     for uid, sid in seller_reviews: 
         # a user cannot upvote their own reviews 
         if user == uid: continue
         # make sure that upvotes are slightly uncommon 
-        if random.choice([True,False,False]) == True: 
+        if random.choice([True,False,False,False,False]) == True: 
             seller_upvotes.writerow([user,uid,sid])
             s_count += 1 
-        if s_count == cap: break
+        if s_count == s_cap: break
     for uid, pid in product_reviews: 
         # a user cannot upvote their own reviews 
         if user == uid: continue
-        # make sure that upvotes are slightly uncommon 
-        if random.choice([True,False,False]) == True: 
+        if random.choice([True,False,False,False]) == True: 
             product_upvotes.writerow([user,uid,pid])
             p_count += 1 
-        if p_count == cap: break
+        if p_count == p_cap: break
 seller_file.close()
 product_file.close()

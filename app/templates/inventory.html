@@ -72,7 +72,9 @@
     <tbody>
       {% for item in avail_inventory %}
         <tr>
-          <th scope="row">{{product_class.get_name(item.pid)}}</th>
+          <th scope="row">
+            <a href="{{ url_for('products.product_detail',product_id=item.pid) }}">{{product_class.get_name(item.pid)}}</a>
+          </th>
           <td>{{item.price}}</td>
           <td>{{item.quantity}}</td>
           <td>{{item.num_for_sale}}</td>

@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
+from decimal import *
 
 from .. import login
 
@@ -73,3 +74,45 @@ WHERE id = :id
 """,
                               id=id)
         return User(*(rows[0])) if rows else None
+
+
+    @staticmethod
+    def update_user_info(user_id, email, firstname, lastname, address, phone_number):
+        try:
+            # Update query to modify user details in the database
+            app.db.execute(
+                "UPDATE Users SET email = :email, firstname = :firstname, lastname = :lastname, "
+                "address = :address, phone_number = :phone_number WHERE id = :user_id",
+                user_id=user_id, email=email, firstname=firstname, 
+                lastname=lastname, address=address, phone_number=phone_number)
+            return True
+        except Exception as e:
+            # Log the exception e
+            return False
+
+
+    # @staticmethod
+    # def top_up(user_id, balance, added_money):
+    #     try:
+    #         # Update query to modify user details in the database
+    #         new_bal = balance + added_money
+    #         app.db.execute(
+    #             "UPDATE Users SET balance = :balance WHERE id = :user_id",
+    #             user_id=user_id, balance= new_bal)
+    #         print("Success!")
+    #         return True
+    #     except Exception as e:
+    #         # Log the exception e
+    #         print("Failure!")
+    #         return False
+ 
+    @staticmethod
+    def top_up(user_id, balance, added_money):
+        # Update query to modify user details in the database
+        new_bal = balance + Decimal(added_money)
+        app.db.execute(
+            "UPDATE Users SET balance = :balance WHERE id = :user_id",
+            user_id=user_id, balance= new_bal)
+        print("Success!")
+        return True
+ 

@@ -13,6 +13,34 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
+<script>
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown menu if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("cat-dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+    var anchors = document.getElementsByTagName('a');
+
+    for(var i = 0, len = anchors.length; i < len; i++) {
+      var thisAnchor = anchors[i];
+        thisAnchor.onclick = function () {
+            var btn = this.parentNode.parentNode.getElementsByTagName('button')[0];
+            btn.innerHTML = this.innerHTML;
+    }
+}
+  }
+</script>
 <body>
   <div class="sidenav">
     {% block msg %}
@@ -39,7 +67,7 @@
     </header>
     {% endblock %}
   </div>
-  <div class="main">
+  <div>
     {% block content %}{% endblock %}
   </div>
 </body>

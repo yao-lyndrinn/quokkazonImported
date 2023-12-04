@@ -15,6 +15,7 @@ from .models.category import Category
 from .models.seller import Seller
 
 from flask import Blueprint
+
 bp = Blueprint('products', __name__)
 
 
@@ -102,7 +103,7 @@ def products():
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
     
-    categories = Category.get_all_categories()
+    categories = Category.get_all()
     
     return render_template('products2.html',
                       items=paginated,
@@ -142,7 +143,7 @@ def search_results():
         search_term = session.get('search_term')
     products = search_products(search_term)
     
-    categories = Category.get_all_categories()
+    categories = Category.get_all()
 
     paginated = products[start:end]
     total_pages = len(products)//24 + 1
@@ -169,10 +170,12 @@ def allowed_file(filename):
     
 @bp.route('/products/add_products', methods=['GET','POST'])
 def add_products():
+    categories=Category.get_all()
     if request.method == 'POST':
         name = request.form["name"]
         description = request.form["description"]
         altTxt = request.form["altTxt"]
+        category = request.form["category"]
         pid = int(Product.newPID()[0][0]) + 1
         createdAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         updatedAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -182,7 +185,7 @@ def add_products():
         filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
         file.save(filepath)
                 
-        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt)
+        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt, category)
         return redirect(url_for('inventory.inventory'))
                 
-    return render_template('add_products.html')
+    return render_template('add_products.html', categories=categories)

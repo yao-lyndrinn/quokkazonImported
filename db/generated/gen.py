@@ -73,7 +73,8 @@ def gen_purchases(num_purchases, available):
             uid = fake.random_int(min=0, max=num_users-1)
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            order_id += 1  # TODO: order_id is not unique, should group purchases into orders
+            if fake.random.random() < 0.4:
+                order_id += 1  # TODO: order_id is not unique, should group purchases into orders
             quantity_available = available[pid][sid]
             quantity = fake.random_int(min=0,max=quantity_available)
             # ensure that items cannot be re-purchased 
@@ -82,10 +83,9 @@ def gen_purchases(num_purchases, available):
                 del available[pid][sid] 
             if len(available[pid]) == 0: 
                 del available[pid]
-
             time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
             date_fulfilled = fake.date_time_between(start_date=time_purchased, end_date='now')
-            if fake.random.random() < 0.1:
+            if time_purchased.year == datetime.today().year and fake.random.random() < 0.3:
                 date_fulfilled = None
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
             count += 1 

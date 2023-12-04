@@ -79,7 +79,9 @@
     <tbody>
       {% for item in sfeedback %}
         <tr>
-          <td>{{item.name}}</td>
+          <td>
+            <a href="{{ url_for('feedback.seller_personal', seller_id=item.uid)}}">{{ item.name }}</a>
+          </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
           <td>{{supvotes[(item.uid,item.sid)]}}

@@ -23,6 +23,7 @@ def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
     supvotes = {}
+    summary = None
     if a is None: 
         is_seller = False
     else:
@@ -30,7 +31,6 @@ def my_profile():
         sfeedback = SellerFeedback.get_by_sid(current_user.id)
         for item in sfeedback:
             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
-        summary = None
         if len(sfeedback) > 0: 
             summary = SellerFeedback.summary_ratings(current_user.id)
 
@@ -82,3 +82,47 @@ def top_up():
         return redirect(url_for('profile.my_profile'))
 
     return render_template('top_up.html')
+
+# @bp.route('/public_profile/<int:uid>', methods=['POST','GET'])
+# def public_profile(uid):
+#     summary = None
+#     is_seller = Seller.get(uid)
+#     if is_seller is not None: 
+#         sfeedback = SellerFeedback.get_by_sid(uid)
+#         supvotes = {}
+#         for item in sfeedback:
+#             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+#         myupvotes = {}
+#         if current_user.is_authenticated: 
+#             # whether the current logged-in user has purchased from this seller before 
+#             has_purchased  = SellerFeedback.has_purchased(current_user.id,uid)
+#             if has_purchased is not None: 
+#                 my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, uid)
+#             else: 
+#                 # the user has not purchased from this seller before 
+#                 has_purchased = False
+#                 my_seller_feedback = False
+#             # which reviews the current user has upvoted 
+#             for reviewer,seller in supvotes: 
+#                 myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
+#         else: 
+#             has_purchased, my_seller_feedback = False, False
+
+#         has_products = Seller.has_products(uid) 
+#         if(has_products):
+#             summary = SellerFeedback.summary_ratings(uid)    
+    
+#     info = Seller.find(uid)
+#     return render_template('sellerDetail.html',
+#                             sfeedback=sfeedback,
+#                             supvotes=supvotes,
+#                             myupvotes=myupvotes,
+#                             summary=summary,
+#                             uid=uid,
+#                             first_name = info[2],
+#                             last_name = info[3],
+#                             email = info[1],
+#                             humanize_time=humanize_time,
+#                             has_products = has_products,
+#                             has_purchased = has_purchased,
+#                             my_seller_feedback=my_seller_feedback)

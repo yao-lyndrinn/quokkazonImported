@@ -189,8 +189,7 @@ def upvote_seller_review():
         SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
     return redirect(url_for('feedback.seller_personal',seller_id=seller))
         
-
-@bp.route('/sellerfeedback/<int:seller_id>', methods=['POST','GET'])
+@bp.route('/seller_profile/<int:seller_id>', methods=['POST','GET'])
 def seller_personal(seller_id):
     summary = None
     sfeedback = SellerFeedback.get_by_sid(seller_id)

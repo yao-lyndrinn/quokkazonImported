@@ -78,7 +78,7 @@ def cart_submit():
     items = CartItem.get_all_by_uid(
                         current_user.id)
     for item in items:
-        CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, None)
+        CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
     CartItem.submit(current_user.id)
     return redirect(url_for('cart.cart_order', order_id = neworder))
 

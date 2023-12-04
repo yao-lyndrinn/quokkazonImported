@@ -99,11 +99,11 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         """, uid = uid)
         return int(rows[0][0]+1) if rows and rows[0][0] is not None else 1
     @staticmethod
-    def newPurchase(uid, sid, pid, order_id, quantity, date_fulfilled):
+    def newPurchase(uid, sid, pid, order_id, quantity, price, date_fulfilled):
         rows = app.db.execute("""
-        INSERT INTO PURCHASES(uid, sid, pid, order_id, quantity, date_fulfilled)
-        VALUES(:uid, :sid, :pid, :order_id, :quantity, :date_fulfilled)
-        """, uid = uid, sid = sid, pid = pid, order_id=order_id, quantity = quantity, date_fulfilled= date_fulfilled
+        INSERT INTO PURCHASES(uid, sid, pid, order_id, quantity, price, date_fulfilled)
+        VALUES(:uid, :sid, :pid, :order_id, :quantity, :price, :date_fulfilled)
+        """, uid = uid, sid = sid, pid = pid, order_id=order_id, quantity = quantity, price = price, date_fulfilled= date_fulfilled
         )
         return
     

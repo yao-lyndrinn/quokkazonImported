@@ -83,11 +83,12 @@ def gen_purchases(num_purchases, available):
                 del available[pid][sid] 
             if len(available[pid]) == 0: 
                 del available[pid]
+            price = random.randint(0,30) + 0.99
             time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
             date_fulfilled = fake.date_time_between(start_date=time_purchased, end_date='now')
             if time_purchased.year == datetime.today().year and fake.random.random() < 0.3:
                 date_fulfilled = None
-            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
+            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,price,date_fulfilled])
             count += 1 
         print(f'{count} generated')
     return
@@ -182,4 +183,4 @@ if __name__ == "__main__":
     #gen_users(num_users)
     available = get_available_products()
     gen_purchases(num_purchases, available)
-    # fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")
+    fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")

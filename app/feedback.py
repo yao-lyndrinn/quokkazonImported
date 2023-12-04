@@ -217,7 +217,7 @@ def seller_personal(seller_id):
         summary = SellerFeedback.summary_ratings(seller_id)    
   
     info = Seller.find(seller_id)
-    return render_template('sellerDetail.html',
+    return render_template('publicProfile.html',
                             sfeedback=sfeedback,
                             supvotes=supvotes,
                             myupvotes=myupvotes,

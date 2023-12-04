@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 class CartItem:
-    def __init__(self, uid, sid, pid, quantity, price, saved_for_later):
+    def __init__(self, uid, sid, pid, quantity, price, saved_for_later = 0):
         self.uid = uid
         self.sid = sid
         self.pid = pid

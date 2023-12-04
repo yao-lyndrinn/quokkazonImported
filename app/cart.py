@@ -1,5 +1,5 @@
 from flask import jsonify
-from flask import render_template
+from flask import render_template, flash
 from flask_login import current_user
 from flask import redirect, url_for, request
 import datetime
@@ -8,6 +8,7 @@ from humanize import naturaltime
 from .models.cart import CartItem
 from .models.inventory import Inventory
 from .models.purchase import Purchase
+from .models.user import User
 from .models.feedback import ProductFeedback, SellerFeedback
 
 from flask import Blueprint
@@ -34,8 +35,10 @@ def cart_add():
     seller_id = request.form["seller_id"]
     quantity = request.form["quantity"]
     saved_for_later = request.form["saved_for_later"]
-    
-    CartItem.add_item(current_user.id, seller_id, product_id, quantity, saved_for_later)
+    if CartItem.get(current_user.id, seller_id, product_id) == None:
+        CartItem.add_item(current_user.id, seller_id, product_id, quantity, saved_for_later)
+    else:
+        flash("Item is already in the cart.")
     print("I'M BUYING THIS MANY", quantity)
     return redirect(url_for('cart.cart'))
 
@@ -72,15 +75,19 @@ def cart_update_quantity():
 
 @bp.route('/cart/submit', methods=['POST'])
 def cart_submit():
-    neworder = CartItem.newOrderId(current_user.id)
-    CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id)
-    CartItem.decrease_balance(current_user.id)
-    items = CartItem.get_all_by_uid(
-                        current_user.id)
-    for item in items:
-        CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
-    CartItem.submit(current_user.id)
-    return redirect(url_for('cart.cart_order', order_id = neworder))
+    if CartItem.get_total_price(current_user.id) < User.get_balance(current_user.id):
+        neworder = CartItem.newOrderId(current_user.id)
+        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id)
+        CartItem.decrease_balance(current_user.id)
+        items = CartItem.get_all_by_uid(
+                            current_user.id)
+        for item in items:
+            CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
+        CartItem.submit(current_user.id)
+        return redirect(url_for('cart.cart_order', order_id = neworder))
+    else:
+        flash("The total price exceeds your current balance!")
+        return redirect(url_for('cart.cart'))
 
 @bp.route('/cart/<int:order_id>')
 def cart_order(order_id):

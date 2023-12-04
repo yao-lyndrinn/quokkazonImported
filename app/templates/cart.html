@@ -50,4 +50,25 @@
 <form action="{{ url_for('cart.cart_viewOrders')}}">
             <input type="submit" value="View Submitted Orders"/>
 </form>
+</div>
+{% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <div id="popup" class="popup">
+              <div class="popup-content">
+                  <span class="close" onclick="closePopup()">&times;</span>
+                  <ul>
+                      {% for message in messages %}
+                          <li>{{ message }}</li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </div>
+      {% endif %}
+  {% endwith %}
+
+  <script>
+      function closePopup() {
+          document.getElementById('popup').style.display = 'none';
+      }
+  </script>
 {% endblock %}

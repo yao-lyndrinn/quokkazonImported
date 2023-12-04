@@ -115,4 +115,14 @@ WHERE id = :id
             user_id=user_id, balance= new_bal)
         print("Success!")
         return True
+
+    @staticmethod
+    def get_balance(user_id):
+        rows = app.db.execute("""
+        SELECT balance
+        FROM Users
+        WHERE id = :id
+        """,
+        id = user_id)
+        return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
  

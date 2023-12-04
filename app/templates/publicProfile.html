@@ -5,8 +5,9 @@
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
+  <p>This user has left an average rating of {{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers and an average rating of {{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</p>
 {% if summary %}
-  <p style="color:#804a03";><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
+  <p style="color:#804a03";><b>Seller's Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">
     {% if 1 <= summary[0] < 1.5 %}
     <span>★</span>★★★★   
@@ -60,7 +61,7 @@
     // initialize a DataTable sorted by the 'Time Added or Updated' column 
     // in reverse chronological order by default. Break ties alphabetically by name. 
     new DataTable($('#sortable'), {
-    order: [[4, 'asc'],[0,'asc']]
+    order: [[4, 'desc'],[0,'asc']]
   });
   })
 </script>
@@ -79,7 +80,9 @@
     <tbody>
       {% for item in sfeedback %}
         <tr>
-          <td>{{item.name}}</td>
+          <td>
+            <a href="{{ url_for('feedback.seller_personal', seller_id=item.uid)}}">{{ item.name }}</a>
+          </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
           <td>{{supvotes[(item.uid,item.sid)]}}
@@ -109,6 +112,6 @@
   </table>
   </div>
 {% else %}
-<p>This user is not a seller.</p>
+<p style="color:#804a03";><b>This user is not a seller.</b></p>
 {% endif %}
 {% endblock %}

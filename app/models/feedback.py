@@ -21,6 +21,17 @@ class ProductFeedback:
         avg = round(info[0][1],1)
         return (avg,num)
 
+    def user_summary_ratings(uid): 
+        info = app.db.execute('''
+        SELECT COUNT(f.rating), AVG(f.rating)
+        FROM ProductFeedback as f
+        WHERE f.uid = :uid
+        ''', uid=uid)
+        if info[0][1] is None:
+            return (None,0)
+        avg = round(info[0][1],1)
+        return (avg,info[0][0])
+    
     def all_pids(): 
         info = app.db.execute('SELECT pid FROM ProductFeedback')
         return info
@@ -235,6 +246,18 @@ class SellerFeedback:
         num = info[0][0]
         avg = round(info[0][1],1)
         return (avg,num)
+    
+    def user_summary_ratings(uid): 
+        info = app.db.execute('''
+        SELECT COUNT(f.rating), AVG(f.rating)
+        FROM SellerFeedback as f
+        WHERE f.uid = :uid
+        ''', uid=uid)
+        if info[0][1] is None:
+            return (None,0)
+        avg = round(info[0][1],1)
+        return (avg,info[0][0])
+    
     # current user's ratings and reviews 
     @staticmethod
     def get_by_uid(uid):
@@ -391,7 +414,7 @@ class SellerFeedback:
         date_time=time)
 
     @staticmethod 
-    def get_seller_name(sid): 
+    def get_name(sid): 
         name = app.db.execute("""
         SELECT (firstname || ' ' || lastname) AS name 
         FROM Users

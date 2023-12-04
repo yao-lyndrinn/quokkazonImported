@@ -28,6 +28,7 @@
         </div>
     </div>
     {% if not is_seller %}
+    <!-- Register as seller button  -->
     <form action="/register_seller">
         <button button style="margin:10px;" name=update_info>Register as Seller</button>
     </form>
@@ -89,7 +90,7 @@
   </table>
   </div>
   {% else %}
-  <p style="text-indent: 75px; color:#804a03";><b>This seller has no ratings and reviews yet.</b></p>
+  <p style="text-indent: 75px; color:#804a03";><b>No users have left ratings and reviews for you yet.</b></p>
   {% endif %}
     {% endif %}
 </body>

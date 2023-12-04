@@ -17,12 +17,14 @@ from .models.user import User
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
+# User personal page
 @bp.route('/myprofile')
 @login_required
 def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
     supvotes = {}
+    summary = None
     if a is None: 
         is_seller = False
     else:
@@ -30,7 +32,6 @@ def my_profile():
         sfeedback = SellerFeedback.get_by_sid(current_user.id)
         for item in sfeedback:
             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
-        summary = None
         if len(sfeedback) > 0: 
             summary = SellerFeedback.summary_ratings(current_user.id)
 
@@ -44,6 +45,7 @@ def my_profile():
                            current_user=current_user,
                            humanize_time=humanize_time)
 
+# Registers a user as a seller
 @bp.route('/register_seller')
 @login_required
 def reg_seller():
@@ -52,7 +54,7 @@ def reg_seller():
     return redirect(url_for('profile.my_profile'))
 
 
-
+# Allows for personal info to be changed
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -70,6 +72,8 @@ def edit_profile():
 
     return render_template('edit_profile.html')
 
+
+# Allows for balance to be topped-up
 @bp.route('/top_up', methods=['GET', 'POST'])
 @login_required
 def top_up():

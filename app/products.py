@@ -42,7 +42,7 @@ def product_detail(product_id):
     seller_summary = {}
     for seller in inventory: 
         # get the name of the seller 
-        seller_names[seller.sid] = SellerFeedback.get_seller_name(seller.sid)
+        seller_names[seller.sid] = SellerFeedback.get_name(seller.sid)
         # get summary feedback statistics for the seller 
         seller_summary[seller.sid] = SellerFeedback.summary_ratings(seller.sid)
     pfeedback = ProductFeedback.get_by_pid(product_id)

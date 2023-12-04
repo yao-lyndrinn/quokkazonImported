@@ -18,7 +18,7 @@
     <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn tab-banner">My Inventory</a>
     
   {% endif %}
-  <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn tab-banner">My Feedback</a>
+  <a href="{{ url_for('feedback.my_feedback',uid=current_user.id) }}" type="button" class="btn tab-banner">My Feedback</a>
   <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn tab-banner">My Profile</a>
    {% endif %}
 </header>

@@ -13,7 +13,7 @@ fake = Faker()
 
 
 def get_csv_writer(f):
-    return csv.writer(f, dialect='unix')
+    return csv.writer(f, dialect='unix', quoting=csv.QUOTE_NONE)
 
 def gen_users(num_users):
     with open('Users.csv', 'w') as f:
@@ -73,7 +73,8 @@ def gen_purchases(num_purchases, available):
             uid = fake.random_int(min=0, max=num_users-1)
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            order_id += 1  # TODO: order_id is not unique, should group purchases into orders
+            if fake.random.random() < 0.4:
+                order_id += 1  # TODO: order_id is not unique, should group purchases into orders
             quantity_available = available[pid][sid]
             quantity = fake.random_int(min=0,max=quantity_available)
             # ensure that items cannot be re-purchased 
@@ -82,12 +83,12 @@ def gen_purchases(num_purchases, available):
                 del available[pid][sid] 
             if len(available[pid]) == 0: 
                 del available[pid]
-
-            time_purchased = "2023-10-25 13:12:58"
-            date_fulfilled = "2023-10-27 13:12:58"  # TODO: change times, have some empty times for unfulfilled orders
-            # time_purchased = fake.date_this_month().strftime("%Y-%m-%d %H:%M:%S")
-            
-            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
+            price = random.randint(0,30) + 0.99
+            time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
+            date_fulfilled = fake.date_time_between(start_date=time_purchased, end_date='now')
+            if time_purchased.year == datetime.today().year and fake.random.random() < 0.3:
+                date_fulfilled = None
+            writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,price,date_fulfilled])
             count += 1 
         print(f'{count} generated')
     return
@@ -128,7 +129,7 @@ def gen_inventory():
                 price = random.randint(0,30) + 0.99
                 writer.writerow([sid, pid, quantity, num_for_sale, price])
                 rows_added += 1
-        print(f'{rows_added} enntries added to Inventory')
+        print(f'{rows_added} entries added to Inventory')
     return
 
 def get_available_sellers(file):
@@ -179,7 +180,7 @@ def gen_cart(num_users):
 
 if __name__ == "__main__": 
     #gen_inventory()
-    gen_users(num_users)
+    #gen_users(num_users)
     available = get_available_products()
     gen_purchases(num_purchases, available)
-    # fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")
+    fix_products_csv("/home/ubuntu/quokkazon/db/data/Products.csv")

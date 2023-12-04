@@ -2,13 +2,14 @@ from flask import current_app as app
 import datetime
 
 class Purchase:
-    def __init__(self, uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled):
+    def __init__(self, uid, sid, pid, order_id, time_purchased, quantity, price, date_fulfilled):
         self.uid = uid
         self.sid = sid
         self.pid = pid
         self.order_id = order_id
         self.time_purchased = time_purchased
         self.quantity = quantity
+        self.price = price
         self.date_fulfilled = date_fulfilled
 
     @staticmethod
@@ -90,8 +91,8 @@ class Purchase:
     def get_total_price_order(uid, order_id):
         rows = app.db.execute("""
         WITH C(total) AS
-            (SELECT Purchases.quantity * price FROM Purchases, Inventory
-            WHERE uid = :uid AND Purchases.sid = Inventory.sid AND Purchases.pid = Inventory.pid AND Purchases.order_id = :order_id)
+            (SELECT quantity * price FROM Purchases
+            WHERE uid = :uid AND Purchases.order_id = :order_id)
         SELECT SUM(total)
         FROM C
         """,

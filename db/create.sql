@@ -42,6 +42,7 @@ CREATE TABLE Purchases(
 	order_id INTEGER NOT NULL,
   time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
 	quantity INTEGER NOT NULL,
+  price DECIMAL(6,2) NOT NULL,
 	date_fulfilled timestamp without time zone,
 	PRIMARY KEY (sid, pid, uid, order_id)
 );

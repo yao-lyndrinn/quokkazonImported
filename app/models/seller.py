@@ -30,6 +30,8 @@ class Seller:
             return Seller.get(user.id) != None
         return False
 
+
+# Method to check if a seller has any products
     @staticmethod
     def has_products(sid):
         rows = app.db.execute('''
@@ -40,6 +42,8 @@ class Seller:
         sid=sid)
         return True if rows else False
 
+
+# Method to add non-sellers to the seller table. (Register as sellers)
     @staticmethod
     def add_seller(id):
         try:

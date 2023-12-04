@@ -19,17 +19,29 @@ def my_feedback(uid):
     name = SellerFeedback.get_name(uid)
     pfeedback = ProductFeedback.get_by_uid(uid)
     pupvotes = {}
+    my_pupvotes = {}
     for item in pfeedback: 
         pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
+    
     sfeedback = SellerFeedback.get_by_uid(uid)
     supvotes = {}
+    my_supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+        
+    if current_user.is_authenticated: 
+        for reviewer, reviewed in pupvotes:
+            my_pupvotes[(reviewer,reviewed)] = ProductFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
+        for reviewer, reviewed in supvotes:
+            my_supvotes[(reviewer,reviewed)] = SellerFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
+
     return render_template('myfeedback.html',
                         uid = uid,
                         name = name,
                         pfeedback=pfeedback,
                         pupvotes = pupvotes,
+                        my_pupvotes = my_pupvotes,
+                        my_supvotes = my_supvotes,
                         sfeedback=sfeedback,
                         supvotes=supvotes,
                         humanize_time=humanize_time)

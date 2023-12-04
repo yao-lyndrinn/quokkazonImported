@@ -22,7 +22,8 @@
 {% if current_user.id == uid %}
 <h2>My Feedback History</h2>
 {% else %}
-<h2>{{name}}'s Feedback History</h2>
+<h2><a href="{{ url_for('feedback.seller_personal', seller_id=uid)}}">{{name}}'s</a>
+   Feedback History</h2>
 {% endif %}
 <br>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
@@ -42,7 +43,7 @@
 
   <div id="products">
   <h3>For Products:</h3>
-  <button onclick="scrolldiv('sellers')">Scroll to Seller Feedback</button> 
+  <button onclick="scrolldiv('sellers')" >Scroll to Seller Feedback</button> 
   <table class='table table-hover table-bordered container' id="sortable_products">
     <thead class="quokka-brown">
       <tr>

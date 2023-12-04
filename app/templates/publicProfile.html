@@ -5,7 +5,8 @@
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
-  <p>This user has left an average rating of {{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers and an average rating of {{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</p>
+  <p>This user has left an average rating of {{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers and an average rating of {{feedback_for_products[0]}} for {{feedback_for_products[1]}} products. </p>
+  <p>Click <a href="{{ url_for('feedback.my_feedback', uid=seller_id)}}">here</a> to see the feedback submitted by this user.</p>
 {% if summary %}
   <p style="color:#804a03";><b>Seller's Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">

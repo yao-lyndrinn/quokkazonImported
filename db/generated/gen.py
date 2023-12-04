@@ -13,7 +13,7 @@ fake = Faker()
 
 
 def get_csv_writer(f):
-    return csv.writer(f, dialect='unix', quoting=csv.QUOTE_NONE)
+    return csv.writer(f, dialect='unix', quoting=csv.QUOTE_NONE, escapechar='\\')
 
 def gen_users(num_users):
     with open('Users.csv', 'w') as f:
@@ -74,20 +74,21 @@ def gen_purchases(num_purchases, available):
                 print(f'{id}', end=' ', flush=True)            
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            if fake.random.random() < 0.6:
+            quantity_available = available[pid][sid]
+            if fake.random.random() < 0.6 and quantity_available > 0:
                 order_id += 1
                 uid = fake.random_int(min=0, max=num_users-1)
                 order_pids = []
             else:
                 counter = 0
-                while pid in order_pids and counter < 5:
+                while (pid in order_pids or quantity_available <= 0) and counter < 5:
                     pid = fake.random_element(elements=list(available.keys()))
                     sid = random.choice(list(available[pid].keys()))
+                    quantity_available = available[pid][sid]
                     counter += 1
                 if counter >= 5:
                     break
-            quantity_available = available[pid][sid]
-            quantity = fake.random_int(min=0,max=quantity_available)
+            quantity = fake.random_int(min=1,max=min(20,quantity_available + 1))
             # ensure that items cannot be re-purchased 
             available[pid][sid] -= quantity
             if available[pid][sid] == 0: 
@@ -97,7 +98,7 @@ def gen_purchases(num_purchases, available):
             price = random.randint(0,30) + 0.99
             time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
             date_fulfilled = fake.date_time_between(start_date=time_purchased, end_date='now')
-            if time_purchased.year == datetime.today().year and fake.random.random() < 0.3:
+            if time_purchased.year == datetime.today().year and fake.random.random() < 0.5:
                 date_fulfilled = None
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,price,date_fulfilled])
             count += 1 

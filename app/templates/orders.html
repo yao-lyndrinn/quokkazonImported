@@ -24,6 +24,7 @@
                 <th scope="col">Customer Info</th>
                 <th scope="col">Product</th>
                 <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
                 <th scope="col">Order Placed</th>
                 <th scope="col">Date Fulfilled</th>
             </tr>
@@ -38,6 +39,7 @@
                 </td>
                 <td><a href="{{ url_for('products.product_detail',product_id=order.pid,option=0) }}">{{ product_class.get(order.pid).name }}</a></td>
                 <td>{{ order.quantity }}</td>
+                <td>{{ order.price }}</td>
                 <td>{{ order.time_purchased }}</td>
             {% if order.date_fulfilled %}
                 <td>{{ order.date_fulfilled }}</td>

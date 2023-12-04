@@ -76,6 +76,7 @@ WHERE id = :id
         return User(*(rows[0])) if rows else None
 
 
+# Method to update a user's info
     @staticmethod
     def update_user_info(user_id, email, firstname, lastname, address, phone_number):
         try:
@@ -106,6 +107,7 @@ WHERE id = :id
     #         print("Failure!")
     #         return False
  
+ # Method to top-up a user's balance
     @staticmethod
     def top_up(user_id, balance, added_money):
         # Update query to modify user details in the database
@@ -115,4 +117,14 @@ WHERE id = :id
             user_id=user_id, balance= new_bal)
         print("Success!")
         return True
+
+    @staticmethod
+    def get_balance(user_id):
+        rows = app.db.execute("""
+        SELECT balance
+        FROM Users
+        WHERE id = :id
+        """,
+        id = user_id)
+        return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
  

@@ -14,17 +14,20 @@ bp = Blueprint('feedback', __name__)
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
-@bp.route('/myfeedback')
-def my_feedback():
-    pfeedback = ProductFeedback.get_by_uid(current_user.id)
+@bp.route('/feedback_history/<int:uid>', methods=['POST','GET'])
+def my_feedback(uid):
+    name = SellerFeedback.get_name(uid)
+    pfeedback = ProductFeedback.get_by_uid(uid)
     pupvotes = {}
     for item in pfeedback: 
         pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
-    sfeedback = SellerFeedback.get_by_uid(current_user.id)
+    sfeedback = SellerFeedback.get_by_uid(uid)
     supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
     return render_template('myfeedback.html',
+                        uid = uid,
+                        name = name,
                         pfeedback=pfeedback,
                         pupvotes = pupvotes,
                         sfeedback=sfeedback,
@@ -167,7 +170,7 @@ def seller_add_feedback():
 
 @bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
 def seller_submission_form(seller_id):
-    name = SellerFeedback.get_seller_name(seller_id)
+    name = SellerFeedback.get_name(seller_id)
     return render_template('myfeedback_add.html',
                             seller_id=seller_id,
                             name=name,
@@ -217,6 +220,8 @@ def seller_personal(seller_id):
         summary = SellerFeedback.summary_ratings(seller_id)    
   
     info = Seller.find(seller_id)
+    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(seller_id)
+    feedback_for_products = ProductFeedback.user_summary_ratings(seller_id)
     return render_template('publicProfile.html',
                             sfeedback=sfeedback,
                             supvotes=supvotes,
@@ -229,4 +234,6 @@ def seller_personal(seller_id):
                             humanize_time=humanize_time,
                             has_products = a,
                             has_purchased = has_purchased,
-                            my_seller_feedback=my_seller_feedback)
+                            my_seller_feedback=my_seller_feedback,
+                            feedback_for_other_sellers=feedback_for_other_sellers,
+                            feedback_for_products=feedback_for_products)

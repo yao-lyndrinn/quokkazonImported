@@ -7,11 +7,20 @@ SELECT pg_catalog.setval('public.users_id_seq',
 
 \COPY Seller FROM 'Sellers.csv' WITH DELIMITER ',' NULL '' CSV
 
+\COPY Category FROM 'Category.csv' WITH DELIMITER ',' NULL '' CSV
+-- SELECT pg_catalog.setval('public.category_id_seq',
+--                          (SELECT MAX(id)+1 FROM Category),
+--                          false);
+
 \COPY Products FROM 'Products.csv' WITH DELIMITER ',' NULL '' CSV
+-- SELECT pg_catalog.setval('public.products_id_seq',
+--                          (SELECT MAX(id)+1 FROM Products),
+--                          false);
 
 \COPY Purchases FROM 'Purchases.csv' WITH DELIMITER ',' NULL '' CSV
 
 \COPY SellerFeedback FROM 'SellerFeedback.csv' WITH DELIMITER ',' NULL '' CSV
+
 
 \COPY ProductFeedback FROM 'ProductFeedback.csv' WITH DELIMITER ',' NULL '' CSV
 
@@ -26,4 +35,3 @@ SELECT pg_catalog.setval('public.wishes_id_seq',
 
 \COPY Inventory FROM 'Inventory.csv' WITH DELIMITER ',' NULL '' CSV
 \COPY Cart FROM 'Cart.csv' WITH DELIMITER ',' NULL '' CSV
-\COPY Category FROM 'Category.csv' WITH DELIMITER ',' NULL '' CSV

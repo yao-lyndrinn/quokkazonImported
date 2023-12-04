@@ -61,6 +61,8 @@ def get_available_products():
 def gen_purchases(num_purchases, available):
     order_id = 0
     count = 0 
+    uid  = 0
+    order_pids = []
     with open('Purchases.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Purchases...', end=' ', flush=True)
@@ -69,12 +71,21 @@ def gen_purchases(num_purchases, available):
                 # no more inventory left 
                 break
             if id % 100 == 0:
-                print(f'{id}', end=' ', flush=True)
-            uid = fake.random_int(min=0, max=num_users-1)
+                print(f'{id}', end=' ', flush=True)            
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
-            if fake.random.random() < 0.4:
-                order_id += 1  # TODO: order_id is not unique, should group purchases into orders
+            if fake.random.random() < 0.6:
+                order_id += 1
+                uid = fake.random_int(min=0, max=num_users-1)
+                order_pids = []
+            else:
+                counter = 0
+                while pid in order_pids and counter < 5:
+                    pid = fake.random_element(elements=list(available.keys()))
+                    sid = random.choice(list(available[pid].keys()))
+                    counter += 1
+                if counter >= 5:
+                    break
             quantity_available = available[pid][sid]
             quantity = fake.random_int(min=0,max=quantity_available)
             # ensure that items cannot be re-purchased 
@@ -89,6 +100,7 @@ def gen_purchases(num_purchases, available):
                 date_fulfilled = None
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,date_fulfilled])
             count += 1 
+            order_pids.append(pid)
         print(f'{count} generated')
     return
 

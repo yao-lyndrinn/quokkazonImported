@@ -2,6 +2,10 @@ body {
     font-family: "Verdana", sans-serif;
 }
 
+a {
+    color:#137a56;
+}
+
 .main-head {
     height: 150px;
     background: #FFF;

@@ -32,6 +32,7 @@ def index():
     
     for product in top_pid:
         top_all.append(Product.get(product))
+
     # products = Product.get_all()
     pids = ProductFeedback.all_pids()
     summary_ratings = {} 

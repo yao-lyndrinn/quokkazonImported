@@ -5,6 +5,7 @@
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
+  <p>This user has left an average rating of {{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers and an average rating of {{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</p>
 {% if summary %}
   <p style="color:#804a03";><b>Seller's Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">
@@ -111,6 +112,6 @@
   </table>
   </div>
 {% else %}
-<p>This user is not a seller.</p>
+<p style="color:#804a03";><b>This user is not a seller.</b></p>
 {% endif %}
 {% endblock %}

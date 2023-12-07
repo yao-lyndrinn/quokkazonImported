@@ -28,32 +28,53 @@ def category_products(category_id):
     end = start + ROWS
     
     cat_items = Product.get_all_by_cat(category_id)
+    category = Category.get_name(category_id)
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)
-    # items = Stock.get_all_in_stock()
-    
-    sort_by_price = request.args.get('sort', type=int)
+    items_stock = Stock.get_stock_by_cat(category_id)
+
+    if request.method == 'GET':    
+        if request.args.get('filter_by') == "available":
+            if request.args.get('sort_by'):
+                items = apply_sort(items_stock, request.args.get('sort_by'), category_id)
+            else:
+                items = apply_sort(items_stock, "a-z", category_id)
+        else:
+            if request.args.get('sort_by'):
+                items = apply_sort(cat_items, request.args.get('sort_by'), category_id)
+            else:
+                items = apply_sort(cat_items, "a-z", category_id)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
         summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
-    # if sort_by_price:
-    #     items = Stock.get_stock_desc()
-    
-    paginated = cat_items[start:end]
-    total_pages = len(cat_items)//24 + 1
+
+    paginated = items[start:end]
+    total_pages = len(items)//24 + 1
     
     categories = Category.get_all()
     
-    return render_template('products2.html', items=paginated,
+    return render_template('products.html', items=paginated,
                       inventory=inventory, 
                       summary=summary,
                       product_prices = product_prices,
                       page=page,
                       total_pages=total_pages,
-                      categories=categories)
+                      categories=categories,
+                      category=category,
+                      is_seller=Seller.is_seller(current_user))
     
-def sort_by_min_value(prices):
-    return min(prices[1])
+def apply_sort(items, sort_by, category_id):
+    stock_items = Stock.get_stock_by_cat(category_id)
+    if sort_by == "high_price":
+        sort_items = sorted(stock_items, key=lambda x: x.price, reverse=True)
+    if sort_by == "low_price":
+        sort_items = sorted(stock_items, key=lambda x: x.price)
+    if sort_by == "a-z":
+        sort_items = sorted(items, key=lambda x: x.name)
+    if sort_by == "z-a":
+        sort_items = sorted(items, key=lambda x: x.name, reverse=True)
+    return sort_items
+
     

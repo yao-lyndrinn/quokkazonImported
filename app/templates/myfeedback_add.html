@@ -13,10 +13,6 @@
 </head>
 <body>   
 <br><br>
-<div style="text-align:right">
-    <a href="{{ url_for('feedback.my_feedback') }}" type="button" class="btn btn-secondary btn-sm"  >My Feedback History</a>
-    </div>
-
 <!-- Product Feedback Editing Page -->
 {% if type == "product" %}
 <a style="color:grey;" href="{{ url_for('products.product_detail',product_id=product_id) }}"> < Product Details</a>

@@ -99,7 +99,7 @@ def cart_order(order_id):
     seller_feedback_exists = {}
     for purchase in items: 
         # get the name of the seller 
-        seller_names[purchase.sid] = SellerFeedback.get_seller_name(purchase.sid)
+        seller_names[purchase.sid] = SellerFeedback.get_name(purchase.sid)
         # get the name of the product 
         product_names[purchase.pid] = ProductFeedback.get_product_name(purchase.pid)[0][0]
         # check whether we place the link to feedback editing or submission form 

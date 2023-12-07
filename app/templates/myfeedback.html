@@ -20,6 +20,7 @@
 </script> 
   
 {% if current_user.id == uid %}
+<div class="page-div">
 <h2>My Feedback History</h2>
 {% else %}
 <h2><a href="{{ url_for('feedback.seller_personal', seller_id=uid)}}">{{name}}'s</a>
@@ -158,7 +159,7 @@
     </tbody>
   </table>
 </div>
-
+</div>
   {% endblock %}
   
   

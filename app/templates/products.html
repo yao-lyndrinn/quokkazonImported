@@ -23,7 +23,7 @@
    {% endif %}
 </header>
 <br>
-<div class="product-div">
+<div class="page-div">
 <h1 id="cat-title"> {{category.name}} </h1>
 <div id="filter-sort">
   <form method="GET" {% if category.name %} action = "{{ url_for('categories.category_products', category_id=category.cid) }}" {% else %} action="/products"{% endif %}>

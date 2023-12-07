@@ -24,6 +24,7 @@ def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
     supvotes = {}
+    myupvotes = {}
     summary = None
     if a is None: 
         is_seller = False
@@ -34,6 +35,9 @@ def my_profile():
             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
         if len(sfeedback) > 0: 
             summary = SellerFeedback.summary_ratings(current_user.id)
+        for reviewer,seller in supvotes: 
+            myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
+
 
     # The user information will be loaded from the current_user proxy
     return render_template('myprofile.html',
@@ -41,6 +45,7 @@ def my_profile():
                            title='My Profile',
                            sfeedback = sfeedback,
                            supvotes=supvotes,
+                           my_supvotes=myupvotes,
                            summary = summary,
                            current_user=current_user,
                            humanize_time=humanize_time)

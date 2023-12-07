@@ -28,6 +28,8 @@ SELECT pg_catalog.setval('public.users_id_seq',
 
 \COPY UpvoteSellerReview FROM 'SellerReviewUpvotes.csv' WITH DELIMITER ',' NULL '' CSV
 
+\COPY Messages FROM 'Messages.csv' WITH DELIMITER ',' NULL '' CSV
+
 \COPY Wishes FROM 'Wishes.csv' WITH DELIMITER ',' NULL '' CSV
 SELECT pg_catalog.setval('public.wishes_id_seq',
                          (SELECT MAX(id)+1 FROM Wishes),

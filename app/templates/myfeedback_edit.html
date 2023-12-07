@@ -2,15 +2,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-<head>
-    <style>
-    textarea {
-        height: 100%;
-        width: 800px;
-
-    }
-    </style>
-</head>
+<div class="page-div">
 <body>   
 <br>
 
@@ -96,6 +88,7 @@ method="POST">
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your feedback!</p>
 
 {% endif %}
+</div>
   {% endblock %}
   
   

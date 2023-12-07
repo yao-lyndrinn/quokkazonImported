@@ -3,7 +3,7 @@ from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp
 
 from .models.user import User
 
@@ -47,9 +47,9 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(),
                                        EqualTo('password')])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Regexp('^[0-9]*$', message='Phone number must contain only numbers')])
     submit = SubmitField('Register')
-
+        
     def validate_email(self, email):
         if User.email_exists(email.data):
             raise ValidationError('Already a user with this email.')

@@ -20,6 +20,7 @@
       <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
       <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
 </div>
+                <p><strong>User ID:</strong> {{ current_user.id }}</p>
                 <p><strong>Balance:</strong> {{ current_user.balance }}</p>
                 <p><strong>Name: </strong> {{ current_user.firstname }} {{ current_user.lastname }}</p>
                 <p><strong>Email:</strong> {{ current_user.email }}</p>

@@ -48,6 +48,9 @@ def index():
         product_prices[item.pid].append(item.price)
         
     categories = Category.get_all()
+    sorted_categories = sorted(categories, key=lambda x: x.name)
+        
+        
     rows = [categories[i:i+6] for i in range(0, len(categories), 6)]
     
     products_purchased = {}
@@ -77,5 +80,5 @@ def index():
                         is_seller=Seller.is_seller(current_user),
                         product_prices=product_prices,
                         rows=rows,
-                        categories=categories)
+                        categories=sorted_categories)
     

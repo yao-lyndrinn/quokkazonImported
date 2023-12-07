@@ -3,10 +3,10 @@
 {% block content %}
 
 <br>
-<h1>Add new product</h1>
+<h1 style="text-align: center;">Add New Product</h1>
 <br>
 
-<form action="{{ url_for('products.add_products')}}" method="POST" enctype="multipart/form-data">
+<form class="add-product-form" action="{{ url_for('products.add_products')}}" method="POST" enctype="multipart/form-data">
     <label for="name">Product name:</label><br>
     <input type="text" id="name" name="name" required>
     <br>
@@ -24,7 +24,6 @@
         {% for category in categories %}
             <option value= "{{category.cid}}" > {{category.name}} </option>
         {% endfor %}
-        <!-- Add more options as needed -->
     </select>
     <input type="submit" value="Add product">
 </form>

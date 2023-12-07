@@ -18,6 +18,14 @@ class Category:
         ''')
         return [Category(*row) for row in rows]
     
+    def get_name(cid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Category
+        WHERE cid = :cid
+        ''', cid=cid)
+        return Category(*(rows[0])) if rows is not None else None
+    
     # def get_all_by_pid(pid):
     #     rows = app.db.execute('''
     #     SELECT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.createdAt, Products.updatedAt, Category.name

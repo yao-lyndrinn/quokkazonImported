@@ -28,11 +28,7 @@ def humanize_time(dt):
 @login_required
 def my_profile():
     a = Seller.get(current_user.id)
-    sfeedback = None
     order_count_graph, order_freq_graph = None, None
-    supvotes = {}
-    myupvotes = {}
-    summary = None
     if a is None: 
         is_seller = False
     else:
@@ -50,13 +46,21 @@ def my_profile():
         of_fig = px.line(of_df, x='Month',y='Count',title='Total number of orders per month')
         order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-        sfeedback = SellerFeedback.get_by_sid(current_user.id)
-        for item in sfeedback:
-            supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
-        if len(sfeedback) > 0: 
-            summary = SellerFeedback.summary_ratings(current_user.id)
-        for reviewer,seller in supvotes: 
-            myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
+    sfeedback = SellerFeedback.get_by_sid(current_user.id)
+    supvotes = {}
+    myupvotes = {}
+    sorted_by_upvotes = SellerFeedback.sorted_by_upvotes(current_user.id)
+    for item in sfeedback:
+        supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+    summary = SellerFeedback.summary_ratings(current_user.id)
+    for reviewer,seller in supvotes: 
+        myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
+    count = 0
+    top3 = []
+    for item in sorted_by_upvotes: 
+        top3.append(item)
+        count += 1 
+        if count == 3: break
 
     feedback_for_other_sellers = SellerFeedback.user_summary_ratings(current_user.id)
     feedback_for_products = ProductFeedback.user_summary_ratings(current_user.id)
@@ -69,6 +73,7 @@ def my_profile():
                            sfeedback = sfeedback,
                            supvotes=supvotes,
                            my_supvotes=myupvotes,
+                           top3=top3,
                            summary = summary,
                            current_user=current_user,
                            feedback_for_other_sellers=feedback_for_other_sellers,

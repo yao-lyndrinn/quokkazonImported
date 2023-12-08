@@ -362,6 +362,25 @@ class SellerFeedback:
         uid=uid,
         sid=sid)
     
+    @staticmethod
+    def sorted_by_upvotes(sid):
+        rows = app.db.execute('''
+        WITH upvotes AS (
+            SELECT reviewer, Count(reviewer) AS votes
+            FROM UpvoteSellerReview 
+            WHERE seller = :sid 
+            GROUP BY reviewer  
+        )
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.sid, f.rating, f.review, f.date_time
+        FROM SellerFeedback as f, Users as u, upvotes as up 
+        WHERE f.sid = :sid
+        AND f.uid = u.id
+        AND up.reviewer = f.uid
+        ORDER BY up.votes DESC
+        ''',
+        sid=sid)
+        return [SellerFeedback(*row) for row in rows]
+    
     @staticmethod 
     def remove_upvotes(reviewer,seller):
         # delete upvotes for this review 

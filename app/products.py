@@ -59,7 +59,6 @@ def product_detail(product_id):
     count = 0
     top3 = []
     for item in sorted_by_upvotes: 
-        print(item.uid, item.pid, pupvotes[(item.uid,item.pid)])
         top3.append(item)
         count += 1 
         if count == 3: break

@@ -166,7 +166,7 @@ def seller_remove_feedback():
         sid = int(request.form['sid'])
         SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.seller_personal',seller_id=sid))
+    return redirect(url_for('feedback.public_profile',user_id=sid))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
@@ -210,7 +210,9 @@ def remove_upvote_seller_review():
     elif page == "publicfeedback":
         uid = int(request.form['uid'])
         return redirect(url_for('feedback.my_feedback',uid=uid))
-    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+    elif page=="myprofile":
+        return redirect(url_for('profile.my_profile'))
+    return redirect(url_for('feedback.public_profile',user_id=seller))
 
 @bp.route('/sellerfeedback/upvote', methods=['POST','GET'])
 def upvote_seller_review():
@@ -223,15 +225,24 @@ def upvote_seller_review():
     elif page == "publicfeedback":
         uid = int(request.form['uid'])
         return redirect(url_for('feedback.my_feedback',uid=uid))
-    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+    elif page=="myprofile":
+        return redirect(url_for('profile.my_profile'))
+    return redirect(url_for('feedback.public_profile',user_id=seller))
         
 @bp.route('/public_profile/<int:user_id>', methods=['POST','GET'])
 def public_profile(user_id):
     summary = None
     sfeedback = SellerFeedback.get_by_sid(user_id)
+    sorted_by_upvotes = SellerFeedback.sorted_by_upvotes(user_id)
     supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+    top3 = []
+    count = 0
+    for item in sorted_by_upvotes: 
+        top3.append(item)
+        count += 1 
+        if count == 3: break
     myupvotes = {}
     if current_user.is_authenticated: 
         # whether the current logged-in user has purchased from this seller before 
@@ -261,6 +272,7 @@ def public_profile(user_id):
                             myupvotes=myupvotes,
                             summary=summary,
                             user_id=user_id,
+                            top3=top3,
                             first_name = info[2],
                             last_name = info[3],
                             email = info[1],

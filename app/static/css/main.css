@@ -271,7 +271,7 @@ section {
     border-radius: 2%;
   }
   
-  .card-image:hover{
+  .card:hover .card-image{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
   

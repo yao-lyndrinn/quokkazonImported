@@ -45,6 +45,7 @@ def product_detail(product_id):
     inv_len = len(inventory)
     seller_names = {}
     seller_summary = {}
+    order_freq_graph = None
     for seller in inventory: 
         # get the name of the seller 
         seller_names[seller.sid] = SellerFeedback.get_name(seller.sid)
@@ -74,10 +75,8 @@ def product_detail(product_id):
             # Graph for orders over time
             orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id, product_id)]
             of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
-            of_fig = px.line(of_df, x='Month',y='Count',title='Number of orders from me per month')
-            order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
-        else:
-            order_freq_graph = None
+            of_fig = px.line(of_df, x='Month',y='Count',title='Number ordered from me per month')
+            order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)            
     else: 
         my_product_feedback, has_purchased = False, False
     return render_template('productDetail.html',

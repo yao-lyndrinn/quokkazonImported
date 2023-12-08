@@ -29,7 +29,7 @@ def humanize_time(dt):
 def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
-    orders, order_counts = None, None
+    order_count_graph, order_freq_graph = None, None
     supvotes = {}
     myupvotes = {}
     summary = None

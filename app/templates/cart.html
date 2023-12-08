@@ -5,6 +5,7 @@
 <br><br>
 {% if current_user.is_authenticated %}
 <h2>My Cart:</h2>
+<!--table of everything in the cart-->
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
@@ -12,12 +13,13 @@
       <th scope="col">Product ID</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
-      <th scope="col">Saved For Later</th>
+      <th scope="col">Save for Later?</th>
       <th scope="col">Remove</th>
     </tr>
   </thead>
   <tbody>
     {% for item in items %}
+    {% if item.saved_for_later == "0" %}
       <tr>
         <td>{{item.sid}}</td>
         <td>{{item.pid}}</td>
@@ -29,13 +31,56 @@
           <input type="submit" value="Update">
       </form></td>
         <td>{{item.price}}</td>
-        <td>{{item.saved_for_later}}</td>
+        <td><form action="{{ url_for('cart.cart_update_saved')}}"
+          method="POST">
+          <input type="hidden" name="product_id" value="{{item.pid}}"/> 
+          <input type="hidden" name="seller_id" value="{{item.sid}}"/> 
+          <input type="hidden" name="saved_for_later" value="{{item.saved_for_later}}"/>
+          <input type="submit" value="Save for Later"/>
+        </form></td>
         <td>
           <form action="{{ url_for('cart.cart_remove', seller_id=item.sid, product_id=item.pid)}}"
             method="POST">
             <input type="submit" value="Remove"/> 
           </form></td>
       </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+<h2>Saved for Later:</h2>
+<!--table of everything in the cart-->
+<table class='table table-hover table-bordered container'>
+  <thead class="quokka-brown">
+    <tr>
+      <th scope="col">Seller ID</th>
+      <th scope="col">Product ID</th>
+      <th scope="col">Unit Price</th>
+      <th scope="col">Move to Cart?</th>
+      <th scope="col">Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    {% if item.saved_for_later == "1"%}
+      <tr>
+        <td>{{item.sid}}</td>
+        <td>{{item.pid}}</td>
+        <td>{{item.price}}</td>
+        <td><form action="{{ url_for('cart.cart_update_saved')}}"
+          method="POST">
+          <input type="hidden" name="product_id" value="{{item.pid}}"/> 
+          <input type="hidden" name="seller_id" value="{{item.sid}}"/> 
+          <input type="hidden" name="saved_for_later" value="{{item.saved_for_later}}"/>
+          <input type="submit" value="Move to Cart"/>
+        </form></td>
+        <td>
+          <form action="{{ url_for('cart.cart_remove', seller_id=item.sid, product_id=item.pid)}}"
+            method="POST">
+            <input type="submit" value="Remove"/> 
+          </form></td>
+      </tr>
+      {% endif %}
     {% endfor %}
   </tbody>
 </table>
@@ -51,6 +96,7 @@
             <input type="submit" value="View Submitted Orders"/>
 </form>
 </div>
+<!--shows popup on duplicate entry, non-positive quantity, or order>balance-->
 {% with messages = get_flashed_messages() %}
       {% if messages %}
           <div id="popup" class="popup">
@@ -71,4 +117,6 @@
           document.getElementById('popup').style.display = 'none';
       }
   </script>
+  <!--add place to input coupon code for discount and add another boolean parameter-->
+  <!--to ensure you can't use that code god i want to kms-->
 {% endblock %}

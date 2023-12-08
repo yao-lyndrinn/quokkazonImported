@@ -31,11 +31,11 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return [CartItem(*row) for row in rows]
     
     @staticmethod
-    def get_total_price(uid):
+    def get_total_price(uid): #sums quantity * price to get total for cart
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
         SELECT SUM(total)
         FROM C
         """,
@@ -43,7 +43,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
     
     @staticmethod
-    def add_item(uid, sid, pid, quantity, saved_for_later):
+    def add_item(uid, sid, pid, quantity, saved_for_later): #new entry in cart
         rows = app.db.execute("""
         INSERT INTO CART(uid, sid, pid, quantity, saved_for_later)
         VALUES(:uid, :sid, :pid, :quantity, :saved_for_later)
@@ -52,11 +52,11 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         sid = sid,
         pid = pid,
         quantity = quantity,
-        saved_for_later = '0')
+        saved_for_later = saved_for_later)
         return
     
     @staticmethod
-    def remove_item(uid, sid, pid):
+    def remove_item(uid, sid, pid): #removes item from cart table
         rows = app.db.execute("""
         DELETE FROM CART
         WHERE uid = :uid AND sid = :sid AND pid = :pid
@@ -80,16 +80,16 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def submit(uid):
+    def submit(uid): #removes from cart table, is called along other fxns
         rows = app.db.execute("""
         DELETE FROM CART
-        WHERE uid = :uid
+        WHERE uid = :uid AND saved_for_later = B'0'
         """,
         uid=uid)
         return
 
     @staticmethod
-    def newOrderId(uid):
+    def newOrderId(uid): #ensures new order id is highest among this user
         rows = app.db.execute("""
         WITH orders(ids) AS (SELECT order_id
         FROM PURCHASES
@@ -98,7 +98,8 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         FROM orders
         """, uid = uid)
         return int(rows[0][0]+1) if rows and rows[0][0] is not None else 1
-    @staticmethod
+
+    @staticmethod #called along submit to put info from cart as a new purchase
     def newPurchase(uid, sid, pid, order_id, quantity, price, date_fulfilled):
         rows = app.db.execute("""
         INSERT INTO PURCHASES(uid, sid, pid, order_id, quantity, price, date_fulfilled)
@@ -108,7 +109,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
     
     @staticmethod
-    def get_all_sids(uid):
+    def get_all_sids(uid): #find each seller for items in cart
         rows = app.db.execute('''
         SELECT DISTINCT sid
         FROM Cart
@@ -117,12 +118,12 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return [row[0] for row in rows]
 
     @staticmethod
-    def increase_balances(sids, uid):
+    def increase_balances(sids, uid): #update user balance for each seller id in cart
         for sid in sids:
             rows = app.db.execute('''
             WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
             UPDATE USERS
             SET balance = balance + (SELECT SUM(total) FROM C)
             WHERE id = :sid
@@ -130,15 +131,39 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def decrease_balance(uid):
+    def decrease_balance(uid): #subtract total cart price from balance on order
         rows = app.db.execute('''
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
         UPDATE USERS
         SET balance = balance - (SELECT SUM(total) FROM C)
         WHERE id = :uid
         ''', uid = uid)
+        return
+
+    @staticmethod
+    def move_to_cart(uid, sid, pid):
+        rows = app.db.execute("""
+        UPDATE CART
+        SET saved_for_later = B'0'
+        WHERE uid = :uid AND sid = :sid AND pid = :pid
+        """,
+        uid=uid,
+        sid=sid,
+        pid=pid)
+        return
+
+    @staticmethod
+    def move_to_saved(uid, sid, pid):
+        rows = app.db.execute("""
+        UPDATE CART
+        SET saved_for_later = B'1'
+        WHERE uid = :uid AND sid = :sid AND pid = :pid
+        """,
+        uid=uid,
+        sid=sid,
+        pid=pid)
         return
 
     

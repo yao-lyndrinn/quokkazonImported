@@ -8,7 +8,7 @@ class ProductFeedback:
         self.rating = rating
         self.review = review
         self.date_time = date_time
-
+    
     def summary_ratings(pid): 
         info = app.db.execute('''
         SELECT COUNT(f.rating), AVG(f.rating)
@@ -48,7 +48,7 @@ class ProductFeedback:
         ''',
         uid=uid)
         return [ProductFeedback(*row) for row in rows]
-    
+
     # get all feedback for a given product 
     @staticmethod
     def get_by_pid(pid):
@@ -82,6 +82,25 @@ class ProductFeedback:
         ORDER BY f.date_time DESC, p.name
         ''',
         uid=uid,
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    @staticmethod
+    def sorted_by_upvotes(pid):
+        rows = app.db.execute('''
+        WITH upvotes AS (
+            SELECT reviewer, Count(reviewer) AS votes
+            FROM UpvoteProductReview 
+            WHERE product = :pid 
+            GROUP BY reviewer  
+        )
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u, upvotes as up 
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        AND up.reviewer = f.uid
+        ORDER BY up.votes DESC
+        ''',
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
     
@@ -343,6 +362,25 @@ class SellerFeedback:
         uid=uid,
         sid=sid)
     
+    @staticmethod
+    def sorted_by_upvotes(sid):
+        rows = app.db.execute('''
+        WITH upvotes AS (
+            SELECT reviewer, Count(reviewer) AS votes
+            FROM UpvoteSellerReview 
+            WHERE seller = :sid 
+            GROUP BY reviewer  
+        )
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.sid, f.rating, f.review, f.date_time
+        FROM SellerFeedback as f, Users as u, upvotes as up 
+        WHERE f.sid = :sid
+        AND f.uid = u.id
+        AND up.reviewer = f.uid
+        ORDER BY up.votes DESC
+        ''',
+        sid=sid)
+        return [SellerFeedback(*row) for row in rows]
+    
     @staticmethod 
     def remove_upvotes(reviewer,seller):
         # delete upvotes for this review 
@@ -457,3 +495,14 @@ class SellerFeedback:
         else: 
             return rows
 
+    # get seller's ratings
+    @staticmethod
+    def get_seller_ratings(sid):
+        rows = app.db.execute('''
+        SELECT EXTRACT(MONTH FROM date_time) AS m, EXTRACT(YEAR FROM date_time) AS y, rating
+        FROM SellerFeedback
+        WHERE sid = :sid
+        ORDER BY y, m
+        ''',
+        sid=sid)
+        return rows

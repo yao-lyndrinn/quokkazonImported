@@ -2,15 +2,6 @@
 
 {% block content %}
 <header class="banner-header">
-  <div class="cat-dropdown">
-    <button onclick="myFunction()" class="btn dropbtn">Categories</button>
-    <div id="myDropdown" class="cat-dropdown-content">
-      <a href="{{ url_for('products.products') }}"> All </a>
-      {% for category in categories %}
-          <a href="{{ url_for('categories.category_products', category_id=category.cid) }}">{{ category.name }}</a>
-      {% endfor %}
-    </div>
-  </div>
   <a href="{{ url_for('userlookup.lookup') }}" type="button" class="btn tab-banner">User Lookup</a>
   {% if current_user.is_authenticated%}
   {% if is_seller%}
@@ -28,13 +19,13 @@
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
   {% if current_user.is_authenticated and is_seller %}
     <a href="{{ url_for('products.add_products') }}" type="button" class="btn btn-dark">Add products</a>
-    <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn btn-dark">My Orders</a>
   {% endif %}
   <!--<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Home</a>-->
 </div>
 
 {% if current_user.is_authenticated %}
   {% if is_seller %}
+<div class="page-div">
   <h2>My Inventory:</h2>
   
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
@@ -89,5 +80,6 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your inventory!</p>
 {% endif %}
+</div>
 
 {% endblock %}

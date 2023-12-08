@@ -62,9 +62,16 @@ def product_detail(product_id):
         # get summary feedback statistics for the seller 
         seller_summary[seller.sid] = SellerFeedback.summary_ratings(seller.sid)
     pfeedback = ProductFeedback.get_by_pid(product_id)
+    sorted_by_upvotes = ProductFeedback.sorted_by_upvotes(product_id)
     pupvotes = {}
     for item in pfeedback:
         pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
+    count = 0
+    top3 = []
+    for item in sorted_by_upvotes: 
+        top3.append(item)
+        count += 1 
+        if count == 3: break
     # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
    
@@ -95,6 +102,7 @@ def product_detail(product_id):
                            pupvotes=pupvotes,
                            myupvotes=myupvotes,
                            summary=summary,
+                           top3=top3,
                            seller_names=seller_names,
                            seller_summary=seller_summary,
                            my_product_feedback = my_product_feedback,

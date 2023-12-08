@@ -30,8 +30,8 @@ seller_file = open("SellerFeedback.csv","w")
 product_writer = get_csv_writer(product_file)
 seller_writer = get_csv_writer(seller_file)
 
-default_times = ["2023-11-01 13:12:58","2023-11-02 13:12:58","2023-11-03 13:12:58",
-                "2023-11-04 13:12:58","2023-11-05 13:12:58","2023-11-06 13:12:58"]
+# default_times = ["2023-11-01 13:12:58","2023-11-02 13:12:58","2023-11-03 13:12:58",
+#                 "2023-11-04 13:12:58","2023-11-05 13:12:58","2023-11-06 13:12:58"]
 
 users, seller_reviews, product_reviews = [],[],[]
 for uid,info in purchases.items():
@@ -41,7 +41,8 @@ for uid,info in purchases.items():
     seller_product_ratings = defaultdict(list)
     for sid, pid_list in info.items(): 
         for pid in pid_list:
-            default_time = random.choice(default_times)
+            # default_time = random.choice(default_times)
+            default_time = fake.date_time_between(start_date='-5y', end_date='now')
             # make sure that the user has not left a review for this product already 
             if pid in product_ratings: 
                 seller_product_ratings[sid].append(product_ratings[pid])
@@ -66,7 +67,8 @@ for uid,info in purchases.items():
         s_rating = int(sum(seller_product_ratings[sid])/len(seller_product_ratings[sid]))
         seller_ratings[sid] = s_rating
         # if random.choice([True,False]) and s_rating < 5: s_rating += 0.5
-        default_time = random.choice(default_times)
+        #default_time = random.choice(default_times)
+        default_time = fake.date_time_between(start_date='-5y', end_date='now')
         # leave_s_review = random.choice([True,False])
         leave_s_review = True
         if leave_s_review: 

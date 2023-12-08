@@ -43,7 +43,7 @@ def fix_products_csv(file):
         for line in f.readlines(): 
             info = line.split(",")
             # 1,Quokka Fur Brush,grooming,,A comb or something,12:58.0,12:58.0
-            default_time = "2018-10-01 13:12:58"
+            default_time = fake.date_time_between(start_date='-5y', end_date='now')
             writer.writerow([info[0],info[1],info[2],info[3],info[4],default_time,default_time])
 
 def get_available_products():

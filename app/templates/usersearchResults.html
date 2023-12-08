@@ -58,7 +58,7 @@
       <div class="card">
         <div class="card-body">
           <h6 class="card-title mb-2 text-muted">
-            <a href="{{ url_for('feedback.seller_personal', seller_id=user.id) }}">{{ user.firstname }} {{user.lastname}}</a>
+            <a href="{{ url_for('feedback.public_profile', user_id=user.id) }}">{{ user.firstname }} {{user.lastname}}</a>
           </h6>
         </div>
       </div>

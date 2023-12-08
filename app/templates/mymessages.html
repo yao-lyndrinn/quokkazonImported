@@ -1,7 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if current_user.is_authenticated %}
 <div class="page-div">
-    <h2>My Messages</h2>
+    <h2>My Messages Inbox</h2>
+    <table class='table table-hover table-bordered container'>
+        <thead class="quokka-brown">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Time of Last Message</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in interacted %}
+            <tr>
+              <td> 
+                <a href="{{ url_for('feedback.public_profile', user_id=item[0])}}">{{ item[1] }}</a>
+            </td>
+              <td>{{item[2]}} <p style = "color:#804a03;">{{humanize_time(item[2])}}</p></td>
+              <td>
+                <form action="{{ url_for('messages.message_thread', other_user=item[0]) }}"
+                    method="POST">
+                    <input type="submit" value="View Message Thread"/> 
+                    </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% else %}
+<div class="page-div">
+<p>Log in to see your messages!</p>
 </div>
+{% endif %}
 {% endblock%}

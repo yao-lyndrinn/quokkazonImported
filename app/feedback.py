@@ -96,7 +96,7 @@ def product_remove_feedback(product_id):
     if request.method == 'POST': 
         ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback'))
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():
@@ -111,15 +111,26 @@ def product_remove_review():
 def remove_upvote_product_review():
     reviewer =  int(request.form['reviewer'])
     product = int(request.form['reviewed'])
+    page = request.form['page']
     ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('products.product_detail',product_id=product))
 
 @bp.route('/productfeedback/upvote', methods=['POST','GET'])
 def upvote_product_review():
-    if request.method == 'POST':
-        reviewer =  int(request.form['reviewer'])
-        product = int(request.form['reviewed'])
-        ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
+    reviewer =  int(request.form['reviewer'])
+    product = int(request.form['reviewed'])
+    page = request.form['page']
+    ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('products.product_detail',product_id=product))
     
 
@@ -155,7 +166,7 @@ def seller_remove_feedback():
         sid = int(request.form['sid'])
         SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.seller_personal',seller_id=sid))
+    return redirect(url_for('feedback.public_profile',user_id=sid))
 
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
@@ -193,29 +204,51 @@ def remove_upvote_seller_review():
     reviewer =  int(request.form['reviewer'])
     seller = int(request.form['seller'])
     SellerFeedback.remove_my_upvote(current_user.id,reviewer,seller)
-    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+    page = request.form['page']
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
+    elif page=="myprofile":
+        return redirect(url_for('profile.my_profile'))
+    return redirect(url_for('feedback.public_profile',user_id=seller))
 
 @bp.route('/sellerfeedback/upvote', methods=['POST','GET'])
 def upvote_seller_review():
-    if request.method == 'POST':
-        reviewer =  int(request.form['reviewer'])
-        seller = int(request.form['seller'])
-        SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
-    return redirect(url_for('feedback.seller_personal',seller_id=seller))
+    reviewer =  int(request.form['reviewer'])
+    seller = int(request.form['seller'])
+    SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
+    page = request.form['page']
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
+    elif page=="myprofile":
+        return redirect(url_for('profile.my_profile'))
+    return redirect(url_for('feedback.public_profile',user_id=seller))
         
-@bp.route('/public_profile/<int:seller_id>', methods=['POST','GET'])
-def seller_personal(seller_id):
+@bp.route('/public_profile/<int:user_id>', methods=['POST','GET'])
+def public_profile(user_id):
     summary = None
-    sfeedback = SellerFeedback.get_by_sid(seller_id)
+    sfeedback = SellerFeedback.get_by_sid(user_id)
+    sorted_by_upvotes = SellerFeedback.sorted_by_upvotes(user_id)
     supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+    top3 = []
+    count = 0
+    for item in sorted_by_upvotes: 
+        top3.append(item)
+        count += 1 
+        if count == 3: break
     myupvotes = {}
     if current_user.is_authenticated: 
         # whether the current logged-in user has purchased from this seller before 
-        has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+        has_purchased  = SellerFeedback.has_purchased(current_user.id,user_id)
         if has_purchased is not None: 
-            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, user_id)
         else: 
             # the user has not purchased from this seller before 
             has_purchased = False
@@ -226,24 +259,25 @@ def seller_personal(seller_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
-    a = Seller.has_products(seller_id) 
-    if(a):
-        summary = SellerFeedback.summary_ratings(seller_id)    
+    a = Seller.get(user_id)
+    if a is not None: 
+        if Seller.has_products(user_id):
+            summary = SellerFeedback.summary_ratings(user_id)    
   
-    info = Seller.find(seller_id)
-    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(seller_id)
-    feedback_for_products = ProductFeedback.user_summary_ratings(seller_id)
+    info = Seller.find(user_id)
+    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(user_id)
+    feedback_for_products = ProductFeedback.user_summary_ratings(user_id)
     return render_template('publicProfile.html',
                             sfeedback=sfeedback,
                             supvotes=supvotes,
                             myupvotes=myupvotes,
                             summary=summary,
-                            seller_id=seller_id,
+                            user_id=user_id,
+                            top3=top3,
                             first_name = info[2],
                             last_name = info[3],
                             email = info[1],
                             humanize_time=humanize_time,
-                            has_products = a,
                             has_purchased = has_purchased,
                             my_seller_feedback=my_seller_feedback,
                             feedback_for_other_sellers=feedback_for_other_sellers,

@@ -74,5 +74,16 @@ class Messages:
         )
         return [Messages(*row) for row in rows]
     
+    @staticmethod 
+    def new_message(myid,otherid,date_time,msg):
+        app.db.execute('''
+        INSERT INTO Messages VALUES (:myid, :otherid, :date_time, :msg)  
+        ''',
+        myid=myid,
+        otherid=otherid,
+        date_time=date_time,
+        msg=msg
+        )
+    
 
     

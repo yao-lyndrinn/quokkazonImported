@@ -15,7 +15,7 @@
 
 <form action="{{ url_for('feedback.product_remove_feedback',product_id=item.pid) }}"
                 method="POST">
-                <input type="submit" value="Delete"/> 
+                <input type="submit" value="Delete" style="background-color: darkred; color: #ffffff"/> 
 </form>
 <br>
 
@@ -41,7 +41,7 @@
 <form action="{{ url_for('feedback.product_remove_review') }}"
 method="POST">
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
-    <input type="submit" value="Delete Review"/> 
+    <input type="submit" value="Delete Review" style="background-color: darkred; color: #ffffff"/> 
 </form>
 <br><br>
 </body>
@@ -56,7 +56,7 @@ method="POST">
 <form action="{{ url_for('feedback.seller_remove_feedback') }}"
                 method="POST">
                 <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
-                <input type="submit" value="Delete"/> 
+                <input type="submit" value="Delete" style="background-color: darkred; color: #ffffff"/> 
 </form>
 <p>Time Updated: {{item.date_time}}</p>
 <p><b>Current Rating</b>: {{item.rating}} <br>  
@@ -79,7 +79,7 @@ method="POST">
 <form action="{{ url_for('feedback.seller_remove_review',seller_id=item.sid) }}"
 method="POST">
     <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
-    <input type="submit" value="Delete Review"/> 
+    <input type="submit" value="Delete Review" style="background-color: darkred; color: #ffffff"/> 
 </form>
 </body>
 {% endfor %}

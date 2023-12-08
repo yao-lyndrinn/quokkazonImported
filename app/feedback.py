@@ -96,7 +96,7 @@ def product_remove_feedback(product_id):
     if request.method == 'POST': 
         ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback'))
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():
@@ -259,9 +259,10 @@ def public_profile(user_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
-    a = Seller.has_products(user_id) 
-    if(a):
-        summary = SellerFeedback.summary_ratings(user_id)    
+    a = Seller.get(user_id)
+    if a is not None: 
+        if Seller.has_products(user_id):
+            summary = SellerFeedback.summary_ratings(user_id)    
   
     info = Seller.find(user_id)
     feedback_for_other_sellers = SellerFeedback.user_summary_ratings(user_id)
@@ -277,7 +278,6 @@ def public_profile(user_id):
                             last_name = info[3],
                             email = info[1],
                             humanize_time=humanize_time,
-                            has_products = a,
                             has_purchased = has_purchased,
                             my_seller_feedback=my_seller_feedback,
                             feedback_for_other_sellers=feedback_for_other_sellers,

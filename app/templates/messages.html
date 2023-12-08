@@ -17,6 +17,7 @@
       } 
     } 
   </script> 
+{% if current_user.is_authenticated %}
 
 <div class="page-div">
     <h2>Message Thread with 
@@ -62,9 +63,16 @@
       <form action="{{ url_for('messages.new_message') }}" method="POST">
         <label id="message">New Message:</label>
         <br>
-        <textarea id="message" name="message" rows="4" cols="50"></textarea>
+        <input type="hidden" id="other_user" name="other_user" value="{{other_user}}">
+        <textarea id="message" name="message" rows="4" cols="50" REQUIRED></textarea>
         <input type="submit" value="Submit"> 
         </form>
         </div>
     </div>
+
+    {% else %}
+    <div class="page-div">
+    <p>Log in to see your messages!</p>
+    </div>
+    {% endif %}
 {% endblock %}

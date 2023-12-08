@@ -5,9 +5,14 @@ from humanize import naturaltime
 import datetime
 from collections import defaultdict
 import os, random
+import pandas as pd
+import plotly
+import plotly.express as px
+import json
 
 from .models.product import Product, ProductRating
 from .models.feedback import ProductFeedback, SellerFeedback
+from .models.purchase import Purchase
 from .models.inventory import Inventory
 from .models.stock import Stock
 from .models.category import Category
@@ -17,6 +22,7 @@ from flask import Blueprint
 
 bp = Blueprint('products', __name__)
 
+MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
@@ -62,6 +68,16 @@ def product_detail(product_id):
         # which reviews the current user has upvoted 
         for reviewer,reviewed in pupvotes: 
             myupvotes[(reviewer,reviewed)] = ProductFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
+        
+        sid = Seller.get(current_user.id)
+        if sid and Inventory.in_inventory(current_user.id, product_id):
+            # Graph for orders over time
+            orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id, product_id)]
+            of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
+            of_fig = px.line(of_df, x='Month',y='Count',title='Number of orders from me per month')
+            order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        else:
+            order_freq_graph = None
     else: 
         my_product_feedback, has_purchased = False, False
     return render_template('productDetail.html',
@@ -76,7 +92,8 @@ def product_detail(product_id):
                            has_purchased=has_purchased,
                            humanize_time=humanize_time,
                            inventory=inventory,
-                           inv_len = inv_len)
+                           inv_len = inv_len,
+                           order_freq_graph=order_freq_graph)
 
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])

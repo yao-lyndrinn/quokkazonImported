@@ -25,6 +25,16 @@ class Inventory:
         WHERE pid = :pid
         ''', pid=pid)
         return [Inventory(*row) for row in rows]
+    
+    @staticmethod
+    def in_inventory(sid, pid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Inventory
+        WHERE sid = :sid
+        AND pid = :pid 
+        ''', sid=sid, pid=pid)
+        return len(rows) > 0
 
     @staticmethod
     def get_all():

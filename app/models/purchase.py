@@ -48,6 +48,7 @@ class Purchase:
             pid, count = row
             top_purchases.append(pid)
         return top_purchases
+    
     @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''
@@ -59,6 +60,106 @@ class Purchase:
                               sid=sid)
         return [Purchase(*row) for row in rows]
     
+    @staticmethod
+    def get_order_counts_by_sid(sid):
+        rows = app.db.execute('''
+        WITH ProductNames(pid, pname) AS
+        (SELECT pid, name FROM Products)
+        SELECT pid, pname, SUM(quantity) AS sum
+        FROM Purchases NATURAL JOIN ProductNames
+        WHERE sid = :sid
+        GROUP BY pid, pname
+        ORDER BY sum DESC
+        ''',
+                              sid=sid)
+        return rows
+    
+    @staticmethod
+    def get_num_orders_per_month(sid, pid=None):
+        today = datetime.date.today()
+        current_year = today.year
+        current_month = today.month
+        year_range = 3
+        if not pid:
+            rows = app.db.execute('''
+            WITH RECURSIVE months AS (
+                SELECT 1 AS month
+                UNION ALL
+                SELECT month+1 FROM months WHERE month+1 <= 12
+            ),
+            years AS (
+                SELECT :current_year-:year_range+1 AS year
+                UNION ALL
+                SELECT year+1 FROM years WHERE year+1 <= :current_year               
+            )
+            SELECT monthYears.month, monthYears.year, COALESCE(count,0)
+            FROM (
+                SELECT month, year, COUNT(order_id) AS count
+                FROM (
+                    SELECT sid, order_id, EXTRACT(MONTH FROM time_purchased) AS month, EXTRACT(YEAR FROM time_purchased) AS year
+                    FROM Purchases
+                ) AS OrderMonths
+                WHERE sid = :sid
+                GROUP BY month, year
+            ) AS OrderMonths
+            RIGHT JOIN (
+                SELECT month, year
+                FROM months CROSS JOIN years
+                ORDER BY year, month
+            ) AS monthYears
+            ON monthYears.month = OrderMonths.month
+            AND monthYears.year = OrderMonths.year
+            WHERE (monthYears.year = :current_year AND monthYears.month <= :current_month)
+            OR (monthYears.year = :current_year-:year_range AND monthYears.month > :current_month)
+            OR (monthYears.year < :current_year AND monthYears.year > :current_year-:year_range)
+            ORDER BY monthYears.year, monthYears.month
+            ''',
+                                sid=sid,
+                                current_year=current_year,
+                                current_month=current_month,
+                                year_range=year_range)
+        else:
+            rows = app.db.execute('''
+            WITH RECURSIVE months AS (
+                SELECT 1 AS month
+                UNION ALL
+                SELECT month+1 FROM months WHERE month+1 <= 12
+            ),
+            years AS (
+                SELECT :current_year-:year_range+1 AS year
+                UNION ALL
+                SELECT year+1 FROM years WHERE year+1 <= :current_year               
+            )
+            SELECT monthYears.month, monthYears.year, COALESCE(count,0)
+            FROM (
+                SELECT month, year, COUNT(order_id) AS count
+                FROM (
+                    SELECT sid, pid, order_id, EXTRACT(MONTH FROM time_purchased) AS month, EXTRACT(YEAR FROM time_purchased) AS year
+                    FROM Purchases
+                ) AS OrderMonths
+                WHERE sid = :sid
+                AND pid = :pid
+                GROUP BY month, year
+            ) AS OrderMonths
+            RIGHT JOIN (
+                SELECT month, year
+                FROM months CROSS JOIN years
+                ORDER BY year, month
+            ) AS monthYears
+            ON monthYears.month = OrderMonths.month
+            AND monthYears.year = OrderMonths.year
+            WHERE (monthYears.year = :current_year AND monthYears.month <= :current_month)
+            OR (monthYears.year = :current_year-:year_range AND monthYears.month > :current_month)
+            OR (monthYears.year < :current_year AND monthYears.year > :current_year-:year_range)
+            ORDER BY monthYears.year, monthYears.month
+            ''',
+                                sid=sid,
+                                pid=pid,
+                                current_year=current_year,
+                                current_month=current_month,
+                                year_range=year_range)
+        return rows
+
     @staticmethod
     def fulfill(uid, sid, pid, order_id, date_fulfilled):
         try:

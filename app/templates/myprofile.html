@@ -35,7 +35,8 @@
         <button button style="margin:10px;" name=update_info>Register as Seller</button>
     </form>
     {% else %}
-
+      <div id='orderCountGraph' class='chart'></div>
+      <div id='orderFreqGraph' class='chart'></div>
     {% if summary %}
     <hr>
     <p style="color:#804a03;"><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
@@ -115,6 +116,17 @@
   {% endif %}
     {% endif %}
 </body>
+
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var orderCountGraph = {{ order_count_graph | safe }};
+  var orderFreqGraph = {{ order_freq_graph | safe }};
+  var config = {staticPlot: true}
+  Plotly.setPlotConfig(config);
+  Plotly.plot('orderCountGraph',orderCountGraph);
+  Plotly.plot('orderFreqGraph',orderFreqGraph);
+</script>
+
 </html>
 {% else %}
 <p>User is not authenticated.</p>

@@ -50,7 +50,7 @@ method="POST">
 
 <!-- Seller Feedback Editing Page -->
 {% for item in sfeedback %}
-<a style="color:grey;" href="{{ url_for('feedback.seller_personal',seller_id=item.sid) }}"> < Seller Profile</a>
+<a style="color:grey;" href="{{ url_for('feedback.public_profile',user_id=item.sid) }}"> < Seller Profile</a>
 
 <h3>My Feedback for Seller {{item.sid}}: {{item.name}}</h3>
 <form action="{{ url_for('feedback.seller_remove_feedback') }}"

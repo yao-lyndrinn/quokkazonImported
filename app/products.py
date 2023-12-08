@@ -40,6 +40,16 @@ def deactivate_session(response):
 
 @bp.route('/products/<int:product_id>',methods = ['GET','POST'])
 def product_detail(product_id):
+    if 'recent' not in session:
+        session['recent'] = []  # 
+    recent_list = session['recent']
+    if len(recent_list) < 4:
+        recent_list.insert(0, product_id)
+    else:
+        recent_list.pop()
+        
+    session['recent'] = recent_list
+    
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)

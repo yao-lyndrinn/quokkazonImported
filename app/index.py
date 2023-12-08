@@ -69,7 +69,11 @@ def index():
     else:
         purchases = None
 
-        
+    recent = session.get('recent')
+    recently_viewed = []
+    for pid in recent:
+        recently_viewed.append(Product.get(pid))
+    print("THESE ARE RECENT", recent)
     # render the page by adding information to the index.html file
     return render_template('index.html',
                         avail_products=top_all,
@@ -80,5 +84,6 @@ def index():
                         is_seller=Seller.is_seller(current_user),
                         product_prices=product_prices,
                         rows=rows,
-                        categories=sorted_categories)
+                        categories=sorted_categories,
+                        recent=recently_viewed)
     

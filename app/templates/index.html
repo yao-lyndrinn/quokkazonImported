@@ -95,6 +95,46 @@
     {% endif %}
   {% endfor %}
 </div>
+</br></br>
+<h2> Recently Viewed: </h2>
+<div class="card-container">
+  {% for product in recent %}
+    <div class="card">
+      <div class="card-body">
+        <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
+        <h5 class="card-title">Product ID: {{ product.pid }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <a href="{{ url_for('products.product_detail',product_id=product.pid) }}">{{ product.name }}</a>
+        </h6>
+        <p class="card-text">
+          {% if product.pid in product_prices %}
+            {% for price in product_prices[product.pid] %}
+              ${{ price }}<br>
+            {% endfor %}
+          {% else %}
+            Not in stock
+          {% endif %}
+          {% if product.pid in summary %}
+            <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
+          {% endif %}
+        </p>
+        {% if current_user.is_authenticated %}
+          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="Add to Wishlist">
+          </form>
+          {% if is_seller%}
+          <form action="{{ url_for('inventory.add', product_id=product.pid) }}" method="POST">
+            <input type="submit" value="Add to Inventory"/> 
+          </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% if loop.index % 4 == 0 %}
+      <div class="clearfix"></div> <!-- Add clearfix every 4 cards to start a new row -->
+    {% endif %}
+  {% endfor %}
+</div>
 
 <br><br>
 {% if current_user.is_authenticated %}

@@ -29,7 +29,7 @@ def humanize_time(dt):
 def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
-    order_count_graph, order_freq_graph = None, None
+    order_count_graph, order_freq_graph, ratings_graph = None, None, None
     supvotes = {}
     myupvotes = {}
     summary = None
@@ -50,6 +50,32 @@ def my_profile():
         of_fig = px.line(of_df, x='Month',y='Count',title='Total number of orders per month')
         order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+        # Graph for average seller rating over time
+        num_ratings, sum, avg_ratings = 0, 0, []
+        ratings_freq = SellerFeedback.get_seller_ratings(current_user.id)
+        m = ratings_freq[0][0]
+        y = ratings_freq[0][1]
+        print(m, y)
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+        while m <= 12 and y < current_year or m <= current_month and y == current_year:
+            i = 0
+            while i < len(ratings_freq) and ratings_freq[i][0] == m and ratings_freq[i][1] == y:
+                sum += ratings_freq[i][2]
+                num_ratings += 1
+                ratings_freq.pop(0)
+                i += 1
+            avg_ratings.append([f'{MONTHS[int(m)-1]} {y}', float(sum/num_ratings)])
+            m += 1
+            if i == ratings_freq:
+                break
+            elif m > 12:
+                m = 1
+                y += 1
+        rt_df = pd.DataFrame(avg_ratings, columns=['Month','Count'])
+        rt_fig = px.line(rt_df, x='Month',y='Count',title='Avg rating over time')
+        ratings_graph = json.dumps(rt_fig, cls=plotly.utils.PlotlyJSONEncoder)
+
         sfeedback = SellerFeedback.get_by_sid(current_user.id)
         for item in sfeedback:
             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
@@ -65,6 +91,7 @@ def my_profile():
                            title='My Profile',
                            order_count_graph=order_count_graph,
                            order_freq_graph=order_freq_graph,
+                           ratings_graph=ratings_graph,
                            sfeedback = sfeedback,
                            supvotes=supvotes,
                            my_supvotes=myupvotes,

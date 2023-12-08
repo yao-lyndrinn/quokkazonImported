@@ -8,7 +8,7 @@ class ProductFeedback:
         self.rating = rating
         self.review = review
         self.date_time = date_time
-
+    
     def summary_ratings(pid): 
         info = app.db.execute('''
         SELECT COUNT(f.rating), AVG(f.rating)
@@ -48,7 +48,7 @@ class ProductFeedback:
         ''',
         uid=uid)
         return [ProductFeedback(*row) for row in rows]
-    
+
     # get all feedback for a given product 
     @staticmethod
     def get_by_pid(pid):
@@ -457,3 +457,14 @@ class SellerFeedback:
         else: 
             return rows
 
+    # get seller's ratings
+    @staticmethod
+    def get_seller_ratings(sid):
+        rows = app.db.execute('''
+        SELECT EXTRACT(MONTH FROM date_time) AS m, EXTRACT(YEAR FROM date_time) AS y, rating
+        FROM SellerFeedback
+        WHERE sid = :sid
+        ORDER BY y, m
+        ''',
+        sid=sid)
+        return rows

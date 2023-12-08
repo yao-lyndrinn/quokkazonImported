@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
+<header class="banner-header">
+    <a href="{{ url_for('userlookup.lookup') }}" type="button" class="btn tab-banner">User Lookup</a>
+    {% if current_user.is_authenticated%}
+    {% if is_seller%}
+      <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn tab-banner">My Orders</a>
+      <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn tab-banner">My Inventory</a>
+      
+    {% endif %}
+    <a href="{{ url_for('feedback.my_feedback',uid=current_user.id) }}" type="button" class="btn tab-banner">My Feedback</a>
+    <a href="{{ url_for('messages.my_messages') }}" type="button" class="btn tab-banner">My Messages</a>
+    <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn tab-banner">My Profile</a>
+     {% endif %}
+  </header>
 {% if current_user.is_authenticated and is_seller %}
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
@@ -13,7 +26,7 @@
         // initialize a DataTable sorted by the 'Order Placed' column 
         // in reverse chronological order by default. Break ties alphabetically by order id. 
         new DataTable($('#sortable'), {
-        order: [[4, 'desc'],[0,'asc']]
+        order: []
       });
       })
     </script>
@@ -31,7 +44,11 @@
         </thead>
         <tbody>
             {% for order in orders %}
+            {% if not order.date_fulfilled %}
+            <tr style="background-color: #FFBFB2">
+            {% else %}
             <tr>
+            {% endif %}
                 <td>{{ order.order_id }}</td>
                 <td>{{ user_class.get(order.uid).firstname + ' ' + user_class.get(order.uid).lastname}}<br>
                     {{ user_class.get(order.uid).email }}<br>

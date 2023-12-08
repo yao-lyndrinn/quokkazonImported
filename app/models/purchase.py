@@ -55,7 +55,7 @@ class Purchase:
         SELECT *
         FROM Purchases
         WHERE sid = :sid
-        ORDER BY time_purchased DESC
+        ORDER BY CASE WHEN date_fulfilled IS NULL THEN 0 ELSE 1 END, time_purchased DESC
         ''',
                               sid=sid)
         return [Purchase(*row) for row in rows]

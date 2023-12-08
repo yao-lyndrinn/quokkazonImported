@@ -122,12 +122,12 @@
     {% if not my_product_feedback %}
     <form action="{{ url_for('feedback.product_submission_form', product_id=product.pid,name=product.name) }}"
     method="POST">
-    <input type="submit" value="Leave feedback for this product"/> 
+    <input type="submit" value="Leave feedback for this product" style="background-color: darkred; color: #ffffff"/> 
     </form>
     {% else %}
     <form action="{{ url_for('feedback.product_feedback_edit', product_id=product.pid) }}"
     method="POST">
-    <input type="submit" value="Manage my feedback for this product"/> 
+    <input type="submit" value="Manage my feedback for this product" style="background-color: #137a56; color: #ffffff"/> 
     </form>
     {% endif %}
     {% endif %}

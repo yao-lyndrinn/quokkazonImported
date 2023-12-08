@@ -30,12 +30,11 @@ def message_thread(other_user):
                         other_user_name=other_user_name,
                         humanize_time=humanize_time)
 
-@bp.route('/new_message/<int:other_user>', methods=['POST','GET'])
-def message_thread(other_user):
-    messages = Messages.message_thread(current_user.id,other_user)
-    other_user_name = SellerFeedback.get_name(other_user)
-    return render_template('messages.html',
-                        messages=messages,
-                        other_user=other_user,
-                        other_user_name=other_user_name,
-                        humanize_time=humanize_time)
+@bp.route('/new_message', methods=['POST','GET'])
+def new_message():
+    other_user = int(request.form['other_user'])
+    msg = request.form['message']
+    current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    messages = Messages.new_message(current_user.id,other_user,current_dateTime,msg)
+    return redirect(url_for('messages.message_thread',other_user=other_user))
+

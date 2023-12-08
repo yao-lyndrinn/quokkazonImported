@@ -3,5 +3,8 @@
 {% block content %}
 <div class="page-div">
     <h2>My Message Thread</h2>
+    {{% for item in messages %}}
+        <p>{{item.msg}}</p>
+    {{% endfor %}}
 </div>
 {% endblock%}

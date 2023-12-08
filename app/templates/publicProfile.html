@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-div">
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
@@ -115,4 +116,5 @@
 {% else %}
 <p style="color:#804a03";><b>This user is not a seller.</b></p>
 {% endif %}
+</div>
 {% endblock %}

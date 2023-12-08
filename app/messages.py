@@ -14,7 +14,15 @@ def humanize_time(dt):
 
 @bp.route('/my_message_history', methods=['POST','GET'])
 def my_messages():
-    messages = Messages.get_by_sender(current_user.id)
+    interacted = Messages.has_message(current_user.id)
+    print(interacted)
     return render_template('mymessages.html',
+                        interacted=interacted,
+                        humanize_time=humanize_time)
+
+@bp.route('/my_message_history/<int:other_user>', methods=['POST','GET'])
+def message_thread(other_user):
+    messages = Messages.get_by_uid(current_user.id)
+    return render_template('messages.html',
                         messages=messages,
                         humanize_time=humanize_time)

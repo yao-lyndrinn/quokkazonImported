@@ -8,31 +8,51 @@ class Messages:
         self.rname = rname
         self.date_time = date_time
         self.msg = msg 
-        
-    @staticmethod
-    def get_by_sender_receiver(sender, receiver):
-        # sorted in chronological order 
-        rows = app.db.execute('''
-        SELECT s.id, (s.firstname || ' ' || s.lastname), r.id, (r.firstname || ' ' || r.lastname), m.msg 
-        FROM Users as s, Users as r, Messages as m  
-        WHERE s.id = :sender 
-        AND r.id = :receiver
-        AND m.sender = :sender
-        AND m.receiver = :receiver
-        ORDER BY f.date_time 
-        ''',
-        sender=sender,
-        receiver=receiver)
-        return [Messages(*row) for row in rows]
-
+    
     @staticmethod 
-    def get_by_sender(sender):
+    def has_message(uid):
+        # get the uid and names of the users who have either messaged the current user 
+        # or received a message from the current user 
         rows = app.db.execute('''
-        SELECT s.id, (s.firstname || ' ' || s.lastname), r.id, (r.firstname || ' ' || r.lastname), m.msg 
-        FROM Users as s, Messages as m  
-        WHERE s.id = :sender 
-        AND m.sender = :sender
-        ORDER BY f.date_time 
+        WITH receivers AS ( 
+            SELECT m.receiver AS id,MAX(m.date_time) AS date_time
+            FROM Messages as m 
+            WHERE m.sender = :uid
+            GROUP BY m.receiver
+        ), senders AS (
+            SELECT m.sender AS id,MAX(m.date_time) AS date_time
+            FROM Messages as m
+            WHERE m.receiver = :uid
+            GROUP BY m.sender
+        )
+        SELECT DISTINCT u.id, (u.firstname || ' ' || u.lastname),MAX(m.date_time)
+        FROM (SELECT * FROM receivers UNION SELECT * FROM senders) AS m, Users as u
+        WHERE u.id = m.id
+        GROUP BY u.id, (u.firstname || ' ' || u.lastname)
         ''',
-        sender=sender)
+        uid=uid)
+        # rows[0] is the id of the user with whom the current user has interacted with 
+        # rows[1] is the name of the user with id equal to rows[0]
+        # rows[2] is the timestamp of the most recent interaction with that user 
+        return rows
+    
+    @staticmethod 
+    def get_by_uid(uid):
+        rows = app.db.execute('''
+        WITH my_messages AS (
+            SELECT m.sender, m.receiver, m.date_time, m.msg
+            FROM Messages as m 
+            WHERE m.sender = :uid
+            OR m.receiver = :uid
+        )
+        SELECT s.id, (s.firstname || ' ' || s.lastname), r.id, (r.firstname || ' ' || r.lastname), m.date_time, m.msg 
+        FROM Users as s, Users as r, my_messages as m  
+        WHERE s.id = m.sender
+        AND r.id = m.receiver 
+        ORDER BY m.date_time   
+        ''',
+        uid=uid)
         return [Messages(*row) for row in rows]
+    
+
+    

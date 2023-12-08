@@ -3,9 +3,7 @@
 {% block content %}
 {% if current_user.is_authenticated and is_seller %}
 <br>
-<div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-    <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-dark">My Inventory</a>
-</div>
+<div class="page-div">
     <h2>My Orders:</h2>
   
     <script>
@@ -36,6 +34,9 @@
                 <td>{{ user_class.get(order.uid).firstname + ' ' + user_class.get(order.uid).lastname}}<br>
                     {{ user_class.get(order.uid).email }}<br>
                     {{ user_class.get(order.uid).address }}
+                    <form action="{{ url_for('messages.message_thread',other_user=order.uid) }}" method="POST">
+                        <input type="submit" value="Message" > 
+                      </form>
                 </td>
                 <td><a href="{{ url_for('products.product_detail',product_id=order.pid,option=0) }}">{{ product_class.get(order.pid).name }}</a></td>
                 <td>{{ order.quantity }}</td>
@@ -56,8 +57,9 @@
             {% endfor %}
         </tbody>
     </table>
+    
 {% else %}
     <br><br><p align="center">Only sellers can view their orders!</p>
 {% endif %}
-
+</div>
 {% endblock %}

@@ -56,6 +56,7 @@ def product_detail(product_id):
     seller_names = {}
     seller_summary = {}
     order_freq_graph = None
+    sid = None
     for seller in inventory: 
         # get the name of the seller 
         seller_names[seller.sid] = SellerFeedback.get_name(seller.sid)
@@ -110,7 +111,8 @@ def product_detail(product_id):
                            humanize_time=humanize_time,
                            inventory=inventory,
                            inv_len = inv_len,
-                           order_freq_graph=order_freq_graph)
+                           order_freq_graph=order_freq_graph,
+                           is_seller=sid)
 
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])

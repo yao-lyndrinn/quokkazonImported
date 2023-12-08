@@ -23,6 +23,10 @@
             border: 2px solid #804a03; /* Adds a brown outline */
             padding: 8px;
         }
+        .card-container {
+            border: 2px solid #804a03; /* Adds a brown outline */
+            padding: 8px;
+        }
     </style>
 
 <body>
@@ -43,50 +47,26 @@
 </html>
 
 </div>
-{% if search_term == "" %}
+{% if search_term2 == "" %}
     <p style= "margin-top: 10px; padding-left: 25px">Showing all {{len_users}} Users</p>
 {% else %}
-    <p style= "margin-top: 10px; padding-left: 25px">Showing {{len_users}} search results for "{{search_term}}"</p>
+    <p style= "margin-top: 10px; padding-left: 25px">Showing {{len_users}} search results for "{{search_term2}}"</p>
 {% endif %}
 <h2>Search Results:</h2>
-<!-- <div class="card-container">
-    {% for product in s %}
+<div class="card-container">
+    {% for user in all_users %}
       <div class="card">
         <div class="card-body">
-          <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
-          <h5 class="card-title">Product ID: {{ product.pid }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">
-            <a href="{{ url_for('products.product_detail',product_id=product.pid) }}">{{ product.name }}</a>
+          <h6 class="card-title mb-2 text-muted">
+            <a href="{{ url_for('feedback.seller_personal', seller_id=user.id) }}">{{ user.firstname }} {{user.lastname}}</a>
           </h6>
-          <p class="card-text">
-            {% if product.pid in product_prices %}
-              {% for price in product_prices[product.pid] %}
-                ${{ price }}<br>
-              {% endfor %}
-            {% else %}
-              Not in stock
-            {% endif %}
-            {% if product.pid in summary %}
-            <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
-            {% endif %}
-          </p>
-          {% if current_user.is_authenticated %}
-            <form action="{{ url_for('wishlist.wishlist_add', product_id=product.pid) }}" method="POST">
-              <input type="submit" value="Add to Wishlist">
-            </form>
-            {% if is_seller%}
-            <form action="{{ url_for('inventory.add', product_id=product.pid) }}" method="POST">
-              <input type="submit" value="Add to Inventory"/> 
-            </form>
-            {% endif %}
-          {% endif %}
         </div>
       </div>
       {% if loop.index % 4 == 0 %}
         <div class="clearfix"></div> 
       {% endif %}
     {% endfor %}
-  </div> -->
+  </div>
 
 </div>
   <div class = "pagination" >

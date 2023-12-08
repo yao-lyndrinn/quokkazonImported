@@ -56,21 +56,17 @@ def my_profile():
         ratings_freq = SellerFeedback.get_seller_ratings(current_user.id)
         m = ratings_freq[0][0]
         y = ratings_freq[0][1]
-        print(m, y)
         current_year = datetime.datetime.now().year
         current_month = datetime.datetime.now().month
+        i = 0
         while m <= 12 and y < current_year or m <= current_month and y == current_year:
-            i = 0
-            while i < len(ratings_freq) and ratings_freq[i][0] == m and ratings_freq[i][1] == y:
-                sum += ratings_freq[i][2]
+            while len(ratings_freq) > 0 and ratings_freq[0][0] == m and ratings_freq[0][1] == y:
+                sum += ratings_freq[0][2]
                 num_ratings += 1
                 ratings_freq.pop(0)
-                i += 1
             avg_ratings.append([f'{MONTHS[int(m)-1]} {y}', float(sum/num_ratings)])
             m += 1
-            if i == ratings_freq:
-                break
-            elif m > 12:
+            if m > 12:
                 m = 1
                 y += 1
         rt_df = pd.DataFrame(avg_ratings, columns=['Month','Count'])

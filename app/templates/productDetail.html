@@ -3,8 +3,6 @@
 
 {% block content %}
 <div class="page-div">
-<br>
-<a style="color:grey;" href="{{ url_for('products.search_results', page=p, search_term=search_term) }}"> < Back to results</a>
 
 <br>
 <section id="product-info">
@@ -81,6 +79,12 @@
                             
                             <input type="submit" value="Add to Cart"/>
                         </form>
+                        <form action="{{ url_for('cart.cart_add')}}" method="POST">
+                          <input type="hidden" name="product_id" value="{{ i.pid }}"/>
+                          <input type="hidden" name="seller_id" value="{{ i.sid }}"/>
+                          <input type="hidden" name="saved_for_later" value="1"/>
+                          <input type="submit" value="Save for Later"/>
+                      </form>
                     {% endfor %}
                     {% else %}
                     {% for i in inventory %}          
@@ -97,7 +101,10 @@
                     
                 {% endif %}
             </div>
-
+            <br>
+            {% if order_freq_graph %}
+              <div id='orderFreqGraph' class='chart'></div>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -183,5 +190,13 @@
     </tbody>
   </table>
   </div>
-</div>
+
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+    var orderFreqGraph = {{ order_freq_graph | safe }};
+    var config = {staticPlot: true}
+    Plotly.setPlotConfig(config);
+    Plotly.plot('orderFreqGraph',orderFreqGraph);
+  </script>
+
 {% endblock %}

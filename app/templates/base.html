@@ -7,10 +7,13 @@
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sale.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+
 </head>
 
 <script>
@@ -71,5 +74,32 @@
     {% block content %}{% endblock %}
   </div>
 </body>
+<footer class="site-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <h6>About</h6>
+        <p class="text-justify">Quokkazon.com <i>WE LOVE QUOKKAS</i> A supportive and lively marketplace for all things Quokkas. For quokka lovers and enthusiasts. For quokkas themselves.</p>
+      </div>
+
+      <div class="col-xs-6 col-md-3">
+        <h6>Quick Links</h6>
+        <ul class="footer-links">
+          <li><a href="https://sites.duke.edu/compsci_316d_001_f23/schedule/">CS316 Website</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-sm-6 col-xs-12">
+        <p class="copyright-text">Copyright &copy; 2023 All Rights Reserved by 
+     <a href="#">Quokkazon</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
 
 </html>

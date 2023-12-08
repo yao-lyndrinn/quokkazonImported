@@ -7,12 +7,18 @@ bp = Blueprint('profile', __name__)
 
 from .models.seller import Seller
 from .models.feedback import SellerFeedback
+from .models.purchase import Purchase
+from .models.product import Product
 
 from humanize import naturaltime
 import datetime
-
+import pandas as pd
+import plotly
+import plotly.express as px
+import json
 from .models.user import User
 
+MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
@@ -23,6 +29,7 @@ def humanize_time(dt):
 def my_profile():
     a = Seller.get(current_user.id)
     sfeedback = None
+    order_count_graph, order_freq_graph = None, None
     supvotes = {}
     myupvotes = {}
     summary = None
@@ -30,6 +37,19 @@ def my_profile():
         is_seller = False
     else:
         is_seller = True
+
+        # Graph for top selling products by count
+        order_counts = Purchase.get_order_counts_by_sid(current_user.id)
+        oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
+        oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top selling products', text_auto=True, color_discrete_sequence=['#8E7618'])
+        order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        # Graph for orders over time
+        orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id)]
+        of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
+        of_fig = px.line(of_df, x='Month',y='Count',title='Total number of orders per month')
+        order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
+
         sfeedback = SellerFeedback.get_by_sid(current_user.id)
         for item in sfeedback:
             supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
@@ -43,6 +63,8 @@ def my_profile():
     return render_template('myprofile.html',
                             is_seller = is_seller,
                            title='My Profile',
+                           order_count_graph=order_count_graph,
+                           order_freq_graph=order_freq_graph,
                            sfeedback = sfeedback,
                            supvotes=supvotes,
                            my_supvotes=myupvotes,

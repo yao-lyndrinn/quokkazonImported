@@ -48,6 +48,7 @@ class Purchase:
             pid, count = row
             top_purchases.append(pid)
         return top_purchases
+    
     @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''
@@ -59,6 +60,106 @@ class Purchase:
                               sid=sid)
         return [Purchase(*row) for row in rows]
     
+    @staticmethod
+    def get_order_counts_by_sid(sid):
+        rows = app.db.execute('''
+        WITH ProductNames(pid, pname) AS
+        (SELECT pid, name FROM Products)
+        SELECT pid, pname, SUM(quantity) AS sum
+        FROM Purchases NATURAL JOIN ProductNames
+        WHERE sid = :sid
+        GROUP BY pid, pname
+        ORDER BY sum DESC
+        ''',
+                              sid=sid)
+        return rows
+    
+    @staticmethod
+    def get_num_orders_per_month(sid, pid=None):
+        today = datetime.date.today()
+        current_year = today.year
+        current_month = today.month
+        year_range = 3
+        if not pid:
+            rows = app.db.execute('''
+            WITH RECURSIVE months AS (
+                SELECT 1 AS month
+                UNION ALL
+                SELECT month+1 FROM months WHERE month+1 <= 12
+            ),
+            years AS (
+                SELECT :current_year-:year_range+1 AS year
+                UNION ALL
+                SELECT year+1 FROM years WHERE year+1 <= :current_year               
+            )
+            SELECT monthYears.month, monthYears.year, COALESCE(count,0)
+            FROM (
+                SELECT month, year, COUNT(order_id) AS count
+                FROM (
+                    SELECT sid, order_id, EXTRACT(MONTH FROM time_purchased) AS month, EXTRACT(YEAR FROM time_purchased) AS year
+                    FROM Purchases
+                ) AS OrderMonths
+                WHERE sid = :sid
+                GROUP BY month, year
+            ) AS OrderMonths
+            RIGHT JOIN (
+                SELECT month, year
+                FROM months CROSS JOIN years
+                ORDER BY year, month
+            ) AS monthYears
+            ON monthYears.month = OrderMonths.month
+            AND monthYears.year = OrderMonths.year
+            WHERE (monthYears.year = :current_year AND monthYears.month <= :current_month)
+            OR (monthYears.year = :current_year-:year_range AND monthYears.month > :current_month)
+            OR (monthYears.year < :current_year AND monthYears.year > :current_year-:year_range)
+            ORDER BY monthYears.year, monthYears.month
+            ''',
+                                sid=sid,
+                                current_year=current_year,
+                                current_month=current_month,
+                                year_range=year_range)
+        else:
+            rows = app.db.execute('''
+            WITH RECURSIVE months AS (
+                SELECT 1 AS month
+                UNION ALL
+                SELECT month+1 FROM months WHERE month+1 <= 12
+            ),
+            years AS (
+                SELECT :current_year-:year_range+1 AS year
+                UNION ALL
+                SELECT year+1 FROM years WHERE year+1 <= :current_year               
+            )
+            SELECT monthYears.month, monthYears.year, COALESCE(count,0)
+            FROM (
+                SELECT month, year, COUNT(order_id) AS count
+                FROM (
+                    SELECT sid, pid, order_id, EXTRACT(MONTH FROM time_purchased) AS month, EXTRACT(YEAR FROM time_purchased) AS year
+                    FROM Purchases
+                ) AS OrderMonths
+                WHERE sid = :sid
+                AND pid = :pid
+                GROUP BY month, year
+            ) AS OrderMonths
+            RIGHT JOIN (
+                SELECT month, year
+                FROM months CROSS JOIN years
+                ORDER BY year, month
+            ) AS monthYears
+            ON monthYears.month = OrderMonths.month
+            AND monthYears.year = OrderMonths.year
+            WHERE (monthYears.year = :current_year AND monthYears.month <= :current_month)
+            OR (monthYears.year = :current_year-:year_range AND monthYears.month > :current_month)
+            OR (monthYears.year < :current_year AND monthYears.year > :current_year-:year_range)
+            ORDER BY monthYears.year, monthYears.month
+            ''',
+                                sid=sid,
+                                pid=pid,
+                                current_year=current_year,
+                                current_month=current_month,
+                                year_range=year_range)
+        return rows
+
     @staticmethod
     def fulfill(uid, sid, pid, order_id, date_fulfilled):
         try:
@@ -88,7 +189,7 @@ class Purchase:
         return [Purchase(*row) for row in rows]
 
     @staticmethod
-    def get_total_price_order(uid, order_id):
+    def get_total_price_order(uid, order_id): #sums up quantity * price
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT quantity * price FROM Purchases
@@ -100,11 +201,52 @@ class Purchase:
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
     
     @staticmethod
+    def get_fulfillment_status(uid, order_id):
+        fulfilled = True
+        #loops through date fulfilled to get overall order status
+        rows = app.db.execute('''
+        SELECT date_fulfilled
+        FROM Purchases
+        WHERE uid = :uid AND Purchases.order_id = :order_id
+        ''',
+                              uid=uid, order_id=order_id)
+        for row in rows:
+            if row[0] == None:
+                fulfilled = False
+        if fulfilled:
+            return "Fulfilled"
+        else:
+            return "Not fulfilled"
+
+    @staticmethod
     def get_unique_orders_by_uid(uid):
+        #returns orders, list of products, price, fulfillment status
         rows = app.db.execute('''
         SELECT DISTINCT order_id
         FROM Purchases
         WHERE uid = :uid
         ''',
                               uid=uid)
-        return [row[0] for row in rows]
+        unique_orders = []
+        for row in rows:
+            order_id = row[0]
+            total_price = Purchase.get_total_price_order(uid, order_id)
+            row_as_list = list(row) #make list so we can append results
+            row_as_list.append(Purchase.get_order_products(uid, order_id))
+            row_as_list.append(total_price)
+            row_as_list.append(Purchase.get_fulfillment_status(uid, order_id))
+            unique_orders.append(row_as_list)
+        return unique_orders
+
+    @staticmethod
+    def get_order_products(uid, order_id):
+        rows = app.db.execute('''
+        SELECT name, Products.pid
+        FROM PURCHASES, Products
+        WHERE uid = :uid AND order_id = :order_id AND Purchases.pid = Products.pid
+        ''', uid = uid, order_id=order_id)
+        name_list = []
+        for row in rows:
+            name_list.append([str(row[0]), row[1]])
+        #returns list of lists where inner list[0] is name, list[1] is id
+        return name_list

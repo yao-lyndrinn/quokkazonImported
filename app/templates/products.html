@@ -91,8 +91,18 @@
     {% if total_pages > 1%}
       {% if page > 1 %}
         <a id="page" href="{{ url_for('products.products', page=page-1)}}">Previous Page</a>
+        <a id="page" href="{{ url_for('products.products', page=1)}}">1</a>
+        <a style="color:#137a56">... </a>
       {% endif %}
-
+      {% if page-1 > 4 %}
+        {% for p in range(page-3, page) %}
+          {% if p == page %}
+            <span> {{ p }}</span>
+          {% else %}
+            <a id="page" href="{{ url_for('products.products', page=p)}}">{{ p }}</a>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
       {% for p in range(page, total_pages + 1) %}
         {% if p == page %}
           <span> {{ p }}</span>

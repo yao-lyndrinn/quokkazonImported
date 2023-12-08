@@ -86,6 +86,25 @@ class ProductFeedback:
         return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
+    def sorted_by_upvotes(pid):
+        rows = app.db.execute('''
+        WITH upvotes AS (
+            SELECT reviewer, Count(reviewer) AS votes
+            FROM UpvoteProductReview 
+            WHERE product = :pid 
+            GROUP BY reviewer  
+        )
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        FROM ProductFeedback as f, Users as u, upvotes as up 
+        WHERE f.pid = :pid
+        AND f.uid = u.id
+        AND up.reviewer = f.uid
+        ORDER BY up.votes DESC
+        ''',
+        pid=pid)
+        return [ProductFeedback(*row) for row in rows]
+    
+    @staticmethod
     def edit_rating(uid,pid,rating,time_updated):
         app.db.execute("""
         UPDATE ProductFeedback 

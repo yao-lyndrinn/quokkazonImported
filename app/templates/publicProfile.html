@@ -6,8 +6,11 @@
 <br>    
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
-  <p>This user has left an average rating of {{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers and an average rating of {{feedback_for_products[0]}} for {{feedback_for_products[1]}} products. </p>
-  <p>Click <a href="{{ url_for('feedback.my_feedback', uid=seller_id)}}">here</a> to see the feedback submitted by this user.</p>
+  <p>{{first_name}} has left an average rating of <b>{{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers</b> and an average rating of <b>{{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</b> </p>
+  <form action="{{ url_for('feedback.my_feedback', uid=seller_id) }}" method="POST">
+      <input type="submit" value="Ratings and Reviews Submitted by Erica" style="background-color:#137a56;color:#ffffff;"/> 
+  </form>
+  <br>
 {% if summary %}
   <p style="color:#804a03";><b>Seller's Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">
@@ -68,7 +71,7 @@
   })
 </script>
 
-
+<p><b>Feedback for {{first_name}}</b></p>
   <table class='table table-hover table-bordered container' id="sortable">
     <thead class="quokka-brown">
       <tr>
@@ -76,7 +79,7 @@
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
         <th scope="col">Upvotes for Review</th>
-        <th scope="col">Time Added or Updated</th>
+        <th scope="col">Last Updated</th>
       </tr>
     </thead>
     <tbody>

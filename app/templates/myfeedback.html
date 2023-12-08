@@ -18,9 +18,9 @@
     } 
   } 
 </script> 
-  
-{% if current_user.id == uid %}
 <div class="page-div">
+
+{% if current_user.id == uid %}
 <h2>My Feedback History</h2>
 {% else %}
 <h2><a href="{{ url_for('feedback.seller_personal', seller_id=uid)}}">{{name}}'s</a>
@@ -52,7 +52,7 @@
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
         <th scope="col">Upvotes for Review</th>
-        <th scope="col">Time Added or Updated</th>
+        <th scope="col">Last Updated</th>
         {% if current_user.id == uid %}
         <th scope="col"></th>
         {% endif %}
@@ -73,6 +73,12 @@
               method="POST">
                 <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
                 <input type="hidden" name="reviewed" value="{{ item.pid }}"/>
+                {% if current_user.id == uid %}
+                <input type="hidden" name="page" value="myfeedback"/>
+                {% else %}
+                <input type="hidden" name="page" value="publicfeedback"/>
+                <input type="hidden" name="uid" value="{{uid}}"/>
+                {% endif %}
                 <input type="submit" value="Upvoted &#8593;" style="background-color: #137a56; color: #ffffff"/> 
               </form>
               {% else %}
@@ -80,6 +86,12 @@
               method="POST">
                 <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
                 <input type="hidden" name="reviewed" value="{{ item.pid }}"/>
+                {% if current_user.id == uid%}
+                <input type="hidden" name="page" value="myfeedback"/>
+                {% else %}
+                <input type="hidden" name="page" value="publicfeedback"/>
+                <input type="hidden" name="uid" value="{{uid}}"/>
+                {% endif %}
                 <input type="submit" value="Upvote &#8593;" /> 
               </form>
               <br>
@@ -111,7 +123,7 @@
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
         <th scope="col">Upvotes for Review</th>
-        <th scope="col">Time Added or Updated</th>
+        <th scope="col">Last Updated</th>
         {% if current_user.id == uid %}
         <th scope="col"></th>
         {% endif %}
@@ -132,6 +144,12 @@
               method="POST">
                 <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
                 <input type="hidden" name="seller" value="{{ item.sid }}"/>
+                {% if current_user.id == uid%}
+                <input type="hidden" name="page" value="myfeedback"/>
+                {% else %}
+                <input type="hidden" name="page" value="publicfeedback"/>
+                <input type="hidden" name="uid" value="{{uid}}"/>
+                {% endif %}
                 <input type="submit" value="Upvoted &#8593;" style="background-color: #137a56; color: #ffffff"/> 
               </form>
               {% else %}
@@ -139,6 +157,12 @@
               method="POST">
                 <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
                 <input type="hidden" name="seller" value="{{ item.sid }}"/>
+                {% if current_user.id == uid%}
+                <input type="hidden" name="page" value="myfeedback"/>
+                {% else %}
+                <input type="hidden" name="page" value="publicfeedback"/>
+                <input type="hidden" name="uid" value="{{uid}}"/>
+                {% endif %}
                 <input type="submit" value="Upvote &#8593;" /> 
               </form>
               <br>

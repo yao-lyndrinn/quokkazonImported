@@ -111,15 +111,26 @@ def product_remove_review():
 def remove_upvote_product_review():
     reviewer =  int(request.form['reviewer'])
     product = int(request.form['reviewed'])
+    page = request.form['page']
     ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('products.product_detail',product_id=product))
 
 @bp.route('/productfeedback/upvote', methods=['POST','GET'])
 def upvote_product_review():
-    if request.method == 'POST':
-        reviewer =  int(request.form['reviewer'])
-        product = int(request.form['reviewed'])
-        ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
+    reviewer =  int(request.form['reviewer'])
+    product = int(request.form['reviewed'])
+    page = request.form['page']
+    ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('products.product_detail',product_id=product))
     
 
@@ -193,14 +204,25 @@ def remove_upvote_seller_review():
     reviewer =  int(request.form['reviewer'])
     seller = int(request.form['seller'])
     SellerFeedback.remove_my_upvote(current_user.id,reviewer,seller)
+    page = request.form['page']
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('feedback.seller_personal',seller_id=seller))
 
 @bp.route('/sellerfeedback/upvote', methods=['POST','GET'])
 def upvote_seller_review():
-    if request.method == 'POST':
-        reviewer =  int(request.form['reviewer'])
-        seller = int(request.form['seller'])
-        SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
+    reviewer =  int(request.form['reviewer'])
+    seller = int(request.form['seller'])
+    SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
+    page = request.form['page']
+    if page == "myfeedback":
+        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    elif page == "publicfeedback":
+        uid = int(request.form['uid'])
+        return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('feedback.seller_personal',seller_id=seller))
         
 @bp.route('/public_profile/<int:seller_id>', methods=['POST','GET'])

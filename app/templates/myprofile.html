@@ -19,13 +19,18 @@
     <div>
       <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
       <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
+      <a href="{{ url_for('feedback.my_feedback', uid=current_user.id)  }}" class="btn btn-dark">Manage My Feedback</a>
 </div>
+<br>
                 <p><strong>User ID:</strong> {{ current_user.id }}</p>
                 <p><strong>Balance:</strong> {{ current_user.balance }}</p>
                 <p><strong>Name: </strong> {{ current_user.firstname }} {{ current_user.lastname }}</p>
                 <p><strong>Email:</strong> {{ current_user.email }}</p>
                 <p><strong>Phone Number:</strong> {{ current_user.phone_number }}</p>
                 <p><strong>Address:</strong> {{ current_user.address }}</p>
+                <p><strong>Feedback for Sellers:</strong> You have left an average rating of <b>{{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers</b>.</p>
+                <p><strong>Feedback for Products:</strong> You have left an average rating of <b>{{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</b></p>
+
             </div>
         </div>
     </div>
@@ -37,25 +42,11 @@
     {% else %}
       <div id='orderCountGraph' class='chart'></div>
       <div id='orderFreqGraph' class='chart'></div>
-    {% if summary %}
+    
+  {% if summary %}
     <hr>
-    <p style="color:#804a03;"><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
-    <div class="star-rating">
-        {% if 1 <= summary[0] < 1.5 %}
-        <span>★</span>★★★★   
-        {% elif 1.5 <= summary[0] < 2.5 %}
-        <span>★★</span>★★★   
-        {% elif 2.5 <= summary[0] < 3.5 %}
-        <span>★★★</span>★★       
-        {% elif 3.5 <= summary[0] < 4.5 %}
-        <span>★★★★</span>★       
-        {% elif 4.5 <= summary[0] <= 5 %}
-        <span>★★★★★</span> 
-        {% else %}
-        ★★★★★
-        {% endif %}               
-    </div>
 
+  <!-- Feedback for you left by other users -->
     <!-- Show feedback table for this seller -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
@@ -68,7 +59,24 @@
     });
     })
     </script>
-
+  <p><b>Feedback for Me</b></p>
+  <p style="color:#804a03;">Average Rating By Other Users: {{summary[0]}} by {{summary[1]}} users</p>
+  <div class="star-rating">
+      {% if 1 <= summary[0] < 1.5 %}
+      <span>★</span>★★★★   
+      {% elif 1.5 <= summary[0] < 2.5 %}
+      <span>★★</span>★★★   
+      {% elif 2.5 <= summary[0] < 3.5 %}
+      <span>★★★</span>★★       
+      {% elif 3.5 <= summary[0] < 4.5 %}
+      <span>★★★★</span>★       
+      {% elif 4.5 <= summary[0] <= 5 %}
+      <span>★★★★★</span> 
+      {% else %}
+      ★★★★★
+      {% endif %}               
+  </div>
+  <br>
   <table class='table table-hover table-bordered container' id="sortable">
     <thead class="quokka-brown">
       <tr>
@@ -76,7 +84,7 @@
         <th scope="col">Rating</th>
         <th scope="col">Review</th>
         <th scope="col">Upvotes for Review</th>
-        <th scope="col">Time Added or Updated</th>
+        <th scope="col">Last Updated</th>
       </tr>
     </thead>
     <tbody>

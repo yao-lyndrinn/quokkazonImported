@@ -6,7 +6,7 @@ from flask import Blueprint
 bp = Blueprint('profile', __name__)
 
 from .models.seller import Seller
-from .models.feedback import SellerFeedback
+from .models.feedback import SellerFeedback, ProductFeedback
 from .models.purchase import Purchase
 from .models.product import Product
 
@@ -58,7 +58,8 @@ def my_profile():
         for reviewer,seller in supvotes: 
             myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
 
-
+    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(current_user.id)
+    feedback_for_products = ProductFeedback.user_summary_ratings(current_user.id)
     # The user information will be loaded from the current_user proxy
     return render_template('myprofile.html',
                             is_seller = is_seller,
@@ -70,6 +71,8 @@ def my_profile():
                            my_supvotes=myupvotes,
                            summary = summary,
                            current_user=current_user,
+                           feedback_for_other_sellers=feedback_for_other_sellers,
+                           feedback_for_products=feedback_for_products,
                            humanize_time=humanize_time)
 
 # Registers a user as a seller

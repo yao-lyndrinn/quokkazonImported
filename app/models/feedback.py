@@ -20,7 +20,7 @@ class ProductFeedback:
         num = info[0][0]
         avg = round(info[0][1],1)
         return (avg,num)
-
+    
     def user_summary_ratings(uid): 
         info = app.db.execute('''
         SELECT COUNT(f.rating), AVG(f.rating)

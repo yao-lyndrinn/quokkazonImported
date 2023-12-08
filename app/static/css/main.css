@@ -466,3 +466,7 @@ section {
     color: #555;
 }
 
+.chart {
+    display: inline-block;
+    width: 45vw;
+}

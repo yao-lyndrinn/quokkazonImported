@@ -31,7 +31,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return [CartItem(*row) for row in rows]
     
     @staticmethod
-    def get_total_price(uid):
+    def get_total_price(uid): #sums quantity * price to get total for cart
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
@@ -43,7 +43,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
     
     @staticmethod
-    def add_item(uid, sid, pid, quantity, saved_for_later):
+    def add_item(uid, sid, pid, quantity, saved_for_later): #new entry in cart
         rows = app.db.execute("""
         INSERT INTO CART(uid, sid, pid, quantity, saved_for_later)
         VALUES(:uid, :sid, :pid, :quantity, :saved_for_later)
@@ -56,7 +56,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
     
     @staticmethod
-    def remove_item(uid, sid, pid):
+    def remove_item(uid, sid, pid): #removes item from cart table
         rows = app.db.execute("""
         DELETE FROM CART
         WHERE uid = :uid AND sid = :sid AND pid = :pid
@@ -80,7 +80,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def submit(uid):
+    def submit(uid): #removes from cart table, is called along other fxns
         rows = app.db.execute("""
         DELETE FROM CART
         WHERE uid = :uid
@@ -89,7 +89,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def newOrderId(uid):
+    def newOrderId(uid): #ensures new order id is highest among this user
         rows = app.db.execute("""
         WITH orders(ids) AS (SELECT order_id
         FROM PURCHASES
@@ -98,7 +98,8 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         FROM orders
         """, uid = uid)
         return int(rows[0][0]+1) if rows and rows[0][0] is not None else 1
-    @staticmethod
+
+    @staticmethod #called along submit to put info from cart as a new purchase
     def newPurchase(uid, sid, pid, order_id, quantity, price, date_fulfilled):
         rows = app.db.execute("""
         INSERT INTO PURCHASES(uid, sid, pid, order_id, quantity, price, date_fulfilled)
@@ -108,7 +109,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
     
     @staticmethod
-    def get_all_sids(uid):
+    def get_all_sids(uid): #find each seller for items in cart
         rows = app.db.execute('''
         SELECT DISTINCT sid
         FROM Cart
@@ -117,7 +118,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return [row[0] for row in rows]
 
     @staticmethod
-    def increase_balances(sids, uid):
+    def increase_balances(sids, uid): #update user balance for each seller id in cart
         for sid in sids:
             rows = app.db.execute('''
             WITH C(total) AS
@@ -130,7 +131,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def decrease_balance(uid):
+    def decrease_balance(uid): #subtract total cart price from balance on order
         rows = app.db.execute('''
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory

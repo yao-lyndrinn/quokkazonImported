@@ -17,14 +17,14 @@ bp = Blueprint('cart', __name__)
 
 @bp.route('/cart')
 def cart():
-    # find the items the current user has added to their wishlist
+    # find the items the current user has added to their cart
     if current_user.is_authenticated:
         items = CartItem.get_all_by_uid(
                         current_user.id)
         totalprice = CartItem.get_total_price(current_user.id)
     else:
         return jsonify({}), 404
-    # render the page by adding information to the index.html file
+    # render the page by adding information to the cart.html file
     return render_template('cart.html',
                       items=items, totalprice=totalprice)
 
@@ -35,11 +35,15 @@ def cart_add():
     seller_id = request.form["seller_id"]
     quantity = request.form["quantity"]
     saved_for_later = request.form["saved_for_later"]
-    if CartItem.get(current_user.id, seller_id, product_id) == None:
-        CartItem.add_item(current_user.id, seller_id, product_id, quantity, saved_for_later)
+    #check quantity is positive
+    if int(quantity) >= 1:
+    #add item to cart with specifications if already not in cart
+        if CartItem.get(current_user.id, seller_id, product_id) == None:
+            CartItem.add_item(current_user.id, seller_id, product_id, quantity, saved_for_later)
+        else: #otherwise, tell the user they have already ordered it.
+            flash("Item is already in the cart.")
     else:
-        flash("Item is already in the cart.")
-    print("I'M BUYING THIS MANY", quantity)
+        flash("You can't order less than 1 of this item.")
     return redirect(url_for('cart.cart'))
 
 @bp.route('/cart/select/<int:product_id>', methods=['POST'])
@@ -70,21 +74,26 @@ def cart_update_quantity():
     quantity = request.form['quantity']
     seller_id = request.form['seller_id']
     product_id = request.form['product_id']
-    CartItem.update_quantity(current_user.id, seller_id, product_id, quantity)
+    #check quantity is positive
+    if int(quantity) >= 1:
+        CartItem.update_quantity(current_user.id, seller_id, product_id, quantity)
+    else:
+        flash("You can't order less than 1 of this item.")
     return redirect(url_for('cart.cart'))
 
 @bp.route('/cart/submit', methods=['POST'])
 def cart_submit():
+    #compare price with users balance
     if CartItem.get_total_price(current_user.id) < User.get_balance(current_user.id):
         neworder = CartItem.newOrderId(current_user.id)
-        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id)
-        CartItem.decrease_balance(current_user.id)
+        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id) #increase for sellers
+        CartItem.decrease_balance(current_user.id) #subtract from buyer
         items = CartItem.get_all_by_uid(
                             current_user.id)
-        for item in items:
+        for item in items: #enter new items into purchases table
             CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
         CartItem.submit(current_user.id)
-        return redirect(url_for('cart.cart_order', order_id = neworder))
+        return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details
     else:
         flash("The total price exceeds your current balance!")
         return redirect(url_for('cart.cart'))
@@ -92,6 +101,10 @@ def cart_submit():
 @bp.route('/cart/<int:order_id>')
 def cart_order(order_id):
     items = Purchase.get_order(current_user.id, order_id)
+    all_fulfilled = True
+    for item in items: #iterate through to see if order is completely fulfilled
+        if item.date_fulfilled == None:
+            all_fulfilled = False
     totalprice = Purchase.get_total_price_order(current_user.id, order_id)
     seller_names = {}
     product_names = {}
@@ -118,9 +131,10 @@ def cart_order(order_id):
                            seller_names = seller_names,
                            product_names = product_names,
                            product_feedback_exists = product_feedback_exists,
-                           seller_feedback_exists = seller_feedback_exists)
+                           seller_feedback_exists = seller_feedback_exists,
+                           all_fulfilled = all_fulfilled)
 
 @bp.route('/cart/viewOrders')
-def cart_viewOrders():
+def cart_viewOrders(): #show list of past orders for user
     items = Purchase.get_unique_orders_by_uid(current_user.id)
     return render_template('viewOrders.html', items = items)

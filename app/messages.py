@@ -2,7 +2,7 @@ from flask import render_template
 from flask_login import current_user
 from flask import request, redirect, url_for
 import datetime
-from .models.seller import Seller
+from .models.feedback import SellerFeedback
 from humanize import naturaltime
 
 from .models.messages import Messages
@@ -22,7 +22,20 @@ def my_messages():
 
 @bp.route('/my_message_history/<int:other_user>', methods=['POST','GET'])
 def message_thread(other_user):
-    messages = Messages.get_by_uid(current_user.id)
+    messages = Messages.message_thread(current_user.id,other_user)
+    other_user_name = SellerFeedback.get_name(other_user)
     return render_template('messages.html',
                         messages=messages,
+                        other_user=other_user,
+                        other_user_name=other_user_name,
+                        humanize_time=humanize_time)
+
+@bp.route('/new_message/<int:other_user>', methods=['POST','GET'])
+def message_thread(other_user):
+    messages = Messages.message_thread(current_user.id,other_user)
+    other_user_name = SellerFeedback.get_name(other_user)
+    return render_template('messages.html',
+                        messages=messages,
+                        other_user=other_user,
+                        other_user_name=other_user_name,
                         humanize_time=humanize_time)

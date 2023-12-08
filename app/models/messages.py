@@ -4,7 +4,7 @@ class Messages:
     def __init__(self,sender,sname,receiver,rname,date_time,msg):
         self.sender = sender
         self.sname = sname 
-        self.receiver = receiver,
+        self.recipient = receiver,
         self.rname = rname
         self.date_time = date_time
         self.msg = msg 
@@ -45,13 +45,33 @@ class Messages:
             WHERE m.sender = :uid
             OR m.receiver = :uid
         )
-        SELECT s.id, (s.firstname || ' ' || s.lastname), r.id, (r.firstname || ' ' || r.lastname), m.date_time, m.msg 
+        SELECT s.id, (s.firstname || ' ' || s.lastname), m.receiver, (r.firstname || ' ' || r.lastname), m.date_time, m.msg 
         FROM Users as s, Users as r, my_messages as m  
         WHERE s.id = m.sender
         AND r.id = m.receiver 
         ORDER BY m.date_time   
         ''',
         uid=uid)
+        return [Messages(*row) for row in rows]
+    
+    @staticmethod 
+    def message_thread(myid,otherid):
+        rows = app.db.execute('''
+        WITH my_messages AS (
+            SELECT m.sender, m.receiver, m.date_time, m.msg
+            FROM Messages as m 
+            WHERE (m.sender = :myid AND m.receiver = :otherid)
+            OR (m.receiver = :myid AND m.sender = :otherid)
+        )
+        SELECT s.id, (s.firstname || ' ' || s.lastname), m.receiver, (r.firstname || ' ' || r.lastname), m.date_time, m.msg 
+        FROM Users as s, Users as r, my_messages as m  
+        WHERE s.id = m.sender
+        AND r.id = m.receiver 
+        ORDER BY m.date_time   
+        ''',
+        myid=myid,
+        otherid=otherid
+        )
         return [Messages(*row) for row in rows]
     
 

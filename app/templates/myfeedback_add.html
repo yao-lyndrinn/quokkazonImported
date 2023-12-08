@@ -22,7 +22,7 @@
     <input type="submit" value="Submit"> 
     </form>
 {% elif type == "seller" %}
-<a style="color:grey;" href="{{ url_for('feedback.seller_personal', seller_id=seller_id) }}"> < Seller's Profile</a>
+<a style="color:grey;" href="{{ url_for('feedback.public_profile', user_id=seller_id) }}"> < Seller's Profile</a>
 <h4>My Feedback for Seller {{seller_id}}: {{name}}</h4>
 <form action="{{ url_for('feedback.seller_add_feedback') }}" method="POST">
     <label id="rating">Rating:</label>

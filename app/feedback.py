@@ -225,19 +225,19 @@ def upvote_seller_review():
         return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('feedback.seller_personal',seller_id=seller))
         
-@bp.route('/public_profile/<int:seller_id>', methods=['POST','GET'])
-def seller_personal(seller_id):
+@bp.route('/public_profile/<int:user_id>', methods=['POST','GET'])
+def public_profile(user_id):
     summary = None
-    sfeedback = SellerFeedback.get_by_sid(seller_id)
+    sfeedback = SellerFeedback.get_by_sid(user_id)
     supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
     myupvotes = {}
     if current_user.is_authenticated: 
         # whether the current logged-in user has purchased from this seller before 
-        has_purchased  = SellerFeedback.has_purchased(current_user.id,seller_id)
+        has_purchased  = SellerFeedback.has_purchased(current_user.id,user_id)
         if has_purchased is not None: 
-            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, seller_id)
+            my_seller_feedback = SellerFeedback.get_by_uid_sid(current_user.id, user_id)
         else: 
             # the user has not purchased from this seller before 
             has_purchased = False
@@ -248,19 +248,19 @@ def seller_personal(seller_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
-    a = Seller.has_products(seller_id) 
+    a = Seller.has_products(user_id) 
     if(a):
-        summary = SellerFeedback.summary_ratings(seller_id)    
+        summary = SellerFeedback.summary_ratings(user_id)    
   
-    info = Seller.find(seller_id)
-    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(seller_id)
-    feedback_for_products = ProductFeedback.user_summary_ratings(seller_id)
+    info = Seller.find(user_id)
+    feedback_for_other_sellers = SellerFeedback.user_summary_ratings(user_id)
+    feedback_for_products = ProductFeedback.user_summary_ratings(user_id)
     return render_template('publicProfile.html',
                             sfeedback=sfeedback,
                             supvotes=supvotes,
                             myupvotes=myupvotes,
                             summary=summary,
-                            seller_id=seller_id,
+                            user_id=user_id,
                             first_name = info[2],
                             last_name = info[3],
                             email = info[1],

@@ -7,9 +7,7 @@
   <p><strong>Name: </strong> {{ first_name }} {{ last_name }}</p>
   <p><strong>Email:</strong> {{ email }}</p>
   <p>{{first_name}} has left an average rating of <b>{{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers</b> and an average rating of <b>{{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</b> </p>
-  <form action="{{ url_for('feedback.my_feedback', uid=seller_id) }}" method="POST">
-      <input type="submit" value="Ratings and Reviews Submitted by Erica" style="background-color:#137a56;color:#ffffff;"/> 
-  </form>
+  <p> <a href="{{ url_for('feedback.my_feedback', uid=user_id)}}">See the feedback submitted by {{first_name}}</a> </p>
   <br>
 {% if summary %}
   <p style="color:#804a03";><b>Seller's Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
@@ -42,12 +40,12 @@
 
 
     {% if not my_seller_feedback %}
-    <form action="{{ url_for('feedback.seller_submission_form', seller_id=seller_id) }}"
+    <form action="{{ url_for('feedback.seller_submission_form', seller_id=user_id) }}"
     method="POST">
     <input type="submit" value="Leave feedback for this seller"/> 
     </form>
     {% else %}
-    <form action="{{ url_for('feedback.seller_feedback_edit', seller_id=seller_id) }}"
+    <form action="{{ url_for('feedback.seller_feedback_edit', seller_id=user_id) }}"
     method="POST">
     <input type="submit" value="Manage my feedback for this seller"/> 
     </form>
@@ -86,7 +84,7 @@
       {% for item in sfeedback %}
         <tr>
           <td>
-            <a href="{{ url_for('feedback.seller_personal', seller_id=item.uid)}}">{{ item.name }}</a>
+            <a href="{{ url_for('feedback.public_profile', user_id=item.uid)}}">{{ item.name }}</a>
           </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>

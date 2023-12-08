@@ -20,7 +20,8 @@
       <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
       <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
       <a href="{{ url_for('feedback.my_feedback', uid=current_user.id)  }}" class="btn btn-dark">Manage My Feedback</a>
-</div>
+      <a href="{{ url_for('feedback.public_profile', user_id=current_user.id)}}" class="btn btn-dark">My Public Profile</a>
+    </div>
 <br>
                 <p><strong>User ID:</strong> {{ current_user.id }}</p>
                 <p><strong>Balance:</strong> {{ current_user.balance }}</p>

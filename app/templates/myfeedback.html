@@ -23,7 +23,7 @@
 {% if current_user.id == uid %}
 <h2>My Feedback History</h2>
 {% else %}
-<h2><a href="{{ url_for('feedback.seller_personal', seller_id=uid)}}">{{name}}'s</a>
+<h2><a href="{{ url_for('feedback.public_profile', user_id=uid)}}">{{name}}'s</a>
    Feedback History</h2>
 {% endif %}
 <br>
@@ -133,7 +133,7 @@
       {% for item in sfeedback %}
         <tr>
           <td>
-          <a href="{{ url_for('feedback.seller_personal', seller_id=item.sid)}}">{{ item.name }}</a>
+          <a href="{{ url_for('feedback.public_profile', user_id=uid)}}">{{ item.name }}</a>
           </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>

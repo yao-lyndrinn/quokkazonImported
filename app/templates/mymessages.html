@@ -16,7 +16,7 @@
           {% for item in interacted %}
             <tr>
               <td> 
-                <a href="{{ url_for('feedback.seller_personal', seller_id=item[0])}}">{{ item[1] }}</a>
+                <a href="{{ url_for('feedback.public_profile', user_id=item[0])}}">{{ item[1] }}</a>
             </td>
               <td>{{item[2]}} <p style = "color:#804a03;">{{humanize_time(item[2])}}</p></td>
               <td>

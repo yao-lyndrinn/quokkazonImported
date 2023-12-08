@@ -67,7 +67,7 @@
                     {% if current_user.is_authenticated %}
                     {% for i in inventory %}                        
                         <p style="text-align: center; display:inline;">
-                          <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid)}}">{{ seller_names[i.sid] }}</a>:
+                          <a href="{{ url_for('feedback.public_profile', user_id=i.sid)}}">{{ seller_names[i.sid] }}</a>:
                           ${{i.price}} ({{i.num_for_sale}} left!)
                           <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
                         </p>
@@ -91,7 +91,7 @@
                     {% else %}
                     {% for i in inventory %}          
                       <br><p style="text-align: center; display:inline;">
-                        <a href="{{ url_for('feedback.seller_personal', seller_id=i.sid)}}">{{ seller_names[i.sid] }}</a>
+                        <a href="{{ url_for('feedback.public_profile', user_id=i.sid)}}">{{ seller_names[i.sid] }}</a>
                         (<em>id: </em>{{ i.sid }}): ${{i.price}} ({{i.num_for_sale}} left!)
                         <br> Seller's Average Rating: {{seller_summary[i.sid][0]}} by {{seller_summary[i.sid][1]}} users
                       </p>
@@ -162,7 +162,7 @@
     {% for item in top3 %}
       <tr>
         <td>
-          <a href="{{ url_for('feedback.seller_personal', seller_id=item.uid)}}">{{ item.name }}</a>
+          <a href="{{ url_for('feedback.public_profile', user_id=item.uid)}}">{{ item.name }}</a>
         </td>
         <td>{{item.rating}}</td>
         <td>{{item.review}}</td>
@@ -208,7 +208,7 @@
       {% for item in pfeedback %}
         <tr>
           <td>
-            <a href="{{ url_for('feedback.seller_personal', seller_id=item.uid)}}">{{ item.name }}</a>
+            <a href="{{ url_for('feedback.public_profile', user_id=item.uid)}}">{{ item.name }}</a>
           </td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>

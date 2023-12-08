@@ -403,6 +403,12 @@ section {
     margin: 20px 20px 20px 20px;
   }
   
+  textarea {
+    height: 100%;
+    width: 800px;
+
+  }
+
   #cat-title{
     text-align: center;
     margin-bottom: 50px;

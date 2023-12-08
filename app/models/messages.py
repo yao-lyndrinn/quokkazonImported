@@ -24,3 +24,15 @@ class Messages:
         sender=sender,
         receiver=receiver)
         return [Messages(*row) for row in rows]
+
+    @staticmethod 
+    def get_by_sender(sender):
+        rows = app.db.execute('''
+        SELECT s.id, (s.firstname || ' ' || s.lastname), r.id, (r.firstname || ' ' || r.lastname), m.msg 
+        FROM Users as s, Messages as m  
+        WHERE s.id = :sender 
+        AND m.sender = :sender
+        ORDER BY f.date_time 
+        ''',
+        sender=sender)
+        return [Messages(*row) for row in rows]

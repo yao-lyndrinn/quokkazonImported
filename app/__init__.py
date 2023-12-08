@@ -47,4 +47,10 @@ def create_app():
     from .categories import bp as categories_bp
     app.register_blueprint(categories_bp)
     
+    from .messages import bp as messages_bp
+    app.register_blueprint(messages_bp)
+
+    from .userlookup import bp as userlookup_bp
+    app.register_blueprint(userlookup_bp)
+    
     return app

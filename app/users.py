@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, session
 from werkzeug.urls import url_parse
+from flask_session import Session
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp
 
 from .models.user import User
 
@@ -47,9 +48,9 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(),
                                        EqualTo('password')])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Regexp('^[0-9]*$', message='Phone number must contain only numbers')])
     submit = SubmitField('Register')
-
+        
     def validate_email(self, email):
         if User.email_exists(email.data):
             raise ValidationError('Already a user with this email.')
@@ -77,3 +78,49 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index.index'))
+
+
+
+@bp.before_request
+def activate_session():
+    if request.path in ['/users/search_results']:
+        session.modified = True
+
+@bp.after_request
+def deactivate_session(response):
+    if request.path in ['', '/users']:
+        session['search_term'] = ''
+    return response
+
+ROWS = 24
+@bp.route('/users/search_results', methods=['GET','POST'])
+def search_results():
+    page = request.args.get("page", 1, type=int)
+    start = (page-1) * ROWS
+    end = start + ROWS
+    
+    search_term = request.args.get('search_term', '')
+
+    all_users = User.get_all()
+    if request.method == 'POST':
+        search_term = request.form['search_term']
+        session['search_term'] = search_term
+        if not search_term:
+            return redirect(url_for('users.search_results'))
+    
+    if request.method == 'GET':
+        search_term = session.get('search_term')  
+    all_users = search_users(search_term)
+    paginated = all_users[start:end]
+    total_pages = len(all_users)//24 + 1
+    return render_template('usersearchResults.html',
+                            all_users = paginated,
+                            search_term2 = search_term,
+                            len_users = len(all_users),
+                            page=page,
+                            total_pages=total_pages)
+
+def search_users(search_term):
+    users = User.get_all()
+    search_results = [user for user in users if (search_term.lower() in user.firstname.lower()) or (search_term.lower() in user.lastname.lower())]
+    return search_results

@@ -127,4 +127,13 @@ WHERE id = :id
         """,
         id = user_id)
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
+
+
+    @staticmethod
+    def get_all():
+        rows = app.db.execute('''
+        SELECT id, email, firstname, lastname, address, phone_number, balance
+        FROM Users
+        ''')
+        return [User(*row) for row in rows]
  

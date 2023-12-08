@@ -5,6 +5,7 @@
 {% if current_user.is_authenticated %}
 <!--doctype html-->
 <html>
+<div class="page-div">
 <head>
     <title>{{ current_user.firstname }} {{ current_user.lastname }} - Profile</title>
 </head>
@@ -19,6 +20,7 @@
       <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
       <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
 </div>
+                <p><strong>User ID:</strong> {{ current_user.id }}</p>
                 <p><strong>Balance:</strong> {{ current_user.balance }}</p>
                 <p><strong>Name: </strong> {{ current_user.firstname }} {{ current_user.lastname }}</p>
                 <p><strong>Email:</strong> {{ current_user.email }}</p>
@@ -37,7 +39,7 @@
       <div id='orderFreqGraph' class='chart'></div>
     {% if summary %}
     <hr>
-    <p style="color:#804a03";><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
+    <p style="color:#804a03;"><b>Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
     <div class="star-rating">
         {% if 1 <= summary[0] < 1.5 %}
         <span>★</span>★★★★   
@@ -83,7 +85,26 @@
           <td>{{item.name}}</td>
           <td>{{item.rating}}</td>
           <td>{{item.review}}</td>
-          <td>{{supvotes[(item.uid,item.sid)]}}</td>
+          <td>{{supvotes[(item.uid,item.sid)]}}
+            {% if current_user.is_authenticated %}
+              {% if my_supvotes[(item.uid,item.sid)] %}
+              <form action="{{ url_for('feedback.remove_upvote_seller_review') }}"
+              method="POST">
+                <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
+                <input type="hidden" name="seller" value="{{ item.sid }}"/>
+                <input type="submit" value="Upvoted &#8593;" style="background-color: #137a56; color: #ffffff"/> 
+              </form>
+              {% else %}
+              <form action="{{ url_for('feedback.upvote_seller_review') }}"
+              method="POST">
+                <input type="hidden" name="reviewer" value="{{ item.uid }}"/>
+                <input type="hidden" name="seller" value="{{ item.sid }}"/>
+                <input type="submit" value="Upvote &#8593;" /> 
+              </form>
+              <br>
+              {% endif %}
+            {% endif %}
+          </td>
           <td>{{item.date_time}} <p style = "color:#804a03;">{{humanize_time(item.date_time)}}</p></td>
         </tr>
       {% endfor %}
@@ -110,4 +131,5 @@
 {% else %}
 <p>User is not authenticated.</p>
 {% endif %}
+</div>
 {% endblock %}

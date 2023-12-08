@@ -10,7 +10,7 @@ import plotly
 import plotly.express as px
 import json
 
-from .models.product import Product
+from .models.product import Product, ProductRating
 from .models.feedback import ProductFeedback, SellerFeedback
 from .models.purchase import Purchase
 from .models.inventory import Inventory
@@ -107,23 +107,27 @@ def products():
     product_prices = defaultdict(list)
     summary = defaultdict(list)
     items_stock = Stock.get_all_in_stock()
-    if request.method == 'GET':    
-        if request.args.get('filter_by') == "available":
-            if request.args.get('sort_by'):
-                items = apply_sort(items_stock, request.args.get('sort_by'))
-            else:
-                items = apply_sort(items_stock, "a-z")
-        else:
-            items = Product.get_all()
-            if (request.args.get('sort_by') == "a-z") | (request.args.get('sort_by') == "z-a"):
-                items = apply_sort(items, request.args.get('sort_by'))
-            else:
-                items = apply_sort(items, "a-z")
-            
+    
     for item in inventory:
         product_prices[item.pid].append(item.price)
         summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
-    
+                
+    if request.method == 'GET':
+        filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
+        sort_by = request.args.get('sort_by') if request.args.get('sort_by') is not None else 'a-z'
+        if sort_by == "top_reviews":
+            items = ProductRating.all_ratings()
+        elif sort_by == "low_price":
+            items = Stock.get_stock_asc()
+        elif sort_by == "high_price":
+            items = Stock.get_stock_desc()
+        else:
+            if filter_by == "available":
+                items = apply_sort(items_stock, sort_by)
+            else:
+                items = apply_sort(Product.get_all(), sort_by)
+        
+
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
     
@@ -161,21 +165,23 @@ def search_results():
         session['search_term'] = search_term
         if not search_term:
             return redirect(url_for('products.products'))
+        
     if request.method == 'GET':
         search_term = session.get('search_term')  
-    products = search_products(search_term)
-    items_stock = in_stock_search_products(search_term)
     
-    if request.args.get('filter_by') == "available":
-        if request.args.get('sort_by'):
-            items = apply_sort(items_stock, request.args.get('sort_by'))
-        else:
-            items = apply_sort(items_stock, "a-z")
+    filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
+    sort_by = request.args.get('sort_by') if request.args.get('sort_by') is not None else 'a-z'
+    if sort_by == "top_reviews":
+        items = search_products(search_term, ProductRating.all_ratings())
+    elif sort_by == "low_price":
+        items = search_products(search_term, Stock.get_stock_asc())
+    elif sort_by == "high_price":
+        items = search_products(search_term, Stock.get_stock_desc())
     else:
-        if (request.args.get('sort_by') == "a-z") | (request.args.get('sort_by') == "z-a"):
-            items = apply_sort(products, request.args.get('sort_by'))
+        if filter_by == "available":
+            items = apply_sort(Stock.get_all_in_stock(), sort_by)
         else:
-            items = apply_sort(products, "a-z")
+            items = apply_sort(search_products(search_term, Product.get_all()), sort_by)
     
     categories = Category.get_all()
 
@@ -193,21 +199,12 @@ def search_results():
                             categories=categories,
                             is_seller=Seller.is_seller(current_user))
     
-def search_products(search_term):
-    products = Product.get_all()
+def search_products(search_term, products):
     search_results = [product for product in products if (search_term.lower() in product.name.lower()) or (search_term.lower() in product.description.lower())]
     return search_results
 
-def in_stock_search_products(search_term):
-    products = Stock.get_all_in_stock()
-    search_results = [product for product in products if (search_term.lower() in product.name.lower()) or (search_term.lower() in product.description.lower())]
-    return search_results
 
 def apply_sort(items, sort_by):
-    if sort_by == "high_price":
-        sort_items = sorted(items, key=lambda x: x.price, reverse=True)
-    if sort_by == "low_price":
-        sort_items = sorted(items, key=lambda x: x.price)
     if sort_by == "a-z":
         sort_items = sorted(items, key=lambda x: x.name)
     if sort_by == "z-a":

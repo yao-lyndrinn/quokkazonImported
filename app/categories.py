@@ -6,8 +6,9 @@ from humanize import naturaltime
 import datetime
 from collections import defaultdict
 import os, random
+from .products import apply_sort
 
-from .models.product import Product
+from .models.product import Product, ProductRating
 from .models.feedback import ProductFeedback
 from .models.inventory import Inventory
 from .models.stock import Stock
@@ -32,19 +33,21 @@ def category_products(category_id):
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)
-    items_stock = Stock.get_stock_by_cat(category_id)
-
-    if request.method == 'GET':    
-        if request.args.get('filter_by') == "available":
-            if request.args.get('sort_by'):
-                items = apply_sort(items_stock, request.args.get('sort_by'), category_id)
-            else:
-                items = apply_sort(items_stock, "a-z", category_id)
+    
+    if request.method == 'GET':
+        filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
+        sort_by = request.args.get('sort_by') if request.args.get('sort_by') is not None else 'a-z'
+        if sort_by == "top_reviews":
+            items = ProductRating.all_ratings_cid(category_id)
+        elif sort_by == "low_price":
+            items = Stock.get_stock_by_cat_asc(category_id)
+        elif sort_by == "high_price":
+            items = Stock.get_stock_by_cat_desc(category_id)
         else:
-            if request.args.get('sort_by'):
-                items = apply_sort(cat_items, request.args.get('sort_by'), category_id)
+            if filter_by == "available":
+                items = apply_sort(Stock.get_stock_by_cat(category_id), sort_by)
             else:
-                items = apply_sort(cat_items, "a-z", category_id)
+                items = apply_sort(cat_items, sort_by)
     
     for item in inventory:
         product_prices[item.pid].append(item.price)
@@ -65,16 +68,4 @@ def category_products(category_id):
                       category=category,
                       is_seller=Seller.is_seller(current_user))
     
-def apply_sort(items, sort_by, category_id):
-    stock_items = Stock.get_stock_by_cat(category_id)
-    if sort_by == "high_price":
-        sort_items = sorted(stock_items, key=lambda x: x.price, reverse=True)
-    if sort_by == "low_price":
-        sort_items = sorted(stock_items, key=lambda x: x.price)
-    if sort_by == "a-z":
-        sort_items = sorted(items, key=lambda x: x.name)
-    if sort_by == "z-a":
-        sort_items = sorted(items, key=lambda x: x.name, reverse=True)
-    return sort_items
-
     

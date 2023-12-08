@@ -99,7 +99,7 @@ CREATE TABLE UpvoteSellerReview(
 
 CREATE TABLE Messages(
 	sender INTEGER NOT NULL REFERENCES Users(id), 
-	receiver INTEGER NOT NULL REFERENCES Seller(id),
+	receiver INTEGER NOT NULL REFERENCES Users(id),
   date_time timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
 	msg VARCHAR(4096) NOT NULL, -- cannot be null because a message must occur in order for it be recorded in this table  
   PRIMARY KEY (sender, receiver, date_time) 
@@ -198,7 +198,7 @@ CREATE TRIGGER InventoryConstraints
 CREATE FUNCTION MessageConstraints() RETURNS TRIGGER AS $$
 BEGIN
   -- ensures that new messages have later timestamps 
-  IF NEW.date_time > (SELECT date_time FROM Messages WHERE sender = NEW.sender and receiver = NEW.receiver) THEN
+  IF NEW.date_time <= (SELECT MAX(date_time) FROM Messages WHERE sender = NEW.sender and receiver = NEW.receiver) THEN
     RAISE EXCEPTION 'New messages in this thread must be dated at a later time than all existing messages between this user and seller.';
   END IF;
   RETURN NEW;

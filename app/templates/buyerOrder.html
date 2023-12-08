@@ -16,6 +16,7 @@
       <th scope="col">Date Fulfilled</th>
     </tr>
   </thead>
+  <!-- table with same info as cart table + date  -->
   <tbody>
     {% for item in items %}
       <tr>
@@ -62,4 +63,9 @@
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your order!</p>
 {% endif %}
 <h2> Final Price: ${{totalprice}}</h2>
+{% if all_fulfilled %}
+  <h3>Order Status: Fulfilled</h3>
+{% else %}
+  <h3>Order Status: Not Fulfilled</h3>
+{% endif %}
 {% endblock %}

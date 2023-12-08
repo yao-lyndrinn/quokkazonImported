@@ -189,7 +189,7 @@ class Purchase:
         return [Purchase(*row) for row in rows]
 
     @staticmethod
-    def get_total_price_order(uid, order_id):
+    def get_total_price_order(uid, order_id): #sums up quantity * price
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT quantity * price FROM Purchases
@@ -201,11 +201,52 @@ class Purchase:
         return float(rows[0][0]) if rows and rows[0][0] is not None else 0.0
     
     @staticmethod
+    def get_fulfillment_status(uid, order_id):
+        fulfilled = True
+        #loops through date fulfilled to get overall order status
+        rows = app.db.execute('''
+        SELECT date_fulfilled
+        FROM Purchases
+        WHERE uid = :uid AND Purchases.order_id = :order_id
+        ''',
+                              uid=uid, order_id=order_id)
+        for row in rows:
+            if row[0] == None:
+                fulfilled = False
+        if fulfilled:
+            return "Fulfilled"
+        else:
+            return "Not fulfilled"
+
+    @staticmethod
     def get_unique_orders_by_uid(uid):
+        #returns orders, list of products, price, fulfillment status
         rows = app.db.execute('''
         SELECT DISTINCT order_id
         FROM Purchases
         WHERE uid = :uid
         ''',
                               uid=uid)
-        return [row[0] for row in rows]
+        unique_orders = []
+        for row in rows:
+            order_id = row[0]
+            total_price = Purchase.get_total_price_order(uid, order_id)
+            row_as_list = list(row) #make list so we can append results
+            row_as_list.append(Purchase.get_order_products(uid, order_id))
+            row_as_list.append(total_price)
+            row_as_list.append(Purchase.get_fulfillment_status(uid, order_id))
+            unique_orders.append(row_as_list)
+        return unique_orders
+
+    @staticmethod
+    def get_order_products(uid, order_id):
+        rows = app.db.execute('''
+        SELECT name, Products.pid
+        FROM PURCHASES, Products
+        WHERE uid = :uid AND order_id = :order_id AND Purchases.pid = Products.pid
+        ''', uid = uid, order_id=order_id)
+        name_list = []
+        for row in rows:
+            name_list.append([str(row[0]), row[1]])
+        #returns list of lists where inner list[0] is name, list[1] is id
+        return name_list

@@ -2,15 +2,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-<head>
-    <style>
-    textarea {
-        height: 100%;
-        width: 800px;
-
-    }
-    </style>
-</head>
+<div class="page-div">
 <body>   
 <br><br>
 <!-- Product Feedback Editing Page -->
@@ -45,6 +37,7 @@
 
 <br><br>
 </body>
+</div>
 {% endif %}
 
 {% endif %}

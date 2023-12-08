@@ -35,7 +35,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
         SELECT SUM(total)
         FROM C
         """,
@@ -52,7 +52,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         sid = sid,
         pid = pid,
         quantity = quantity,
-        saved_for_later = '0')
+        saved_for_later = saved_for_later)
         return
     
     @staticmethod
@@ -83,7 +83,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
     def submit(uid): #removes from cart table, is called along other fxns
         rows = app.db.execute("""
         DELETE FROM CART
-        WHERE uid = :uid
+        WHERE uid = :uid AND saved_for_later = B'0'
         """,
         uid=uid)
         return
@@ -123,7 +123,7 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
             rows = app.db.execute('''
             WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
             UPDATE USERS
             SET balance = balance + (SELECT SUM(total) FROM C)
             WHERE id = :sid
@@ -135,11 +135,35 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         rows = app.db.execute('''
         WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid)
+            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
         UPDATE USERS
         SET balance = balance - (SELECT SUM(total) FROM C)
         WHERE id = :uid
         ''', uid = uid)
+        return
+
+    @staticmethod
+    def move_to_cart(uid, sid, pid):
+        rows = app.db.execute("""
+        UPDATE CART
+        SET saved_for_later = B'0'
+        WHERE uid = :uid AND sid = :sid AND pid = :pid
+        """,
+        uid=uid,
+        sid=sid,
+        pid=pid)
+        return
+
+    @staticmethod
+    def move_to_saved(uid, sid, pid):
+        rows = app.db.execute("""
+        UPDATE CART
+        SET saved_for_later = B'1'
+        WHERE uid = :uid AND sid = :sid AND pid = :pid
+        """,
+        uid=uid,
+        sid=sid,
+        pid=pid)
         return
 
     

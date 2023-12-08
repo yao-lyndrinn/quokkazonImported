@@ -83,15 +83,22 @@ def cart_update_quantity():
 
 @bp.route('/cart/submit', methods=['POST'])
 def cart_submit():
+    #get cart price
+    totalPrice = CartItem.get_total_price(current_user.id)
+    if totalPrice == 0: #block empty orders
+        flash("You can't submit an empty order!")
+        return redirect(url_for('cart.cart'))
     #compare price with users balance
-    if CartItem.get_total_price(current_user.id) < User.get_balance(current_user.id):
+    if totalPrice < User.get_balance(current_user.id):
         neworder = CartItem.newOrderId(current_user.id)
         CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id) #increase for sellers
         CartItem.decrease_balance(current_user.id) #subtract from buyer
         items = CartItem.get_all_by_uid(
                             current_user.id)
         for item in items: #enter new items into purchases table
-            CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
+            if item.saved_for_later == '0': #other functions check in the model, get_all_by_uid doesn't
+                #because it is what is used to render the whole cart page
+                CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
         CartItem.submit(current_user.id)
         return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details
     else:
@@ -138,3 +145,14 @@ def cart_order(order_id):
 def cart_viewOrders(): #show list of past orders for user
     items = Purchase.get_unique_orders_by_uid(current_user.id)
     return render_template('viewOrders.html', items = items)
+
+@bp.route('/cart/update_saved', methods=['POST'])
+def cart_update_saved():
+    product_id = request.form['product_id']
+    seller_id = request.form['seller_id']
+    saved_for_later = request.form['saved_for_later']
+    if saved_for_later == '0':
+        CartItem.move_to_saved(current_user.id, seller_id, product_id)
+    else:
+        CartItem.move_to_cart(current_user.id, seller_id, product_id)
+    return redirect(url_for('cart.cart'))

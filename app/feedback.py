@@ -6,7 +6,7 @@ from .models.seller import Seller
 from .models.category import Category 
 from humanize import naturaltime
 import os 
-
+is_seller = False
 from .models.feedback import ProductFeedback, SellerFeedback
 
 from flask import Blueprint

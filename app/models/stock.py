@@ -89,10 +89,10 @@ class Stock:
     @staticmethod
     def get_az():
         rows = app.db.execute('''
-        SELECT DISTINCT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, MIN(Products.createdAt) AS firstCreatedAt, Products.updatedAt, Products.cid, Inventory.price
+        SELECT DISTINCT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, MIN(Products.createdAt) AS firstCreatedAt, Products.updatedAt, Products.cid, MIN(Inventory.price) as price
         FROM Products
         JOIN Inventory ON Products.pid = Inventory.pid
-        GROUP BY Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.updatedAt, Products.cid, Inventory.price
+        GROUP BY Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.updatedAt, Products.cid
         ORDER BY Products.name 
         ''')
         return [Stock(*row) for row in rows]
@@ -101,10 +101,10 @@ class Stock:
     @staticmethod
     def get_za():
         rows = app.db.execute('''
-        SELECT DISTINCT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, MIN(Products.createdAt) AS firstCreatedAt, Products.updatedAt, Products.cid, Inventory.price
+        SELECT DISTINCT Products.pid, Products.name, Products.description, Products.image, Products.altTxt, MIN(Products.createdAt) AS firstCreatedAt, Products.updatedAt, Products.cid, MIN(Inventory.price) as price
         FROM Products
         JOIN Inventory ON Products.pid = Inventory.pid
-        GROUP BY Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.updatedAt, Products.cid, Inventory.price
+        GROUP BY Products.pid, Products.name, Products.description, Products.image, Products.altTxt, Products.updatedAt, Products.cid
         ORDER BY Products.name DESC
         ''')
         return [Stock(*row) for row in rows]

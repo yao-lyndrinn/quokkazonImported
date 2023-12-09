@@ -92,7 +92,9 @@ def cart_remove(seller_id, product_id):
 
 @bp.route('/cart/update_quantity', methods=['POST'])
 def cart_update_quantity():
-    quantity = request.form['quantity']
+    quantity = request.form.get("quantity", "")
+    if not quantity or not quantity.isdigit():
+        quantity = 1
     seller_id = request.form['seller_id']
     product_id = request.form['product_id']
     #check quantity is positive

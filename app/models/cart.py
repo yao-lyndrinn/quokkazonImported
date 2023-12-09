@@ -141,16 +141,16 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         rows = app.db.execute('''
         WITH C(cart_quantity) AS
         (SELECT Cart.quantity FROM Cart, Inventory
-        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND saved_for_later = B'0')
+        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND Inventory.pid = Cart.pid AND Inventory.sid = Cart.sid AND saved_for_later = B'0')
         UPDATE INVENTORY
-        SET num_for_sale = num_for_sale - (SELECT DISTINCT cart_quantity FROM C)
+        SET num_for_sale = num_for_sale - (SELECT cart_quantity FROM C)
         WHERE sid = :sid AND Inventory.pid = :pid;
 
         WITH C(cart_quantity) AS
         (SELECT Cart.quantity FROM Cart, Inventory
-        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND saved_for_later = B'0')
+        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND Inventory.pid = Cart.pid AND Inventory.sid = Cart.sid AND saved_for_later = B'0')
         UPDATE INVENTORY
-        SET quantity = quantity - (SELECT DISTINCT cart_quantity FROM C)
+        SET quantity = quantity - (SELECT cart_quantity FROM C)
         WHERE sid = :sid AND Inventory.pid = :pid;
         ''', sid = sid, uid = uid, pid = pid)
         return
@@ -185,5 +185,18 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
             return False
         else:
             return True
+
+    @staticmethod
+    def check_stocks(uid): #check if quantity > stock
+        inStock = True
+        rows = app.db.execute('''
+        SELECT Cart.quantity, num_for_sale
+        FROM Cart, Inventory
+        WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
+        ''', uid = uid)
+        for row in rows:
+            if row[0] > row[1]:
+                inStock = False
+        return inStock
 
     

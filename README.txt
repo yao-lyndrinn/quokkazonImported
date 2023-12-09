@@ -17,6 +17,7 @@ Team members:
         -Updating cart.html, app/cart.py, app/models/cart.py
             -Prices on cart submission now directly stored in Purchases
             -Inventory now properly decrements items in stock on cart submission
+            -Inventory checks inventories on submission as well, in case stock has decreased since last cart view
             -Now includes "save for later" and promotional code "QUOLIDAY25" bonus functionality
                 -Save for later removes item from price calculation and excludes it from submission
                 -promotional code allows for 25% discount on all items, which is taken into account during balance adjustment

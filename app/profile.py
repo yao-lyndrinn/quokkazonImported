@@ -142,7 +142,6 @@ def edit_profile():
         email = request.form.get('email')
         phone_number = request.form.get('phone_number')
         address = request.form.get('address')
-
         User.update_user_info(current_user.id, email, firstname, lastname, address, phone_number)
         #flash('Profile updated successfully!')
         return redirect(url_for('profile.my_profile'))

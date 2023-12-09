@@ -143,7 +143,7 @@ def edit_profile():
         email = request.form.get('email')
         phone_number = request.form.get('phone_number').replace('(','').replace(')','').replace('-','').replace(' ','').replace('+','')
         address = request.form.get('address')
-        if len(firstname.strip()) == 0 or len(email.strip()) == 0 or len(phone_number.strip()) == 10 or len(address.strip()) == 0:
+        if len(firstname.strip()) == 0 or len(email.strip()) == 0 or len(phone_number.strip()) != 10 or len(address.strip()) == 0:
             return render_template('edit_profile.html', categories=sorted_categories, error=True)
         User.update_user_info(current_user.id, email, firstname, lastname, address, phone_number)
         #flash('Profile updated successfully!')

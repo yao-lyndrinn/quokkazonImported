@@ -98,6 +98,8 @@ def product_add_feedback():
 @bp.route('/myfeedback/edit/product/<int:product_id>', methods=['POST','GET'])
 def product_feedback_edit(product_id):
     pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
+    if Seller.find(current_user.id): 
+                is_seller = True 
     return render_template('myfeedback_edit.html',
                         pfeedback=pfeedback,
                         is_seller=is_seller,

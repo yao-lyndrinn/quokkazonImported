@@ -43,20 +43,24 @@
     </form>
     
     {% else %}
-    {% if not summary %}
-    <p style="text-indent: 65px; color:#804a03";><b>No users have left feedback for you yet.</b></p>
-
     <!--If user is a seller, show analytics graphs for their top selling products, their number of orders over time, and their average seller rating over time-->
     <div style="width: 1540px; margin: 0 auto">
-      <div id='orderCountGraph' class='chart'></div>
-      <div id='orderFreqGraph' class='chart'></div>
-      <div id='ratingsGraph' class='chart'></div>
+      {% if order_count_graph %}
+        <div id='orderCountGraph' class='chart'></div>
+      {% endif %}
+      {% if order_freq_graph %}
+        <div id='orderFreqGraph' class='chart'></div>
+      {% endif %}
+      {% if ratings_graph %}
+        <div id='ratingsGraph' class='chart'></div>
+      {% endif %}
     </div>
+    {% if not summary %}
+    <p style="text-indent: 65px; color:#804a03";><b>No users have left feedback for you yet.</b></p>
     
     {% else %}
- 
-    <hr>
 
+    <hr>
   <!-- Feedback for you left by other users -->
     <!-- Show feedback table for this seller -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />

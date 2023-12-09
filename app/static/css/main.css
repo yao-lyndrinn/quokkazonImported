@@ -940,6 +940,10 @@ section {
   max-width: 100%;
 }
 
+#feedback-image {
+  max-width: 200px;
+}
+
 .add-product-form {
   max-width: 500px;
 }

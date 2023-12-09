@@ -3,19 +3,6 @@
 <!--Page for viewing a table of all the purchases and orders for a seller to fulfill or has already fulfilled-->
 
 {% block content %}
-<header class="banner-header">
-    <a href="{{ url_for('userlookup.lookup') }}" type="button" class="btn tab-banner">User Lookup</a>
-    {% if current_user.is_authenticated%}
-    {% if is_seller%}
-      <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn tab-banner">My Orders</a>
-      <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn tab-banner">My Inventory</a>
-      
-    {% endif %}
-    <a href="{{ url_for('feedback.my_feedback',uid=current_user.id) }}" type="button" class="btn tab-banner">My Feedback</a>
-    <a href="{{ url_for('messages.my_messages') }}" type="button" class="btn tab-banner">My Messages</a>
-    <a href="{{ url_for('profile.my_profile') }}" type="button" class="btn tab-banner">My Profile</a>
-     {% endif %}
-  </header>
 {% if current_user.is_authenticated and is_seller %}
 <br>
 <div class="page-div">

@@ -16,8 +16,9 @@ def humanize_time(dt):
 
 @bp.route('/my_message_history', methods=['POST','GET'])
 def my_messages():
+    is_seller=False
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller=True
         interacted = Messages.has_message(current_user.id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)

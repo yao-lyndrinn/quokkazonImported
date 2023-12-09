@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+<!--Page for viewing a table of all the products in a seller's own inventory-->
+
 {% block content %}
 <header class="banner-header">
   <a href="{{ url_for('userlookup.lookup') }}" type="button" class="btn tab-banner">User Lookup</a>
@@ -68,9 +70,6 @@
               <form action="{{ url_for('inventory.edit', product_id=item.pid, oq=item.quantity, on=item.num_for_sale, op=item.price) }}">
                     <input type="submit" value="Edit"/> 
               </form>
-              {% if item.pid in products %}
-                <button><a href="{{ url_for('products.edit_product', product_id=item.pid) }}">Edit Product</a></button>
-              {% endif %}
           </td>
         </tr>
       {% endfor %}

@@ -85,7 +85,7 @@ WHERE id = :id
                 "UPDATE Users SET email = :email, firstname = :firstname, lastname = :lastname, "
                 "address = :address, phone_number = :phone_number, password = :password WHERE id = :user_id",
                 user_id=user_id, email=email, firstname=firstname, 
-                lastname=lastname, address=address, phone_number=phone_number, password= password)
+                lastname=lastname, address=address, phone_number=phone_number, password= generate_password_hash(password))
             return True
         except Exception as e:
             # Log the exception e

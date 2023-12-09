@@ -14,7 +14,13 @@
     <input type="submit" value="Message {{first_name}}" > 
   </form>
   {% endif %}
-  <br>
+  
+
+  {% if not summary %}
+<p style="color:#804a03";><b>No users have left feedback for {{first_name}} yet.</b></p>
+{% endif %}
+
+<br>
 {% if summary %}
   <p style="color:#804a03";><b>{{first_name}}'s Average Rating: {{summary[0]}} by {{summary[1]}} users</b></p>
   <div class="star-rating">
@@ -60,6 +66,7 @@
     {% endif %}
     
     {% endif %}
+
 
   <!-- Show table of reviews -->
 

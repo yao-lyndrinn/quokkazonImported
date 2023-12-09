@@ -9,6 +9,7 @@ import datetime
 from .models.inventory import Inventory
 from .models.seller import Seller
 from .models.product import Product
+from .models.category import Category
 
 from flask import Blueprint
 bp = Blueprint('inventory', __name__)
@@ -16,6 +17,7 @@ bp = Blueprint('inventory', __name__)
 # load inventory table page, showing only the inventory entries a seller has access to
 @bp.route('/inventory')
 def inventory():
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     # find the products current user has bought:
     if current_user.is_authenticated:
         inventory = Inventory.get_all_by_sid(
@@ -28,7 +30,8 @@ def inventory():
                            avail_inventory=inventory,
                            is_seller=Seller.is_seller(current_user),
                            product_class=Product,
-                           products=products)
+                           products=products,
+                           categories=sorted_categories)
 
 class InventoryEdit(FlaskForm): # Form for editing Inventory item values in a seller's inventory
     quantity = IntegerField('Quantity', validators=[NumberRange(min=0)])
@@ -39,6 +42,7 @@ class InventoryEdit(FlaskForm): # Form for editing Inventory item values in a se
 # Edit the price, quantity, and amount for sale of a product for a particular seller in their inventory
 @bp.route('/inventory/edit/<int:product_id>/<int:oq>-<int:on>:<float:op>', methods=['GET', 'POST'])
 def edit(product_id, oq, on, op):
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     form = InventoryEdit()
     if form.validate_on_submit():
         if Inventory.edit(product_id,
@@ -48,7 +52,7 @@ def edit(product_id, oq, on, op):
                           form.price.data
                          ):
             return redirect(url_for('inventory.inventory'))
-    return render_template('editInventory.html', title="Edit Item", form=form, old_quantity=oq, old_num_for_sale=on, old_price=op, product_name=Product.get_name(product_id), product_id=product_id)
+    return render_template('editInventory.html', title="Edit Item", form=form, old_quantity=oq, old_num_for_sale=on, old_price=op, product_name=Product.get_name(product_id), product_id=product_id, categories = sorted_categories)
 
 # Add an existing product to a seller's own inventory if it is not already present
 @bp.route('/inventory/add/<int:product_id>', methods=['GET','POST'])

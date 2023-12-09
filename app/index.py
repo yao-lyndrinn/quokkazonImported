@@ -55,8 +55,7 @@ def index():
         product_prices[item.pid].append(item.price)
         
     # sort the categories to display on the drop down
-    categories = Category.get_all()
-    sorted_categories = sorted(categories, key=lambda x: x.name)
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     
     products_purchased = {}
     feedback_exists = {}

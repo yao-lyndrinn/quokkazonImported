@@ -24,12 +24,13 @@ def orders():
                            product_class=Product,
                            user_class=User)
 
+# Let a seller mark a purchase as fulfilled at the current time within their own orders table
 @bp.route('/orders/fulfill/<int:uid>-<int:sid>-<int:pid>-<int:oid>', methods=['POST'])
 def fulfill(uid, sid, pid, oid):
     current_dateTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if Purchase.fulfill(uid, sid, pid, oid, current_dateTime):
         return redirect(url_for('allpurchases.orders'))
     else:
-        print("ERROR")
+        print("ERROR with fulfillment entry")
     return redirect(url_for('allpurchases.orders'))
         

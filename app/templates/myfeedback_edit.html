@@ -43,13 +43,23 @@ method="POST">
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
     <input type="submit" value="Delete Review" style="background-color: darkred; color: #ffffff"/> 
 </form>
-<br><br>
-<label for="currentImage">Current Image:</label><br>
-    {% if product.image %}
+
+<form action="{{ url_for('feedback.product_remove_review') }}"
+method="POST">
+    <label for="image"><b>Image:</b></label><br>
+    <input type="file" id="image" name="image" accept="image/*" required><br>
+    <input type="submit" value ="Submit"/> 
+    <input type="submit" value="Delete Image" style="background-color: darkred; color: #ffffff"/> 
+
+    <br>
+    <label for="currentImage">Current Image:</label><br>
+    {% if item.image %}
         <img id="edit-image" src="{{ url_for('static', filename=item.image) }}">
     {% else %}
         <p>No image attached to review.</p>
     {% endif %}
+</form>
+
 
 </body>
 {% endfor %}

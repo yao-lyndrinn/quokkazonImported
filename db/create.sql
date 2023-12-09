@@ -10,7 +10,7 @@ CREATE TABLE Users(
 );
 
 CREATE TABLE Seller (
-	sid INTEGER PRIMARY KEY NOT NULL REFERENCES Users(id)
+	sid INTEGER PRIMARY KEY NOT NULL REFERENCES Users(id)   -- Seller id just references existing User id, all other Seller values can be taken from User table
 );
 
 CREATE TABLE Category (
@@ -36,15 +36,15 @@ CREATE TABLE Tag (
   name VARCHAR(400)NOT NULL
 );
 
-CREATE TABLE Purchases(
+CREATE TABLE Purchases(   -- Contains all individual purchases, which are grouped by orders (a set of purchases made by one user at a point in time)
   uid INTEGER NOT NULL REFERENCES Users(id),
 	sid INTEGER NOT NULL REFERENCES Seller(sid),
   pid INTEGER NOT NULL REFERENCES Products(pid), 
 	order_id INTEGER NOT NULL,
   time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
 	quantity INTEGER NOT NULL,
-  price DECIMAL(6,2) NOT NULL,
-	date_fulfilled timestamp without time zone,
+  price DECIMAL(6,2) NOT NULL,    -- price at time of purchase, not necessarily the same as the current price of the product
+	date_fulfilled timestamp without time zone,   -- can be null of purchase has not yet be fulfilled by the seller
 	PRIMARY KEY (sid, pid, uid, order_id)
 );
 
@@ -194,6 +194,36 @@ CREATE TRIGGER InventoryConstraints
   BEFORE INSERT OR UPDATE ON Inventory
   FOR EACH ROW
   EXECUTE PROCEDURE InventoryConstraints();
+
+----------------------------------------------------------------------
+-- purchase constraints
+
+CREATE FUNCTION PurchaseConstraints() RETURNS TRIGGER AS $$
+BEGIN
+  -- constraints the values in date_fulfilled, quantity, and price at time of purchase
+  IF NEW.date_fulfilled IS NOT NULL AND NEW.date_fulfilled < NEW.time_purchased THEN
+    RAISE EXCEPTION 'Fulfillment date cannot be before time of purchase';
+  END IF;
+  IF NEW.quantity < 0 THEN
+    RAISE EXCEPTION 'Quantity of an purchase cannot be less than 0.';
+  END IF;
+  IF NEW.price < 0 THEN
+    RAISE EXCEPTION 'Price of a purchase cannot be less than 0.';
+  END IF;
+  IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.uid <> p.uid) THEN
+    RAISE EXCEPTION 'Different users cannot make the same order';
+  END IF;
+  IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.time_purchased <> p.time_purchased) THEN
+    RAISE EXCEPTION 'The same order cannot include purchases made at different times';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER PurchaseConstraints
+  BEFORE INSERT OR UPDATE ON Purchases    -- deletions are ok
+  FOR EACH ROW
+  EXECUTE PROCEDURE PurchaseConstraints();
 
 ----------------------------------------------------------------------
 -- messages constraints

@@ -22,6 +22,7 @@ from flask import Blueprint
 
 bp = Blueprint('products', __name__)
 
+# List of month abbreviations for analytics graph
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 #converting time into a readable format
@@ -63,6 +64,7 @@ def product_detail(product_id):
     seller_names = {}
     seller_summary = {}
     order_freq_graph = None
+    sid = None
     for seller in inventory: 
         # get the name of the seller 
         seller_names[seller.sid] = SellerFeedback.get_name(seller.sid)
@@ -96,7 +98,7 @@ def product_detail(product_id):
         
         sid = Seller.get(current_user.id)
         if sid and Inventory.in_inventory(current_user.id, product_id):
-            # Graph for orders over time
+            # Create a graph for the number of orders per month for the given product and seller
             orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id, product_id)]
             of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
             of_fig = px.line(of_df, x='Month',y='Count',title='Number ordered from me per month')
@@ -117,7 +119,8 @@ def product_detail(product_id):
                            humanize_time=humanize_time,
                            inventory=inventory,
                            inv_len = inv_len,
-                           order_freq_graph=order_freq_graph)
+                           order_freq_graph=order_freq_graph,
+                           is_seller=sid)
 
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])

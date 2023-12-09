@@ -2,6 +2,9 @@ from flask import current_app as app
 import datetime
 
 class Purchase:
+    # Creates a new purchase entry with the given user id, seller id, product id, order id, time of purchase, quantity purchased, price at time of purchase,
+    # and date the purchase. No two entries can have the same user id, seller id, product id, and order id at once. The date fulfilled may by None to denote
+    #  a yet-to-be fulfilled purchase
     def __init__(self, uid, sid, pid, order_id, time_purchased, quantity, price, date_fulfilled):
         self.uid = uid
         self.sid = sid
@@ -12,6 +15,7 @@ class Purchase:
         self.price = price
         self.date_fulfilled = date_fulfilled
 
+    # Returns a purchase entry given the user, product, seller, and order ids
     @staticmethod
     def get(uid,pid,sid,order_id):
         rows = app.db.execute('''
@@ -22,6 +26,7 @@ class Purchase:
         uid=uid, pid=pid, sid =sid, order_id = order_id)
         return Purchase(*(rows[0])) if rows else None
 
+    # Returns the (at most) 10 purchases most recent purchases in reverse chronological order by a user after a specified date
     @staticmethod
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
@@ -36,6 +41,8 @@ class Purchase:
                               since=since)
         return [Purchase(*row) for row in rows]
     
+    # Returns the top 10 purchased products and their associated purchase counts.
+    @staticmethod
     def get_top_ten():
         rows = app.db.execute('''
         SELECT pid, COUNT(*)
@@ -49,6 +56,8 @@ class Purchase:
             top_purchases.append(pid)
         return top_purchases
     
+    # Returns all purchases made from a particular specified seller, sorting in reverse chronological order
+    # However, unfulfilled orders will be placed at the top.
     @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''
@@ -60,6 +69,7 @@ class Purchase:
                               sid=sid)
         return [Purchase(*row) for row in rows]
     
+    # Returns total quantities of products ordered in order from highest to lowest for a particular specified seller.
     @staticmethod
     def get_order_counts_by_sid(sid):
         rows = app.db.execute('''
@@ -74,6 +84,8 @@ class Purchase:
                               sid=sid)
         return rows
     
+    # Returns a list of the total number of orders for a particular seller over each month for the last 3 years. If no product is specified, the numbers of orders are
+    # summed up for all products. Otherwise, if a product is specified, then the numbers of orders are only summed up for that particular product.
     @staticmethod
     def get_num_orders_per_month(sid, pid=None):
         today = datetime.date.today()
@@ -160,6 +172,7 @@ class Purchase:
                                 year_range=year_range)
         return rows
 
+    # Updates a purchase as fulfilled by setting a new fulfillment date
     @staticmethod
     def fulfill(uid, sid, pid, order_id, date_fulfilled):
         try:
@@ -174,11 +187,11 @@ class Purchase:
                                   order_id=order_id,
                                   date_fulfilled=date_fulfilled
                                 )
-            print("YESSS")
             return date_fulfilled
         except Exception as e:
             print(str(e))
-            
+
+    # Returns all purchases by a user within a single order specified by the order id
     @staticmethod
     def get_order(uid, order_id):
         rows = app.db.execute('''
@@ -189,7 +202,7 @@ class Purchase:
         return [Purchase(*row) for row in rows]
 
     @staticmethod
-    def get_total_price_order(uid, order_id): #sums up quantity * price
+    def get_total_price_order(uid, order_id): # sums up quantity * price for an order
         rows = app.db.execute("""
         WITH C(total) AS
             (SELECT quantity * price FROM Purchases

@@ -931,7 +931,9 @@ section {
 
 .chart {
     display: inline-block;
-    width: 45vw;
+    margin: 0 auto;
+    height: 400px;
+    width: 500px;
 }
 
 #edit-image {

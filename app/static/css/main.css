@@ -49,6 +49,17 @@ a {
   background-color: rgb(70, 70, 70);
 }
 
+.btn-red-feedback{
+  border: none;
+  color: white;
+  background-color: darkred;
+}
+
+.btn-red-feedback:hover {
+  color:white;
+  text-decoration: none;
+  background-color: rgb(70, 70, 70);
+}
 
 .quokka-brown{
   background-color: #422808;

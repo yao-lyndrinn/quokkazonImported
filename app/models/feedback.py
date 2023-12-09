@@ -392,6 +392,7 @@ class SellerFeedback:
     
     @staticmethod
     def sorted_by_upvotes(sid):
+        # get the feedback for a given seller sorted by upvotes 
         rows = app.db.execute('''
         WITH upvotes AS (
             SELECT reviewer, Count(reviewer) AS votes
@@ -443,6 +444,7 @@ class SellerFeedback:
 
     @staticmethod 
     def upvote_count(reviewer,seller):
+        # the total number of upvotes for a seller feedback entry 
         rows = app.db.execute("""
         SELECT Count(*)
         FROM UpvoteSellerReview 
@@ -455,6 +457,7 @@ class SellerFeedback:
 
     @staticmethod 
     def my_upvote(uid,reviewer,seller):
+        # get all of my upvotes for a certain seller feedback review 
         upvoted = app.db.execute("""
         SELECT Count(*)
         FROM UpvoteSellerReview 
@@ -481,6 +484,7 @@ class SellerFeedback:
 
     @staticmethod 
     def get_name(sid): 
+        # get a user's name 
         name = app.db.execute("""
         SELECT (firstname || ' ' || lastname) AS name 
         FROM Users
@@ -491,6 +495,7 @@ class SellerFeedback:
    
     @staticmethod
     def feedback_exists(uid,sid): 
+        # whether a user has left feedback for this seller already 
         exists = app.db.execute("""
         SELECT f.uid
         FROM SellerFeedback f                         

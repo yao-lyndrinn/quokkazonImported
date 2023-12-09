@@ -127,5 +127,5 @@ def search_results():
 
 def search_users(search_term):
     users = User.get_all()
-    search_results = [user for user in users if (search_term.lower() in user.firstname.lower()) or (search_term.lower() in user.lastname.lower())]
+    search_results = [user for user in users if (search_term.lower() in user.firstname.lower()) or (search_term.lower() in user.lastname.lower()) or (search_term.lower() in (user.firstname.lower() + " " + user.lastname.lower()))]
     return search_results

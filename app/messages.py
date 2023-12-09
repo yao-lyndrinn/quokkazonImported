@@ -33,7 +33,7 @@ def my_messages():
 @bp.route('/my_message_history/<int:other_user>', methods=['POST','GET'])
 def message_thread(other_user):
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller = True
         else:
             is_seller = False

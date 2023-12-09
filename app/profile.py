@@ -10,7 +10,9 @@ from .models.feedback import SellerFeedback, ProductFeedback
 from .models.purchase import Purchase
 from .models.product import Product
 from .models.category import Category
-
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp
 from humanize import naturaltime
 import datetime
 import pandas as pd
@@ -130,22 +132,40 @@ def reg_seller():
     # The user information will be loaded from the current_user proxy
     return redirect(url_for('profile.my_profile'))
 
+class RegistrationForm(FlaskForm):
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    address = StringField('Address', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(),
+                                       EqualTo('password')])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Regexp('^[0-9]*$', message='Phone number must contain only numbers')])
+    submit = SubmitField('Register')
+        
+    def validate_email(self, email):
+        if User.email_exists(email.data):
+            raise ValidationError('Already a user with this email.')
 
 # Allows for personal info to be changed
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+    form = RegistrationForm()
     if request.method == 'POST':
         # Retrieve form data
         firstname = request.form.get('firstname')
         lastname = request.form.get('lastname')
         email = request.form.get('email')
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
         phone_number = request.form.get('phone_number').replace('(','').replace(')','').replace('-','').replace(' ','').replace('+','')
         address = request.form.get('address')
         if len(firstname.strip()) == 0 or len(email.strip()) == 0 or len(phone_number.strip()) != 10 or len(address.strip()) == 0:
             return render_template('edit_profile.html', categories=sorted_categories, error=True)
-        User.update_user_info(current_user.id, email, firstname, lastname, address, phone_number)
+        User.update_user_info(current_user.id, email, firstname, lastname, address, phone_number, password)
         #flash('Profile updated successfully!')
         return redirect(url_for('profile.my_profile'))
     return render_template('edit_profile.html', categories=sorted_categories, error=False)

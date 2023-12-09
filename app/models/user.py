@@ -78,14 +78,14 @@ WHERE id = :id
 
 # Method to update a user's info
     @staticmethod
-    def update_user_info(user_id, email, firstname, lastname, address, phone_number):
+    def update_user_info(user_id, email, firstname, lastname, address, phone_number, password):
         try:
             # Update query to modify user details in the database
             app.db.execute(
                 "UPDATE Users SET email = :email, firstname = :firstname, lastname = :lastname, "
-                "address = :address, phone_number = :phone_number WHERE id = :user_id",
+                "address = :address, phone_number = :phone_number, password = :password WHERE id = :user_id",
                 user_id=user_id, email=email, firstname=firstname, 
-                lastname=lastname, address=address, phone_number=phone_number)
+                lastname=lastname, address=address, phone_number=phone_number, password= password)
             return True
         except Exception as e:
             # Log the exception e

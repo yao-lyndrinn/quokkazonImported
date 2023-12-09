@@ -152,9 +152,8 @@ def top_up():
     if request.method == 'POST':
         # Retrieve form data
         added_money = request.form.get("added_money")
-
-        User.top_up(current_user.id, current_user.balance, added_money)
-       # flash('Balance topped up successfully!')
-        return redirect(url_for('profile.my_profile'))
-
-    return render_template('top_up.html', categories=sorted_categories)
+        if User.top_up(current_user.id, current_user.balance, added_money):
+            return redirect(url_for('profile.my_profile'))
+        else:
+            return render_template('top_up.html',error=True)
+    return render_template('top_up.html',error=False, categories=sorted_categories)

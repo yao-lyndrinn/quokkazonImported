@@ -120,7 +120,23 @@ CREATE TABLE Cart(
   -- one line is identified by user, seller, and product which is for one quantity of item in that user’s cart
 );
 
+----------------------------------------------------------------------
+-- user constraints
 
+CREATE FUNCTION UserConstraints() RETURNS TRIGGER AS $$
+BEGIN
+  -- ensures that new messages have later timestamps 
+  IF NEW.balance < 0 THEN
+    RAISE EXCEPTION 'User balance must be nonnegative!';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER UserConstraints
+  BEFORE INSERT OR UPDATE ON Users  -- deletions are ok
+  FOR EACH ROW
+  EXECUTE PROCEDURE UserConstraints();
 ----------------------------------------------------------------------
 -- feedback constraints
 

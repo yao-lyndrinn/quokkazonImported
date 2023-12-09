@@ -89,13 +89,10 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
-    def newOrderId(uid): #ensures new order id is highest among this user
+    def newOrderId(uid): #ensures new order id is highest
         rows = app.db.execute("""
-        WITH orders(ids) AS (SELECT order_id
+        SELECT MAX(order_id)
         FROM PURCHASES
-        WHERE uid = :uid)
-        SELECT MAX(orders.ids)
-        FROM orders
         """, uid = uid)
         return int(rows[0][0]+1) if rows and rows[0][0] is not None else 1
 
@@ -118,28 +115,25 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return [row[0] for row in rows]
 
     @staticmethod
-    def increase_balances(sids, uid): #update user balance for each seller id in cart
+    def increase_balances(sids, uid, multiplier): #update user balance for each seller id in cart
         for sid in sids:
             rows = app.db.execute('''
             WITH C(total) AS
             (SELECT Cart.quantity * price FROM Cart, Inventory
             WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
             UPDATE USERS
-            SET balance = balance + (SELECT SUM(total) FROM C)
+            SET balance = balance + (SELECT SUM(total) FROM C) * :multiplier
             WHERE id = :sid
-            ''', sid = sid, uid = uid)
+            ''', sid = sid, uid = uid, multiplier = multiplier)
         return
 
     @staticmethod
-    def decrease_balance(uid): #subtract total cart price from balance on order
+    def decrease_balance(uid, totalPrice): #subtract total cart price from balance on order
         rows = app.db.execute('''
-        WITH C(total) AS
-            (SELECT Cart.quantity * price FROM Cart, Inventory
-            WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid AND saved_for_later = B'0')
         UPDATE USERS
-        SET balance = balance - (SELECT SUM(total) FROM C)
+        SET balance = balance - :totalPrice
         WHERE id = :uid
-        ''', uid = uid)
+        ''', uid = uid, totalPrice = totalPrice)
         return
 
     @staticmethod
@@ -165,5 +159,12 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         sid=sid,
         pid=pid)
         return
+
+    @staticmethod
+    def compare(uid, total):
+        if total == CartItem.get_total_price(uid):
+            return False
+        else:
+            return True
 
     

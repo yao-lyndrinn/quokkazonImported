@@ -111,12 +111,25 @@ WHERE id = :id
     @staticmethod
     def top_up(user_id, balance, added_money):
         # Update query to modify user details in the database
-        new_bal = balance + Decimal(added_money)
-        app.db.execute(
-            "UPDATE Users SET balance = :balance WHERE id = :user_id",
-            user_id=user_id, balance= new_bal)
-        print("Success!")
-        return True
+        try:
+            added_decimal = Decimal(added_money)
+            if added_decimal < 0:
+                print("Added amount can't be negative!")
+                return False
+            new_bal = balance + added_decimal
+            try:
+                app.db.execute(
+                    "UPDATE Users SET balance = :balance WHERE id = :user_id",
+                    user_id=user_id, balance= new_bal)
+                print("Success!")
+                return True
+            except:
+                print("Error: balance out of range")
+                return False
+        except:
+            print('Added amount must be a decimal!')
+            return False
+        
 
     @staticmethod
     def get_balance(user_id):

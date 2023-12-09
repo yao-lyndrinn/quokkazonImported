@@ -141,13 +141,13 @@ def products():
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)
-    items_stock = Stock.get_all_in_stock()
+    items = []
     
     #make lists of product prices and summaries for items 
     for item in inventory:
         product_prices[item.pid].append(item.price)
         summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
-                
+
     #sorting and filtering the products
     if request.method == 'GET':
         filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
@@ -160,9 +160,16 @@ def products():
             items = Stock.get_stock_desc()
         else:
             if filter_by == "available":
-                items = apply_sort(items_stock, sort_by)
+                if sort_by == "a-z":
+                    items = Stock.get_az()             
+                if sort_by == "z-a":
+                    items = Stock.get_za()
             else:
-                items = apply_sort(Product.get_all(), sort_by)
+                if sort_by == "a-z":
+                    items = Product.get_az()
+                    
+                else:
+                    items = Product.get_za()
         
 
     paginated = items[start:end]
@@ -210,7 +217,7 @@ def search_results():
     
     #get search term from sessions
     if request.method == 'GET':
-        search_term = session.get('search_term')  
+        search_term = session.get('search_term')
     
     #filtering and sorting on the search results page
     filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
@@ -223,7 +230,7 @@ def search_results():
         items = search_products(search_term, Stock.get_stock_desc())
     else:
         if filter_by == "available":
-            items = apply_sort(Stock.get_all_in_stock(), sort_by)
+            items = apply_sort(search_products(search_term, Stock.get_all_in_stock()), sort_by)
         else:
             items = apply_sort(search_products(search_term, Product.get_all()), sort_by)
     

@@ -314,8 +314,8 @@ def public_profile(user_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
-    a = Seller.get(user_id)
-    if a is not None: 
+    is_seller = Seller.get(user_id)
+    if is_seller is not None: 
         if Seller.has_products(user_id):
             summary = SellerFeedback.summary_ratings(user_id)    
   

@@ -12,6 +12,7 @@ class Product:
         self.cid = cid
         self.sid = sid
 
+    #Returns one product entry by pid
     @staticmethod
     def get(pid):
         rows = app.db.execute('''
@@ -21,6 +22,7 @@ class Product:
         ''', pid=pid)
         return Product(*(rows[0])) if rows is not None else None
 
+    #Returns all product entries
     @staticmethod
     def get_all():
         rows = app.db.execute('''
@@ -28,6 +30,8 @@ class Product:
         FROM Products
         ''')
         return [Product(*row) for row in rows]
+    
+    #Returns all product entries a-z
     @staticmethod
     def get_az():
         rows = app.db.execute('''
@@ -36,6 +40,8 @@ class Product:
         ORDER BY Products.name
         ''')
         return [Product(*row) for row in rows]
+    
+    #Returns all product entries z-a
     @staticmethod
     def get_za():
         rows = app.db.execute('''
@@ -44,6 +50,8 @@ class Product:
         ORDER BY Products.name DESC
         ''')
         return [Product(*row) for row in rows]
+    
+    #Returns all product entries based on category
     @staticmethod
     def get_all_by_cat(cid):
         rows = app.db.execute('''
@@ -53,6 +61,7 @@ class Product:
         ''', cid=cid)
         return [Product(*row) for row in rows]
     
+    #Returns the name of a product entry based on pid
     @staticmethod
     def get_name(pid):
         product = Product.get(pid)
@@ -60,6 +69,8 @@ class Product:
             return product.name
         else:
             return None
+        
+    #Creates a new pid for product
     @staticmethod
     def newPID():
         rows = app.db.execute("""
@@ -68,6 +79,7 @@ class Product:
         """)
         return rows
         
+    #Inserts product values into the product table as a new entry 
     @staticmethod 
     def add_product(pid, name, description, image, altTxt, createdAt, updatedAt, cid, sid):
         app.db.execute("""
@@ -84,6 +96,8 @@ class Product:
         sid=sid
         )
         return 
+    
+    #Get all product entries by creator 
     @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''
@@ -93,6 +107,7 @@ class Product:
         ''', sid=sid)
         return [row[0] for row in rows]
     
+    #Updates an existing product based on their pid and sid. 
     @staticmethod
     def edit(pid, name, description, image, altTxt, updatedAt, cid, sid):
         try:
@@ -123,6 +138,7 @@ class ProductRating:
         self.cid = cid
         self.rating = rating
         
+    # Gets all enries of joined table of product and product feedback to have access to ratings
     def all_ratings():
         rows = app.db.execute('''
         SELECT p.pid, p.name, p.description, p.image, p.altTxt, p.createdAt, p.updatedAt, p.cid, AVG(f.rating) as avg_rating
@@ -133,6 +149,7 @@ class ProductRating:
         ''')
         return [ProductRating(*row) for row in rows]
     
+    #Gets product entries based on category ordered descending on ratings
     def all_ratings_cid(cid):
         rows = app.db.execute('''
         SELECT p.pid, p.name, p.description, p.image, p.altTxt, p.createdAt, p.updatedAt, p.cid, AVG(f.rating) as avg_rating

@@ -12,6 +12,7 @@ class Stock:
         self.cid = cid
         self.price = price
 
+    #Returns all Product entries that are joined with Inventory, so that means someone is selling them and they are in stock
     @staticmethod
     def get_all_in_stock():
         rows = app.db.execute('''
@@ -22,6 +23,7 @@ class Stock:
         ''')
         return [Stock(*row) for row in rows]
     
+    #Returns all in-stock items descending ordr
     @staticmethod
     def get_stock_desc():
         rows = app.db.execute('''
@@ -33,6 +35,7 @@ class Stock:
         ''')
         return [Stock(*row) for row in rows]
    
+    #Returns all in-stock items ascending order
     @staticmethod
     def get_stock_asc():
         rows = app.db.execute('''
@@ -44,6 +47,7 @@ class Stock:
         ''')
         return [Stock(*row) for row in rows]
     
+    #Returns all in stock items by category
     @staticmethod
     def get_stock_by_cat(cid):
         rows = app.db.execute('''
@@ -55,6 +59,7 @@ class Stock:
         ''', cid = cid)
         return [Stock(*row) for row in rows]
     
+    #Returns all in stock items by category ascending price order
     @staticmethod
     def get_stock_by_cat_asc(cid):
         rows = app.db.execute('''
@@ -67,6 +72,7 @@ class Stock:
         ''', cid = cid)
         return [Stock(*row) for row in rows]
     
+    #Returns all in stock items by category descending price order
     @staticmethod
     def get_stock_by_cat_dec(cid):
         rows = app.db.execute('''
@@ -79,6 +85,7 @@ class Stock:
         ''', cid = cid)
         return [Stock(*row) for row in rows]
     
+    #Returns all in stock items by category ascending name order
     @staticmethod
     def get_az():
         rows = app.db.execute('''
@@ -90,6 +97,7 @@ class Stock:
         ''')
         return [Stock(*row) for row in rows]
     
+     #Returns all in stock items by category descending name order
     @staticmethod
     def get_za():
         rows = app.db.execute('''

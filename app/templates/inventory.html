@@ -3,7 +3,7 @@
 <!--Page for viewing a table of all the products in a seller's own inventory-->
 
 {% block content %}
-
+<div class = "index-div">
 <br>
 <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
   {% if current_user.is_authenticated and is_seller %}
@@ -73,5 +73,5 @@
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your inventory!</p>
 {% endif %}
 </div>
-
+</div>
 {% endblock %}

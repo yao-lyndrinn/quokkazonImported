@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div class="index-div">
 <br><br>
 {% if current_user.is_authenticated %}
 <h2>My Cart:</h2>
@@ -126,5 +126,5 @@
   Enter Promotional Code: <input type="text" name="code">
   <input type="submit" value="Apply">
 </form>
-
+</div>
 {% endblock %}

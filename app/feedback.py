@@ -16,22 +16,30 @@ def humanize_time(dt):
 
 @bp.route('/feedback_history/<int:uid>', methods=['POST','GET'])
 def my_feedback(uid):
-    name = SellerFeedback.get_name(uid)
-    pfeedback = ProductFeedback.get_by_uid(uid)
+    # render the feedback history page for a given user 
+    name = SellerFeedback.get_name(uid) # name of the user 
+    pfeedback = ProductFeedback.get_by_uid(uid) # get the user's feedback for products 
     pupvotes = {}
     my_pupvotes = {}
     for item in pfeedback: 
+        # get the user's upvotes for product reviews 
         pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
     
+    # get the user's feedback for sellers 
     sfeedback = SellerFeedback.get_by_uid(uid)
     supvotes = {}
     my_supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
         
+    # if the current user is logged in, then they can upvote reviews 
     if current_user.is_authenticated: 
+        if Seller.find(current_user.id): 
+            is_seller = True 
+        # get the current user's upvotes for product reviews 
         for reviewer, reviewed in pupvotes:
             my_pupvotes[(reviewer,reviewed)] = ProductFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
+        # get the current user's upvotes for seller reviews 
         for reviewer, reviewed in supvotes:
             my_supvotes[(reviewer,reviewed)] = SellerFeedback.my_upvote(current_user.id,reviewer,reviewed)[0][0]
 
@@ -44,19 +52,30 @@ def my_feedback(uid):
                         my_supvotes = my_supvotes,
                         sfeedback=sfeedback,
                         supvotes=supvotes,
+                        is_seller=is_seller,
                         humanize_time=humanize_time)
-
+    
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
 def product_submission_form(product_id,name):
-    return render_template('myfeedback_add.html',
-                            product_id=product_id,
-                            name=name,
-                            type="product",
-                            humanize_time=humanize_time)
+    if current_user.is_authenticated: 
+        # go to the feedback submission form for this product 
+        if Seller.find(current_user.id): 
+            is_seller = True 
+        return render_template('myfeedback_add.html',
+                                product_id=product_id,
+                                is_seller=is_seller,
+                                name=name,
+                                type="product",
+                                humanize_time=humanize_time)
+    else: 
+        return redirect(url_for('users.login'))
 
 @bp.route('/myfeedback/add/product', methods=['POST','GET'])
-def product_add_feedback():
+def product_add_feedback(): 
     if request.method == 'POST': 
+        # submit feedback 
+        if Seller.find(current_user.id): 
+            is_seller = True 
         pid = int(request.form['pid'])
         rating = int(request.form['rating'])
         review = request.form['review']
@@ -70,34 +89,52 @@ def product_add_feedback():
         
         ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime, "product_images/" + filename)
         pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, pid)
-    return render_template('myfeedback_edit.html',
-                        pfeedback=pfeedback,
-                        humanize_time=humanize_time)
+        return render_template('myfeedback_edit.html',
+                            pfeedback=pfeedback,
+                            is_seller=is_seller,
+                            humanize_time=humanize_time)
+    # if the user did not click a button to get to this page, redirect them to the home page 
+    elif current_user.is_authenticated: 
+        return redirect(url_for('index.index',uid=current_user.id))  
+    # anonymous user
+    else: 
+        return redirect(url_for('users.login'))      
 
 @bp.route('/myfeedback/edit/product/<int:product_id>', methods=['POST','GET'])
 def product_feedback_edit(product_id):
-    pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
-    return render_template('myfeedback_edit.html',
-                        pfeedback=pfeedback,
-                        humanize_time=humanize_time)
-
+    if current_user.is_authenticated: 
+        # go to the feedback editing page for this product 
+        if Seller.find(current_user.id): 
+            is_seller = True
+        pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
+        return render_template('myfeedback_edit.html',
+                            pfeedback=pfeedback,
+                            is_seller=is_seller,
+                            humanize_time=humanize_time)
+    else: 
+        return redirect(url_for('users.login'))      
+ 
 @bp.route('/myfeedback/edit/product_rating', methods=['POST','GET'])
 def product_rating_edit():
-    if request.method == 'POST': 
+    if request.method == "POST":
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         rating = int(request.form['rating'])
         pid = int(request.form['pid'])
         ProductFeedback.edit_rating(current_user.id, pid, rating, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/edit/product_review', methods=['POST','GET'])
 def product_review_edit():
-    if request.method == 'POST': 
+    if request.method == "POST":
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         review = request.form['review']
         pid = int(request.form['pid'])
         ProductFeedback.edit_review(current_user.id, pid, review, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/edit/product_image', methods=['POST','GET'])
 def product_image_edit():
@@ -112,13 +149,15 @@ def product_image_edit():
         pid = int(request.form['pid'])
         print(filename)
         ProductFeedback.edit_image(current_user.id, pid, "product_images/" + filename, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
-    if request.method == 'POST': 
-        ProductFeedback.remove_upvotes(current_user.id,product_id)
-        ProductFeedback.remove_feedback(current_user.id,product_id)
+    # when a user removes their product feedback, also remove any associated upvotes 
+    ProductFeedback.remove_upvotes(current_user.id,product_id)
+    ProductFeedback.remove_feedback(current_user.id,product_id)
     return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
@@ -128,7 +167,9 @@ def product_remove_review():
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/myfeedback/delete/image', methods=['POST','GET'])
 def product_remove_image():
@@ -136,21 +177,24 @@ def product_remove_image():
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ProductFeedback.edit_image(current_user.id, pid,'',current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
 
 @bp.route('/productfeedback/remove_upvote', methods=['POST','GET'])
 def remove_upvote_product_review():
-    reviewer =  int(request.form['reviewer'])
-    product = int(request.form['reviewed'])
-    page = request.form['page']
-    ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
-    if page == "myfeedback":
-        return redirect(url_for('feedback.my_feedback',uid=current_user.id))
-    elif page == "publicfeedback":
-        uid = int(request.form['uid'])
-        return redirect(url_for('feedback.my_feedback',uid=uid))
+    if request.method == "POST":
+        reviewer =  int(request.form['reviewer'])
+        product = int(request.form['reviewed'])
+        page = request.form['page']
+        ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
+        if page == "myfeedback":
+            return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+        elif page == "publicfeedback":
+            uid = int(request.form['uid'])
+            return redirect(url_for('feedback.my_feedback',uid=uid))
     return redirect(url_for('products.product_detail',product_id=product))
-
+    
 @bp.route('/productfeedback/upvote', methods=['POST','GET'])
 def upvote_product_review():
     reviewer =  int(request.form['reviewer'])
@@ -171,6 +215,7 @@ def seller_feedback_edit(seller_id):
                     current_user.id, seller_id)
     return render_template('myfeedback_edit.html',
                         sfeedback=sfeedback,
+                        is_seller=is_seller,
                         humanize_time=humanize_time)
 
 @bp.route('/myfeedback/edit/seller_rating', methods=['POST','GET'])
@@ -219,6 +264,7 @@ def seller_add_feedback():
         sfeedback = SellerFeedback.get_by_uid_sid(current_user.id, sid)
     return render_template('myfeedback_edit.html',
                         sfeedback=sfeedback,
+                        is_seller=is_seller,
                         humanize_time=humanize_time)
 
 @bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
@@ -290,10 +336,13 @@ def public_profile(user_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
-    a = Seller.get(user_id)
-    if a is not None: 
+    is_seller = Seller.get(user_id)
+    if is_seller is not None: 
         if Seller.has_products(user_id):
             summary = SellerFeedback.summary_ratings(user_id)    
+        is_seller = True
+    else: 
+        is_seller = True 
   
     info = Seller.find(user_id)
     feedback_for_other_sellers = SellerFeedback.user_summary_ratings(user_id)
@@ -303,6 +352,7 @@ def public_profile(user_id):
                             supvotes=supvotes,
                             myupvotes=myupvotes,
                             summary=summary,
+                            is_seller=is_seller,
                             user_id=user_id,
                             top3=top3,
                             first_name = info[2],

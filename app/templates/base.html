@@ -83,7 +83,7 @@
     <a href="{{ url_for('userlookup.lookup') }}" type="button" class="btn tab-banner">User Lookup</a>
     {% if current_user.is_authenticated%}
     {% if is_seller%}
-      <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn tab-banner">My Orders</a>
+      <a href="{{ url_for('allpurchases.orders') }}" type="button" class="btn tab-banner">Seller Orders</a>
       <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn tab-banner">My Inventory</a>
       
     {% endif %}

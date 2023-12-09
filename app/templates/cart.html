@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div class="index-div">
 <br><br>
 {% if current_user.is_authenticated %}
 <h2>My Cart:</h2>
@@ -119,4 +119,5 @@
   </script>
   <!--add place to input coupon code for discount and add another boolean parameter-->
   <!--to ensure you can't use that code god i want to kms-->
+</div>
 {% endblock %}

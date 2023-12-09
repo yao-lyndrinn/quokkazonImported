@@ -7,6 +7,7 @@ from .models.seller import Seller
 from humanize import naturaltime
 
 from .models.messages import Messages
+from .models.category import Category
 from flask import Blueprint
 bp = Blueprint('messages', __name__)
 
@@ -16,11 +17,15 @@ def humanize_time(dt):
 @bp.route('/my_message_history', methods=['POST','GET'])
 def my_messages():
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller=True
+        else: 
+            is_seller = False
         interacted = Messages.has_message(current_user.id)
+        sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('mymessages.html',
                         interacted=interacted,
+                        categories=sorted_categories,
                         is_seller=is_seller,
                         humanize_time=humanize_time)
     return redirect(url_for('index.index'))
@@ -28,14 +33,18 @@ def my_messages():
 @bp.route('/my_message_history/<int:other_user>', methods=['POST','GET'])
 def message_thread(other_user):
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller = True
+        else:
+            is_seller = False
+        sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         messages = Messages.message_thread(current_user.id,other_user)
         other_user_name = SellerFeedback.get_name(other_user)
         return render_template('messages.html',
                             messages=messages,
                             is_seller = is_seller,
                             other_user=other_user,
+                            categories=sorted_categories,
                             other_user_name=other_user_name,
                             humanize_time=humanize_time)
     return redirect(url_for('index.index'))

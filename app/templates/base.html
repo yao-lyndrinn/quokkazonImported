@@ -20,6 +20,16 @@
   function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
   }
+
+  // Prevent double clicks on submit buttons in forms 
+  $(document).ready(function(){
+                 $("form").submit(function() {
+                        $(this).submit(function() {
+                            return false;
+                        });
+                        return true;
+                    }); 
+            }); 
   
   // Close the dropdown menu if the user clicks outside of it
   window.onclick = function(event) {

@@ -82,7 +82,7 @@
 <form action="{{ url_for('feedback.seller_rating_edit') }}" method="POST">
     <input type="number" name="rating" id="rating" min="1" max="5" REQUIRED>
     <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
-    <input type="submit" value="Submit"> 
+    <input type="submit" value="Submit" class="btn btn-gray-inventory"> 
     </form>
 </p>
 
@@ -92,7 +92,7 @@
 <form action="{{ url_for('feedback.seller_review_edit') }}" method="POST">
  <textarea id="review" name="review" rows="4" cols="50" REQUIRED>{{item.review}}</textarea>
  <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
-<br><input type="submit" value="Submit"> 
+<br><input type="submit" value="Submit" class="btn btn-gray-inventory"> 
     </form>
 <form action="{{ url_for('feedback.seller_remove_review',seller_id=item.sid) }}"
 method="POST">

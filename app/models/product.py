@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 class Product:
-    def __init__(self, pid, name, description, image, altTxt, createdAt, updatedAt, cid):
+    def __init__(self, pid, name, description, image, altTxt, createdAt, updatedAt, cid, sid):
         self.pid = pid
         self.name = name
         self.description = description
@@ -10,6 +10,7 @@ class Product:
         self.CreatedAt = createdAt
         self.UpdatedAt = updatedAt
         self.cid = cid
+        self.sid = sid
 
     @staticmethod
     def get(pid):
@@ -52,10 +53,10 @@ class Product:
         return rows
         
     @staticmethod 
-    def add_product(pid, name, description, image, altTxt, createdAt, updatedAt, cid):
+    def add_product(pid, name, description, image, altTxt, createdAt, updatedAt, cid, sid):
         app.db.execute("""
-        INSERT INTO Products(pid, name, description, image, altTxt, createdAt, updatedAt, cid)
-        VALUES(:pid, :name, :description, :image, :altTxt, :createdAt, :updatedAt, :cid)
+        INSERT INTO Products(pid, name, description, image, altTxt, createdAt, updatedAt, cid, sid)
+        VALUES(:pid, :name, :description, :image, :altTxt, :createdAt, :updatedAt, :cid, :sid)
         """, 
         pid = pid, 
         name=name, 
@@ -63,9 +64,36 @@ class Product:
         image=image, altTxt=altTxt, 
         createdAt=createdAt, 
         updatedAt=updatedAt,
-        cid=cid
+        cid=cid,
+        sid=sid
         )
-        return
+        return 
+    
+    def get_all_by_sid(sid):
+        rows = app.db.execute('''
+        SELECT pid
+        FROM Products
+        WHERE sid = :sid
+        ''', sid=sid)
+        return [row[0] for row in rows]
+    
+    @staticmethod
+    def edit(pid, name, description, image, altTxt, updatedAt, cid, sid):
+        try:
+            rows = app.db.execute("""
+            UPDATE Products
+            SET name=:name, description=:description, image=:image, altTxt=:altTxt, updatedAt=:updatedAt, cid=:cid
+            WHERE pid=:pid AND sid=:sid
+            """,
+            pid = pid, 
+            name=name, 
+            description=description, 
+            image=image, altTxt=altTxt, 
+            updatedAt=updatedAt,
+            cid=cid,
+            sid=sid)
+        except Exception as e:
+            print(str(e))
     
 class ProductRating:
     def __init__(self, pid, name, description, image, altTxt, createdAt, updatedAt, cid, rating):

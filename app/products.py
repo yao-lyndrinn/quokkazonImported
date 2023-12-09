@@ -252,7 +252,7 @@ def add_products():
         filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
         file.save(filepath)
                 
-        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt, category)
+        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt, category, current_user.id)
         
         if Inventory.add(pid, current_user.id, 0, 0, 0):
             return redirect(url_for('inventory.edit', product_id=pid, oq=0, on=0, op=0))
@@ -261,3 +261,27 @@ def add_products():
         return redirect(url_for('inventory.inventory'))
                 
     return render_template('add_products.html', categories=categories)
+
+@bp.route('/products/edit_product/<int:product_id>', methods=['GET','POST'])
+def edit_product(product_id):
+    categories=Category.get_all()
+    product = Product.get(product_id)
+    if request.method == "POST":
+        name = request.form["name"]
+        description = request.form["description"]
+        altTxt = request.form["altTxt"]
+        category = request.form["category"]
+        updatedAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        if request.files['image']:
+            file = request.files['image']
+            filename = file.filename
+            filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
+            file.save(filepath)
+        else:
+            filename = product.image[15:]
+        
+        Product.edit(product_id, name, description, "product_images/" + filename, altTxt, updatedAt, category, current_user.id)
+        return redirect(url_for('inventory.inventory'))
+    return render_template('editProduct.html',  categories=categories, product=product, product_id=product_id)
+

@@ -1,27 +1,30 @@
 from flask import current_app as app
 
 class ProductFeedback:
-    def __init__(self,uid,name,pid,rating,review,date_time):
-        self.uid = uid
-        self.name = name
-        self.pid = pid
-        self.rating = rating
-        self.review = review
+    def __init__(self,uid,name,pid,rating,review,date_time,image):
+        self.uid = uid # reviewer's id
+        self.name = name # either name of product or name of reviewer depending on the precise usage 
+        self.pid = pid # product's id 
+        self.rating = rating # rating on a scale from 1 to 5 
+        self.review = review 
         self.date_time = date_time
+        self.image = image # link to an image that the user has uploaded with their feedback
     
     def summary_ratings(pid): 
+        # get the number of ratings and average rating for a product 
         info = app.db.execute('''
         SELECT COUNT(f.rating), AVG(f.rating)
         FROM ProductFeedback as f
         WHERE f.pid = :pid
         ''', pid=pid)
-        if info[0][1] is None:
+        if info[0][1] is None: # default in case there is no feedback
             return (None,0)
-        num = info[0][0]
-        avg = round(info[0][1],1)
+        num = info[0][0] # number of ratings 
+        avg = round(info[0][1],1) # average rating 
         return (avg,num)
     
     def user_summary_ratings(uid): 
+        # the total number of reviews and average rating that a user has submitted for all products 
         info = app.db.execute('''
         SELECT COUNT(f.rating), AVG(f.rating)
         FROM ProductFeedback as f
@@ -33,14 +36,15 @@ class ProductFeedback:
         return (avg,info[0][0])
     
     def all_pids(): 
+        # get all product ids that have feedback associated with them 
         info = app.db.execute('SELECT pid FROM ProductFeedback')
         return info
     
-    # current user's ratings and reviews for products 
     @staticmethod
     def get_by_uid(uid):
+        # current user's ratings and reviews for all products 
         rows = app.db.execute('''
-        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
+        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time, f.image
         FROM ProductFeedback as f, Products as p
         WHERE f.uid = :uid
         AND p.pid = f.pid
@@ -49,11 +53,12 @@ class ProductFeedback:
         uid=uid)
         return [ProductFeedback(*row) for row in rows]
 
-    # get all feedback for a given product 
     @staticmethod
     def get_by_pid(pid):
+        # get all feedback by the current user for a given product 
         rows = app.db.execute('''
-        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , 
+                f.pid, f.rating, f.review, f.date_time, f.image
         FROM ProductFeedback as f, Users as u
         WHERE f.pid = :pid
         AND f.uid = u.id
@@ -62,19 +67,12 @@ class ProductFeedback:
         pid=pid)
         return [ProductFeedback(*row) for row in rows]
     
-    @staticmethod
-    def get_all():
-        rows = app.db.execute('''
-        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
-        FROM ProductFeedback as f, Products as p
-        WHERE p.pid = f.pid
-        ''')
-        return [ProductFeedback(*row) for row in rows]
     
     @staticmethod
     def get_by_uid_pid(uid, pid):
+        # get the feedback left for a given product by a given user 
         rows = app.db.execute('''
-        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time
+        SELECT f.uid, p.name, f.pid, f.rating, f.review, f.date_time, f.image
         FROM ProductFeedback as f, Products as p
         WHERE f.uid = :uid
         AND p.pid = f.pid
@@ -87,6 +85,7 @@ class ProductFeedback:
     
     @staticmethod
     def sorted_by_upvotes(pid):
+        # get all feedback for a product sorted by their number of upvotes 
         rows = app.db.execute('''
         WITH upvotes AS (
             SELECT reviewer, Count(reviewer) AS votes
@@ -94,7 +93,8 @@ class ProductFeedback:
             WHERE product = :pid 
             GROUP BY reviewer  
         )
-        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, f.rating, f.review, f.date_time
+        SELECT f.uid, (u.firstname || ' ' || u.lastname) as name , f.pid, 
+                              f.rating, f.review, f.date_time, f.image
         FROM ProductFeedback as f, Users as u, upvotes as up 
         WHERE f.pid = :pid
         AND f.uid = u.id
@@ -106,6 +106,7 @@ class ProductFeedback:
     
     @staticmethod
     def edit_rating(uid,pid,rating,time_updated):
+        # update rating and the timestamp
         app.db.execute("""
         UPDATE ProductFeedback 
         SET rating = :rating, date_time = :time_updated                       
@@ -119,6 +120,7 @@ class ProductFeedback:
     
     @staticmethod
     def edit_review(uid,pid,review,time_updated):
+        # update review and the timestamp 
         app.db.execute("""
         UPDATE ProductFeedback 
         SET review = :review, date_time = :time_updated                       
@@ -132,6 +134,7 @@ class ProductFeedback:
     
     @staticmethod
     def remove_feedback(uid,pid):
+        # remove the product feedback left by the user with this uid for the product identified by pid 
         app.db.execute("""
         DELETE from ProductFeedback 
         WHERE uid = :uid 
@@ -153,6 +156,7 @@ class ProductFeedback:
 
     @staticmethod 
     def my_upvote(uid,reviewer,product):
+        # see if I have upvoted the feedback for a given product by a certain reviewer 
         upvoted = app.db.execute("""
         SELECT Count(*)
         FROM UpvoteProductReview 
@@ -167,6 +171,7 @@ class ProductFeedback:
     
     @staticmethod 
     def remove_my_upvote(user,reviewer,product):
+        # remove my upvote for a certain review
         app.db.execute("""
         DELETE from UpvoteProductReview 
         WHERE reviewer = :reviewer 
@@ -179,6 +184,7 @@ class ProductFeedback:
 
     @staticmethod 
     def add_my_upvote(user,reviewer,product):
+        # add my upvote for a certain review 
         app.db.execute("""
         INSERT INTO UpvoteProductReview VALUES (:user,:reviewer,:product)
         """,
@@ -188,6 +194,7 @@ class ProductFeedback:
 
     @staticmethod 
     def upvote_count(reviewer,product):
+        # get the number of upvotes for a certain review 
         rows = app.db.execute("""
         SELECT Count(*)
         FROM UpvoteProductReview 
@@ -200,6 +207,7 @@ class ProductFeedback:
 
     @staticmethod
     def feedback_exists(uid,pid): 
+        # check if there is existing feedback for this pid by user identified with uid 
         exists = app.db.execute("""
         SELECT f.uid
         FROM ProductFeedback f                         
@@ -211,7 +219,8 @@ class ProductFeedback:
         return exists 
     
     @staticmethod
-    def has_purchased(uid,pid): 
+    def has_purchased(uid,pid):
+        # check to see if uid has purchased pid before  
         purchased = app.db.execute("""
         SELECT Purchases.time_purchased
         FROM Purchases, Products, Users u
@@ -226,18 +235,21 @@ class ProductFeedback:
         return purchased 
 
     @staticmethod 
-    def add_feedback(uid,pid,rating,review,time): 
+    def add_feedback(uid,pid,rating,review,time,image): 
+        # insert feedback
         app.db.execute("""
-        INSERT INTO ProductFeedback VALUES (:uid,:pid,:rating,:review,:date_time)
+        INSERT INTO ProductFeedback VALUES (:uid,:pid,:rating,:review,:date_time,:image)
         """,
         uid=uid,
         pid=pid,
         rating=rating,
         review=review,
-        date_time=time)
+        date_time=time,
+        image=image)
     
     @staticmethod 
     def get_product_name(pid): 
+        # get the name of the product 
         name = app.db.execute("""
         SELECT name 
         FROM Products

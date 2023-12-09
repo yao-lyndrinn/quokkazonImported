@@ -161,12 +161,12 @@
           {% if feedback_exists[purchase.pid] %}
           <form action="{{ url_for('feedback.product_feedback_edit', product_id=purchase.pid) }}"
                 method="POST">
-                <input type="submit" value="Edit"/> 
+                <input type="submit" value="Edit" style="background-color: #137a56; color: #ffffff"/> 
           </form>
           {% else %}
           <form action="{{ url_for('feedback.product_submission_form', product_id=purchase.pid,name=products_purchased[purchase.pid]) }}"
                 method="POST">
-                <input type="submit" value="Add"/> 
+                <input type="submit" value="Add" style="background-color: darkred; color: #ffffff"/> 
           </form>
           {% endif %}
       </td>

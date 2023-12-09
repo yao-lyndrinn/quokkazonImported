@@ -20,13 +20,16 @@ def inventory():
     if current_user.is_authenticated:
         inventory = Inventory.get_all_by_sid(
             current_user.id)
+        products = Product.get_all_by_sid(current_user.id)
+        print("THESE ARE PRODUCTSSSS", products)
     else:
         inventory = None
     # render the page by adding information to the index.html file
     return render_template('inventory.html',
                            avail_inventory=inventory,
                            is_seller=Seller.is_seller(current_user),
-                           product_class=Product)
+                           product_class=Product,
+                           products=products)
 
 class InventoryEdit(FlaskForm):
     quantity = IntegerField('Quantity', validators=[NumberRange(min=0)])

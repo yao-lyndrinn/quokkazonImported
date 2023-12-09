@@ -27,7 +27,8 @@ CREATE TABLE Products (
   altTxt VARCHAR(4096),
   CreatedAt timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
   UpdatedAt timestamp without time zone,
-  cid INTEGER NOT NULL REFERENCES Category(cid)
+  cid INTEGER NOT NULL REFERENCES Category(cid),
+  sid INTEGER NOT NULL REFERENCES Seller(sid)
 );
 
 CREATE TABLE Tag (
@@ -77,9 +78,11 @@ CREATE TABLE ProductFeedback(
 	pid INTEGER NOT NULL REFERENCES Products(pid),
 	rating INTEGER NOT NULL CHECK(rating BETWEEN 1 and 5), -- should a user leave any feedback, they must leave a rating 
 	review VARCHAR(4096), -- can be null because leaving a review is optional 
-  date_time timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'), 
+  date_time timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+  image VARCHAR(400),
   PRIMARY KEY (uid, pid) 	
 );
+
 
 CREATE TABLE UpvoteProductReview(
   uid INTEGER NOT NULL REFERENCES Users(id),

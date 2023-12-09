@@ -932,3 +932,11 @@ section {
     height: 400px;
     width: 500px;
 }
+
+#edit-image {
+  max-width: 100%;
+}
+
+.add-product-form {
+  max-width: 500px;
+}

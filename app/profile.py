@@ -82,6 +82,8 @@ def my_profile():
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
     summary = SellerFeedback.summary_ratings(current_user.id)
+    if summary[0] is None: 
+        summary = None 
     for reviewer,seller in supvotes: 
         myupvotes[(reviewer,seller)] = SellerFeedback.my_upvote(current_user.id,reviewer,seller)[0][0]
     count = 0

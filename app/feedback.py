@@ -6,7 +6,6 @@ from .models.seller import Seller
 from .models.category import Category 
 from humanize import naturaltime
 import os 
-is_seller = False
 from .models.feedback import ProductFeedback, SellerFeedback
 
 from flask import Blueprint
@@ -32,7 +31,7 @@ def my_feedback(uid):
     my_supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
-        
+    is_seller=False
     # if the current user is logged in, then they can upvote reviews 
     if current_user.is_authenticated: 
         if Seller.get(current_user.id): 
@@ -63,6 +62,8 @@ def product_submission_form(product_id,name):
         # go to the feedback submission form for this product 
         if Seller.get(current_user.id): 
             is_seller = True 
+        else: 
+            is_seller = False
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('myfeedback_add.html',
                                 product_id=product_id,
@@ -79,7 +80,9 @@ def product_add_feedback():
     if request.method == 'POST': 
         # submit feedback 
         if Seller.get(current_user.id): 
-            is_seller = True 
+            is_seller = True
+        else:
+            is_seller = False 
         pid = int(request.form['pid'])
         rating = int(request.form['rating'])
         review = request.form['review']
@@ -109,6 +112,8 @@ def product_feedback_edit(product_id):
         # go to the feedback editing page for this product 
         if Seller.get(current_user.id): 
             is_seller = True
+        else:
+            is_seller=False
         pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('myfeedback_edit.html',
@@ -215,7 +220,9 @@ def upvote_product_review():
 def seller_feedback_edit(seller_id):
     if current_user.is_authenticated:
         if Seller.get(current_user.id): 
-                is_seller = True 
+            is_seller = True 
+        else:
+            is_seller = False
         sfeedback = SellerFeedback.get_by_uid_sid( # sorted by rating 
                         current_user.id, seller_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
@@ -266,6 +273,8 @@ def seller_add_feedback():
     if request.method == 'POST': 
         if Seller.get(current_user.id):
             is_seller = True
+        else: 
+            is_seller = False
         sid = int(request.form['sid'])
         rating = int(request.form['rating'])
         review = request.form['review']
@@ -286,6 +295,8 @@ def seller_submission_form(seller_id):
     if current_user.is_authenticated: 
         if Seller.get(current_user.id):
             is_seller = True
+        else: 
+            is_seller = False
         name = SellerFeedback.get_name(seller_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('myfeedback_add.html',
@@ -335,6 +346,7 @@ def upvote_seller_review():
 @bp.route('/public_profile/<int:user_id>', methods=['POST','GET'])
 def public_profile(user_id):
     summary = None
+    is_seller = False
     sfeedback = SellerFeedback.get_by_sid(user_id)
     sorted_by_upvotes = SellerFeedback.sorted_by_upvotes(user_id)
     supvotes = {}

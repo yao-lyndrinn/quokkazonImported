@@ -30,7 +30,6 @@
       <div class="card">
         <div class="card-body">
           <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
-          <!-- <h5 class="card-title">Product ID: {{ product.pid }}</h5> -->
           <h6 class="card-subtitle mb-2 text-muted">
             <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
           </h6>

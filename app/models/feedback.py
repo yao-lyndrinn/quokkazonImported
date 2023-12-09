@@ -133,6 +133,20 @@ class ProductFeedback:
         time_updated = time_updated)
     
     @staticmethod
+    def edit_image(uid,pid,image,time_updated):
+        # update image 
+        app.db.execute("""
+        UPDATE ProductFeedback 
+        SET image = :image, date_time = :time_updated                       
+        WHERE uid = :uid 
+        AND pid = :pid 
+        """,
+        uid=uid,
+        pid=pid,
+        image=image,
+        time_updated = time_updated)
+    
+    @staticmethod
     def remove_feedback(uid,pid):
         # remove the product feedback left by the user with this uid for the product identified by pid 
         app.db.execute("""

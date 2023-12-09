@@ -11,7 +11,7 @@
 
 <h4>My Feedback for Product {{product_id}}: {{name}}</h4>
 
-<form action="{{ url_for('feedback.product_add_feedback') }}" method="POST">
+<form action="{{ url_for('feedback.product_add_feedback') }}" method="POST" enctype="multipart/form-data">
     <label id="rating">Rating:</label>
     <input type="number" name="rating" id="rating" REQUIRED>
     <input type="hidden" id="pid" name="pid" value="{{product_id}}">

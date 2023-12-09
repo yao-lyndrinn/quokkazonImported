@@ -106,7 +106,7 @@ messaged = []
 seller_upvotes = get_csv_writer(seller_file)
 product_upvotes = get_csv_writer(product_file)
 messages = get_csv_writer(messages_file)
-s_cap, p_cap, m_cap = 300, 200, 10
+s_cap, p_cap, m_cap = 300, 500, 10
 
 for user in users: 
     s_count, p_count = 0,0

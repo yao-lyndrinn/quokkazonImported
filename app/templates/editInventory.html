@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div class="page-div">
 <br>
 <h1 style="text-align: center">{{ product_name }}</h1>
 <br>
@@ -45,5 +45,5 @@
   <a class="btn btn-secondary" href="{{ url_for('inventory.inventory') }}" role="button">Cancel</a><br><br>
   <a class="btn btn-red" href="{{ url_for('inventory.delete', product_id=product_id) }}"role="button">Delete</a>
 </form>
-
+</div>
 {% endblock %}

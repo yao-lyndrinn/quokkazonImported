@@ -20,34 +20,36 @@ bp = Blueprint('cart', __name__)
 
 @bp.route('/cart')
 def cart():
-    #check if holiday code has been applied
-    discount = request.args.get('discount', default=False, type=bool)
-    multiplier = 1
-    if discount:
-        multiplier = 0.75
-    seller_names = {}
-    product_names = {}
-    # find the items the current user has added to their cart
-    if current_user.is_authenticated:
-        items = CartItem.get_all_by_uid(
-                        current_user.id)
-        for item in items:
-            # get the name of the seller 
-            seller_names[item.sid] = SellerFeedback.get_name(item.sid)
-            # get the name of the product 
-            product_names[item.pid] = ProductFeedback.get_product_name(item.pid)[0][0]
-            item.price = round(decimal.Decimal(multiplier) * item.price,2)
-        totalprice = round(CartItem.get_total_price(current_user.id) * multiplier,2)
+    if (current_user.is_authenticated):
+        #check if holiday code has been applied
+        discount = request.args.get('discount', default=False, type=bool)
+        multiplier = 1
+        if discount:
+            multiplier = 0.75
+        seller_names = {}
+        product_names = {}
+        # find the items the current user has added to their cart
+        if current_user.is_authenticated:
+            items = CartItem.get_all_by_uid(
+                            current_user.id)
+            for item in items:
+                # get the name of the seller 
+                seller_names[item.sid] = SellerFeedback.get_name(item.sid)
+                # get the name of the product 
+                product_names[item.pid] = ProductFeedback.get_product_name(item.pid)[0][0]
+                item.price = round(decimal.Decimal(multiplier) * item.price,2)
+            totalprice = round(CartItem.get_total_price(current_user.id) * multiplier,2)
 
+        else:
+            return jsonify({}), 404
+        sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+        # render the page by adding information to the cart.html file
+        return render_template('cart.html',
+                        items=items, totalprice=totalprice, seller_names = seller_names, 
+                        product_names=product_names, categories = sorted_categories,
+                        is_seller= Seller.is_seller(current_user))
     else:
-        return jsonify({}), 404
-
-    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
-    # render the page by adding information to the cart.html file
-    return render_template('cart.html',
-                      items=items, totalprice=totalprice, seller_names = seller_names, 
-                      product_names=product_names, categories = sorted_categories,
-                      is_seller= Seller.is_seller(current_user))
+        return redirect(url_for('index.index'))
 
 
 @bp.route('/cart/add', methods=['POST'])
@@ -131,17 +133,22 @@ def cart_submit():
     #compare price with users balance
     if totalPrice < User.get_balance(current_user.id):
         neworder = CartItem.newOrderId(current_user.id)
-        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id, multiplier) #increase for sellers
-        CartItem.decrease_balance(current_user.id, totalPrice) #subtract from buyer
-        items = CartItem.get_all_by_uid(
-                            current_user.id)
-        for item in items: #enter new items into purchases table
-            if item.saved_for_later == '0': #other functions check in the model, get_all_by_uid doesn't
-                #because it is what is used to render the whole cart page
-                CartItem.decrease_stock(item.sid, current_user.id, item.pid)
-                CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price * decimal.Decimal(multiplier), None)
-        CartItem.submit(current_user.id)
-        return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details
+        inStock = CartItem.check_stocks(current_user.id)
+        if inStock: #stock may have changed since user last logged in
+            CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id, multiplier) #increase for sellers
+            CartItem.decrease_balance(current_user.id, totalPrice) #subtract from buyer
+            items = CartItem.get_all_by_uid(
+                                current_user.id)
+            for item in items: #enter new items into purchases table
+                if item.saved_for_later == '0': #other functions check in the model, get_all_by_uid doesn't
+                    #because it is what is used to render the whole cart page
+                    CartItem.decrease_stock(item.sid, current_user.id, item.pid)
+                    CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price * decimal.Decimal(multiplier), None)
+            CartItem.submit(current_user.id)
+            return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details
+        else:
+            flash("One or more items are out of stock for your order.")
+            return redirect(url_for('cart.cart'))
     else:
         flash("The total price exceeds your current balance!")
         return redirect(url_for('cart.cart'))

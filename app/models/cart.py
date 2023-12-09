@@ -137,6 +137,25 @@ WHERE uid = :uid AND Cart.sid = Inventory.sid AND Cart.pid = Inventory.pid
         return
 
     @staticmethod
+    def decrease_stock(sid, uid, pid): #update user balance for each seller id in cart
+        rows = app.db.execute('''
+        WITH C(cart_quantity) AS
+        (SELECT Cart.quantity FROM Cart, Inventory
+        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND saved_for_later = B'0')
+        UPDATE INVENTORY
+        SET num_for_sale = num_for_sale - (SELECT DISTINCT cart_quantity FROM C)
+        WHERE sid = :sid AND Inventory.pid = :pid;
+
+        WITH C(cart_quantity) AS
+        (SELECT Cart.quantity FROM Cart, Inventory
+        WHERE uid = :uid AND Cart.sid = :sid AND Cart.pid = :pid AND saved_for_later = B'0')
+        UPDATE INVENTORY
+        SET quantity = quantity - (SELECT DISTINCT cart_quantity FROM C)
+        WHERE sid = :sid AND Inventory.pid = :pid;
+        ''', sid = sid, uid = uid, pid = pid)
+        return
+
+    @staticmethod
     def move_to_cart(uid, sid, pid):
         rows = app.db.execute("""
         UPDATE CART

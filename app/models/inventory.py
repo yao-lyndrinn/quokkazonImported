@@ -19,6 +19,15 @@ class Inventory:
         ''', sid=sid)
         return [Inventory(*row) for row in rows]
 
+    @staticmethod
+    def get(sid, pid):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Inventory
+        WHERE sid = :sid AND pid = :pid
+        ''', sid=sid, pid=pid)
+        return rows[0]
+
     # Return all inventory entries for a particular product owned by any seller
     @staticmethod
     def get_all_by_pid(pid):

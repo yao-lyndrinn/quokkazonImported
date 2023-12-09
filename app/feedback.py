@@ -35,7 +35,7 @@ def my_feedback(uid):
         
     # if the current user is logged in, then they can upvote reviews 
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id): 
+        if Seller.get(current_user.id): 
             is_seller = True 
         # get the current user's upvotes for product reviews 
         for reviewer, reviewed in pupvotes:
@@ -61,7 +61,7 @@ def my_feedback(uid):
 def product_submission_form(product_id,name):
     if current_user.is_authenticated: 
         # go to the feedback submission form for this product 
-        if Seller.find(current_user.id): 
+        if Seller.get(current_user.id): 
             is_seller = True 
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('myfeedback_add.html',
@@ -78,7 +78,7 @@ def product_submission_form(product_id,name):
 def product_add_feedback(): 
     if request.method == 'POST': 
         # submit feedback 
-        if Seller.find(current_user.id): 
+        if Seller.get(current_user.id): 
             is_seller = True 
         pid = int(request.form['pid'])
         rating = int(request.form['rating'])
@@ -107,7 +107,7 @@ def product_add_feedback():
 def product_feedback_edit(product_id):
     if current_user.is_authenticated: 
         # go to the feedback editing page for this product 
-        if Seller.find(current_user.id): 
+        if Seller.get(current_user.id): 
             is_seller = True
         pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, product_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
@@ -214,7 +214,7 @@ def upvote_product_review():
 @bp.route('/myfeedback/edit/seller/<int:seller_id>', methods=['POST','GET'])
 def seller_feedback_edit(seller_id):
     if current_user.is_authenticated:
-        if Seller.find(current_user.id): 
+        if Seller.get(current_user.id): 
                 is_seller = True 
         sfeedback = SellerFeedback.get_by_uid_sid( # sorted by rating 
                         current_user.id, seller_id)
@@ -264,7 +264,7 @@ def seller_remove_review():
 @bp.route('/myfeedback/add/seller', methods=['POST','GET'])
 def seller_add_feedback():
     if request.method == 'POST': 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller = True
         sid = int(request.form['sid'])
         rating = int(request.form['rating'])
@@ -284,7 +284,7 @@ def seller_add_feedback():
 @bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
 def seller_submission_form(seller_id):
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller = True
         name = SellerFeedback.get_name(seller_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
@@ -348,7 +348,7 @@ def public_profile(user_id):
         if count == 3: break
     myupvotes = {}
     if current_user.is_authenticated: 
-        if Seller.find(current_user.id):
+        if Seller.get(current_user.id):
             is_seller = True
         # whether the current logged-in user has purchased from this seller before 
         has_purchased  = SellerFeedback.has_purchased(current_user.id,user_id)

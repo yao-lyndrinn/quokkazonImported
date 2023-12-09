@@ -16,10 +16,11 @@ def humanize_time(dt):
 
 @bp.route('/my_message_history', methods=['POST','GET'])
 def my_messages():
-    is_seller=False
     if current_user.is_authenticated: 
         if Seller.get(current_user.id):
             is_seller=True
+        else: 
+            is_seller = False
         interacted = Messages.has_message(current_user.id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('mymessages.html',
@@ -34,6 +35,8 @@ def message_thread(other_user):
     if current_user.is_authenticated: 
         if Seller.find(current_user.id):
             is_seller = True
+        else:
+            is_seller = False
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         messages = Messages.message_thread(current_user.id,other_user)
         other_user_name = SellerFeedback.get_name(other_user)

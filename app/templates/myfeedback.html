@@ -56,6 +56,7 @@
         {% if current_user.id == uid %}
         <th scope="col"></th>
         {% endif %}
+        <th scope="col">Image</th>
       </tr>
     </thead>
     <tbody>
@@ -107,6 +108,11 @@
             </form>
         </td>
           {% endif %} 
+          <td>  
+            {% if item.image %}
+            <img id="edit-image" src="{{ url_for('static', filename=item.image) }}">
+            {% endif %}
+          </td>
         </tr>
       {% endfor %}
     </tbody>

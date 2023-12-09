@@ -54,7 +54,7 @@ def my_feedback(uid):
                         sfeedback=sfeedback,
                         supvotes=supvotes,
                         is_seller=is_seller,
-                        sorted_categories=sorted_categories,
+                        categories=sorted_categories,
                         humanize_time=humanize_time)
     
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
@@ -69,7 +69,7 @@ def product_submission_form(product_id,name):
                                 is_seller=is_seller,
                                 name=name,
                                 type="product",
-                                sorted_categories=sorted_categories,
+                                categories=sorted_categories,
                                 humanize_time=humanize_time)
 
     return redirect(url_for('users.login'))
@@ -97,7 +97,7 @@ def product_add_feedback():
         return render_template('myfeedback_edit.html',
                             pfeedback=pfeedback,
                             is_seller=is_seller,
-                            sorted_categories=sorted_categories,
+                            categories=sorted_categories,
                             humanize_time=humanize_time)
     
     # if the user did not click a button to get to this page, redirect them to the home page 
@@ -114,7 +114,7 @@ def product_feedback_edit(product_id):
         return render_template('myfeedback_edit.html',
                             pfeedback=pfeedback,
                             is_seller=is_seller,
-                            sorted_categories=sorted_categories,
+                            categories=sorted_categories,
                             humanize_time=humanize_time)
     
     return redirect(url_for('index.index'))      
@@ -222,7 +222,7 @@ def seller_feedback_edit(seller_id):
         return render_template('myfeedback_edit.html',
                             sfeedback=sfeedback,
                             is_seller=is_seller,
-                            sorted_categories=sorted_categories,
+                            categories=sorted_categories,
                             humanize_time=humanize_time)
     return redirect(url_for('index.index'))
 
@@ -276,7 +276,7 @@ def seller_add_feedback():
         return render_template('myfeedback_edit.html',
                             sfeedback=sfeedback,
                             is_seller=is_seller,
-                            sorted_categories=sorted_categories,
+                            categories=sorted_categories,
                             humanize_time=humanize_time)
     return redirect(url_for('index.index'))
 
@@ -293,7 +293,7 @@ def seller_submission_form(seller_id):
                                 is_seller = is_seller,
                                 name=name,
                                 type="seller",
-                                sorted_categories=sorted_categories,
+                                categories=sorted_categories,
                                 humanize_time=humanize_time)
     return redirect(url_for('index.index'))
 
@@ -382,7 +382,7 @@ def public_profile(user_id):
                             myupvotes=myupvotes,
                             summary=summary,
                             user_is_seller=user_is_seller,
-                            sorted_categories=sorted_categories,
+                            categories=sorted_categories,
                             is_seller=is_seller,
                             user_id=user_id,
                             top3=top3,

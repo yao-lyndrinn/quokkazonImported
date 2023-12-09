@@ -20,6 +20,19 @@
   function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
   }
+
+  // Prevent Double clicks 
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', (e) => {
+      // Prevent if already submitting
+      if (form.classList.contains('is-submitting')) {
+        e.preventDefault();
+      }
+      
+      // Add class to hook our visual indicator on
+      form.classList.add('is-submitting');
+    });
+  });
   
   // Close the dropdown menu if the user clicks outside of it
   window.onclick = function(event) {

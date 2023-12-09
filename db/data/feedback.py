@@ -130,7 +130,7 @@ for user in users:
                         recipient = uid 
                     messages.writerow([sender,recipient,msg_date,msg])
         # make sure that upvotes are slightly uncommon 
-        if random.choice([True,False,False,False,False]) == True: 
+        if random.choice([True,False]) == True: 
             seller_upvotes.writerow([user,uid,sid])
             s_count += 1 
         if s_count == s_cap: break

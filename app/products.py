@@ -101,7 +101,7 @@ def product_detail(product_id):
             # Create a graph for the number of orders per month for the given product and seller
             orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id, product_id)]
             of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
-            of_fig = px.line(of_df, x='Month',y='Count',title='Number ordered from me per month')
+            of_fig = px.line(of_df, x='Month',y='Count',title='My Orders Per Month')
             order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)            
     else: 
         my_product_feedback, has_purchased = False, False

@@ -6,6 +6,7 @@
 <h1 style="text-align: center;">Add New Product</h1>
 <br>
 
+<!--Form for creating new products for the Seller's inventory but also for other sellers to use-->
 <form class="add-product-form" action="{{ url_for('products.add_products')}}" method="POST" enctype="multipart/form-data">
     <label for="name">Product name:</label><br>
     <input type="text" id="name" name="name" required>

@@ -8,7 +8,7 @@
   <h3>{{ first_name }} {{ last_name }}</h3>
   <p><strong>Email:</strong> {{ email }}</p>
   <p>{{first_name}} has left an average rating of <b>{{feedback_for_other_sellers[0]}} for {{feedback_for_other_sellers[1]}} other sellers</b> and an average rating of <b>{{feedback_for_products[0]}} for {{feedback_for_products[1]}} products.</b> </p>
-  <p> <a href="{{ url_for('feedback.my_feedback', uid=user_id)}}">See the feedback submitted by {{first_name}}</a> </p>
+  <p> <a href="{{ url_for('feedback.my_feedback', uid=user_id)}}">See the feedback submitted by {{first_name}} {{last_name}}</a> </p>
   {% if current_user.id != user_id %}
   <form action="{{ url_for('messages.message_thread',other_user=user_id) }}" method="POST">
     <input type="submit" value="Message {{first_name}}" > 

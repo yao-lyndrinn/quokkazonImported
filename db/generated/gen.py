@@ -57,36 +57,41 @@ def get_available_products():
             available[pid][sid] = int(num_for_sale)
     return available 
 
-# uid, sid, pid, order_id, time_purchased, quantity, date_fulfilled 
+# Generate purchase entries with a user id, seller id, product id, order id, time purchased, quantity, and date fulfilled 
 def gen_purchases(num_purchases, available):
+    # Set initiial purchase values for first entry
     order_id = 0
     count = 0 
     uid  = 0
-    order_pids = []
+    time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
+    order_pids = []     # keep track of products already contained by the current order
     with open('Purchases.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Purchases...', end=' ', flush=True)
         for id in range(num_purchases):
             if len(available) == 0: 
-                # no more inventory left 
+                # if no more inventory left, stop generating
                 break
-            if id % 100 == 0:
+            if id % 100 == 0:   # track progress in console
                 print(f'{id}', end=' ', flush=True)            
+            # Start with random product and seller id for each new entry
             pid = fake.random_element(elements=list(available.keys()))
             sid = random.choice(list(available[pid].keys()))
             quantity_available = available[pid][sid]
+            # If there is more of the random product available, decide randomly whether to start a new order for a new user and time of purchase or not
             if fake.random.random() < 0.6 and quantity_available > 0:
                 order_id += 1
                 uid = fake.random_int(min=0, max=num_users-1)
+                time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
                 order_pids = []
             else:
                 counter = 0
-                while (pid in order_pids or quantity_available <= 0) and counter < 5:
+                while (pid in order_pids or quantity_available <= 0) and counter < 5:   # Make sure the newly selected product is not already present within the order
                     pid = fake.random_element(elements=list(available.keys()))
                     sid = random.choice(list(available[pid].keys()))
                     quantity_available = available[pid][sid]
                     counter += 1
-                if counter >= 5:
+                if counter >= 5:    # if we have failed multiple times to find a valid next product, we just stop generation here
                     break
             quantity = fake.random_int(min=1,max=min(20,quantity_available + 1))
             # ensure that items cannot be re-purchased 
@@ -96,9 +101,9 @@ def gen_purchases(num_purchases, available):
             if len(available[pid]) == 0: 
                 del available[pid]
             price = random.randint(0,30) + 0.99
-            time_purchased = fake.date_time_between(start_date='-5y', end_date='now')
+            
             date_fulfilled = fake.date_time_between(start_date=time_purchased, end_date='now')
-            if time_purchased.year == datetime.today().year and fake.random.random() < 0.5:
+            if time_purchased.year == datetime.today().year and fake.random.random() < 0.5:     # Randomly select some orders made this year as unfulfilled orders
                 date_fulfilled = None
             writer.writerow([uid, sid, pid, order_id, time_purchased,quantity,price,date_fulfilled])
             count += 1 
@@ -127,6 +132,7 @@ def get_pids(file):
     with open(file,'r') as f:
         return [int(line.split(',')[0]) for line in f.readlines()]
 
+# Generate inventory table values using the established Sellers and Products
 def gen_inventory():
     with open('Inventory.csv','w') as f:
         writer = get_csv_writer(f)

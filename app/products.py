@@ -22,6 +22,7 @@ from flask import Blueprint
 
 bp = Blueprint('products', __name__)
 
+# List of month abbreviations for analytics graph
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 def humanize_time(dt):
@@ -90,7 +91,7 @@ def product_detail(product_id):
         
         sid = Seller.get(current_user.id)
         if sid and Inventory.in_inventory(current_user.id, product_id):
-            # Graph for orders over time
+            # Create a graph for the number of orders per month for the given product and seller
             orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id, product_id)]
             of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
             of_fig = px.line(of_df, x='Month',y='Count',title='Number ordered from me per month')

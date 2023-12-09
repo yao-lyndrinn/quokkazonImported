@@ -495,7 +495,7 @@ class SellerFeedback:
         else: 
             return rows
 
-    # get seller's ratings
+    # Get month, year, and rating value for each rating for a seller, sorted chronologically
     @staticmethod
     def get_seller_ratings(sid):
         rows = app.db.execute('''

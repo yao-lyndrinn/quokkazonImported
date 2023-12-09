@@ -41,9 +41,12 @@
         <button button style="margin:10px;" name=update_info>Register as Seller</button>
     </form>
     {% else %}
+    <!--If user is a seller, show analytics graphs for their top selling products, their number of orders over time, and their average seller rating over time-->
+    <div style="width: 1540px; margin: 0 auto">
       <div id='orderCountGraph' class='chart'></div>
       <div id='orderFreqGraph' class='chart'></div>
       <div id='ratingsGraph' class='chart'></div>
+    </div>
     {% if summary %}
     <hr>
 

@@ -87,7 +87,7 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}
-<h2> Total Price: ${{totalprice}}</h2>
+<h2> Total Price: ${{'{:.2f}'.format(totalprice)}}</h2>
 <form action="{{ url_for('cart.cart_submit')}}"
             method="POST">
             <input type="submit" value="Submit Order"/>

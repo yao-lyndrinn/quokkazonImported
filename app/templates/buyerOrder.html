@@ -67,7 +67,7 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your order!</p>
 {% endif %}
-<h2> Final Price: ${{totalprice}}</h2>
+<h2> Final Price: ${{'{:.2f}'.format(totalprice)}}</h2>
 {% if all_fulfilled %}
   <h3>Order Status: Fulfilled</h3>
 {% else %}

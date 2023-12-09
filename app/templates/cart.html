@@ -91,6 +91,8 @@
 <form action="{{ url_for('cart.cart_submit')}}"
             method="POST">
             <input type="submit" value="Submit Order"/>
+            <input type="hidden" name="total" value = {{totalprice}}/>
+
 </form>
 <form action="{{ url_for('cart.cart_viewOrders')}}">
             <input type="submit" value="View Submitted Orders"/>
@@ -119,5 +121,10 @@
   </script>
   <!--add place to input coupon code for discount and add another boolean parameter-->
   <!--to ensure you can't use that code god i want to kms-->
+  <form action="{{ url_for('cart.cart_discount')}}"
+  method="POST">
+  Enter Promotional Code: <input type="text" name="code">
+  <input type="submit" value="Apply">
+</form>
 </div>
 {% endblock %}

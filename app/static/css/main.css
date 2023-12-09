@@ -542,6 +542,9 @@ section {
   font-size:15px;
   line-height:24px;
   color:#737373;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column; 
 }
 .site-footer hr
 {

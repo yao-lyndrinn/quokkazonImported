@@ -34,7 +34,6 @@ def my_profile():
     supvotes = {}
     myupvotes = {}
     summary = None
-    order_count_graph, order_freq_graph = None, None
     if a is None: 
         is_seller = False
     else:
@@ -42,15 +41,22 @@ def my_profile():
 
         # Create a graph for top selling products by count for a particular seller
         order_counts = Purchase.get_order_counts_by_sid(current_user.id)
-        oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
-        oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top Selling Products', text_auto=True, color_discrete_sequence=['#8E7618'])
-        order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        if order_counts:
+            oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
+            oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top Selling Products', text_auto=True, color_discrete_sequence=['#8E7618'])
+            order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         # Create a graph for the total number orders over time for a particular seller across all products
         orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id)]
-        of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
-        of_fig = px.line(of_df, x='Month',y='Count',title='Total Number of Orders Per Month')
-        order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        plot_graph = False
+        for row in orders_freq:
+            if row[1] != 0:
+                plot_graph = True
+                break
+        if plot_graph:
+            of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
+            of_fig = px.line(of_df, x='Month',y='Count',title='Total Number of Orders Per Month')
+            order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         # Create a graph for the average seller rating over time by month
         num_ratings, sum, avg_ratings = 0, 0, []

@@ -44,17 +44,13 @@
     
     {% else %}
     <!--If user is a seller, show analytics graphs for their top selling products, their number of orders over time, and their average seller rating over time-->
-    <div style="width: 1540px; margin: 0 auto">
-      {% if order_count_graph %}
+    {% if order_count_graph or order_freq_graph or ratings_graph %}
+      <div style="width: 1540px; margin: 0 auto">
         <div id='orderCountGraph' class='chart'></div>
-      {% endif %}
-      {% if order_freq_graph %}
         <div id='orderFreqGraph' class='chart'></div>
-      {% endif %}
-      {% if ratings_graph %}
         <div id='ratingsGraph' class='chart'></div>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
     {% if not summary %}
     <p style="text-indent: 65px; color:#804a03";><b>No users have left feedback for you yet.</b></p>
     

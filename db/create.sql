@@ -229,9 +229,6 @@ BEGIN
   IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.uid <> p.uid) THEN
     RAISE EXCEPTION 'Different users cannot make the same order';
   END IF;
-  IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.time_purchased <> p.time_purchased) THEN
-    RAISE EXCEPTION 'The same order cannot include purchases made at different times';
-  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

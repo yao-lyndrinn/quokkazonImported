@@ -10,6 +10,7 @@ from .models.inventory import Inventory
 from .models.purchase import Purchase
 from .models.user import User
 from .models.feedback import ProductFeedback, SellerFeedback
+from .models.category import Category
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -24,9 +25,11 @@ def cart():
         totalprice = CartItem.get_total_price(current_user.id)
     else:
         return jsonify({}), 404
+
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     # render the page by adding information to the cart.html file
     return render_template('cart.html',
-                      items=items, totalprice=totalprice)
+                      items=items, totalprice=totalprice, categories = sorted_categories)
 
 
 @bp.route('/cart/add', methods=['POST'])
@@ -144,7 +147,9 @@ def cart_order(order_id):
 @bp.route('/cart/viewOrders')
 def cart_viewOrders(): #show list of past orders for user
     items = Purchase.get_unique_orders_by_uid(current_user.id)
-    return render_template('viewOrders.html', items = items)
+    
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+    return render_template('viewOrders.html', items = items, categories = sorted_categories)
 
 @bp.route('/cart/update_saved', methods=['POST'])
 def cart_update_saved():

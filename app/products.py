@@ -166,6 +166,7 @@ def products():
                     items = Stock.get_za()
             else:
                 if sort_by == "a-z":
+                    print("IM HERE A_Z")
                     items = Product.get_az()
                     
                 else:

@@ -10,15 +10,15 @@
     <title>{{ current_user.firstname }} {{ current_user.lastname }} - Profile</title>
 </head>
 <body>
+    <!-- Edit Info Button -->
+    <div style="float: right">
+      <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
+      <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
+      <a href="{{ url_for('feedback.my_feedback', uid=current_user.id)  }}" class="btn btn-dark">Manage My Feedback</a>
+      <a href="{{ url_for('feedback.public_profile', user_id=current_user.id)}}" class="btn btn-dark">My Public Profile</a>
+    </div>
     <div class="container profile">
         <br><br>
-        <!-- Edit Info Button -->
-        <div style="display: inline-block; float: right">
-          <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-dark">Edit Info</a>
-          <a href="{{ url_for('profile.top_up') }}" class="btn btn-dark">Top Up Balance</a>
-          <a href="{{ url_for('feedback.my_feedback', uid=current_user.id)  }}" class="btn btn-dark">Manage My Feedback</a>
-          <a href="{{ url_for('feedback.public_profile', user_id=current_user.id)}}" class="btn btn-dark">My Public Profile</a>
-        </div>
         <h1>My Profile</h1>
         <div class="row">
             <div class="col-md-8">

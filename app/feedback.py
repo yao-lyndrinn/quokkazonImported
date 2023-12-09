@@ -4,6 +4,7 @@ from flask import request, redirect, url_for
 import datetime
 from .models.seller import Seller
 from humanize import naturaltime
+import os 
 
 from .models.feedback import ProductFeedback, SellerFeedback
 
@@ -60,7 +61,14 @@ def product_add_feedback():
         rating = int(request.form['rating'])
         review = request.form['review']
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime)
+        
+        # get image file and format properly 
+        file = request.files['image']
+        filename = file.filename
+        filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
+        file.save(filepath)
+        
+        ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime, "product_images/" + filename)
         pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, pid)
     return render_template('myfeedback_edit.html',
                         pfeedback=pfeedback,
@@ -91,6 +99,15 @@ def product_review_edit():
         ProductFeedback.edit_review(current_user.id, pid, review, current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
+@bp.route('/myfeedback/edit/product_image', methods=['POST','GET'])
+def product_image_edit():
+    if request.method == 'POST': 
+        current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        image = request.form['image']
+        pid = int(request.form['pid'])
+        ProductFeedback.edit_review(current_user.id, pid, image, current_dateTime)
+    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
     if request.method == 'POST': 
@@ -106,6 +123,15 @@ def product_remove_review():
         ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+
+# @bp.route('/myfeedback/delete/image', methods=['POST','GET'])
+# def product_remove_review():
+#     if request.method == 'POST': 
+#         pid = int(request.form['pid'])
+#         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#         ProductFeedback.remove_upvotes(current_user.id,pid)
+#         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
+#     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
 @bp.route('/productfeedback/remove_upvote', methods=['POST','GET'])
 def remove_upvote_product_review():

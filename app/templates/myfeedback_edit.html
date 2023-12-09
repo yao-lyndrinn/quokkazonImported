@@ -44,6 +44,13 @@ method="POST">
     <input type="submit" value="Delete Review" style="background-color: darkred; color: #ffffff"/> 
 </form>
 <br><br>
+<label for="currentImage">Current Image:</label><br>
+    {% if product.image %}
+        <img id="edit-image" src="{{ url_for('static', filename=item.image) }}">
+    {% else %}
+        <p>No image attached to review.</p>
+    {% endif %}
+
 </body>
 {% endfor %}
 

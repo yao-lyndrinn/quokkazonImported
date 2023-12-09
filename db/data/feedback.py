@@ -1,6 +1,6 @@
 import csv,random,os
 from collections import defaultdict 
-from datetime import datetime 
+from datetime import datetime, timedelta
 from faker import Faker
 Faker.seed(0)
 fake = Faker()
@@ -106,7 +106,7 @@ messaged = []
 seller_upvotes = get_csv_writer(seller_file)
 product_upvotes = get_csv_writer(product_file)
 messages = get_csv_writer(messages_file)
-s_cap, p_cap, m_cap = 100, 500, 10
+s_cap, p_cap, m_cap = 300, 200, 10
 
 for user in users: 
     s_count, p_count = 0,0
@@ -115,10 +115,12 @@ for user in users:
             if (uid,sid) in messaged: continue
             if random.choice([True,False]) == True: 
                 messaged.append((uid,sid))
+                messaged.append((sid,uid))
                 # start a message thread 
-                last_msg_date = fake.date_time_between(start_date='-3y', end_date='now')
+                msg_date = fake.date_time_between(start_date='-3y', end_date='now')
                 for _ in range(random.randint(0,m_cap)): 
-                    msg_date = fake.date_time_between(start_date=last_msg_date, end_date='now')
+                    msg_date = msg_date + timedelta(hours = random.randint(1,100))
+                    last_mst_date = msg_date
                     length = random.randint(6,20)
                     msg = fake.sentence(nb_words=length)[:-1]  
                     sender = random.choice([uid,sid])

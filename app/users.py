@@ -7,6 +7,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp
 
 from .models.user import User
+from .models.category import Category
 
 
 from flask import Blueprint
@@ -36,7 +37,8 @@ def login():
             next_page = url_for('index.index')
 
         return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+    return render_template('login.html', title='Sign In', form=form, categories=sorted_categories)
 
 
 class RegistrationForm(FlaskForm):
@@ -58,6 +60,7 @@ class RegistrationForm(FlaskForm):
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     if current_user.is_authenticated:
         return redirect(url_for('index.index'))
     form = RegistrationForm()
@@ -71,7 +74,7 @@ def register():
                          ):
             flash('Congratulations, you are now a registered user!')
             return redirect(url_for('users.login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register', form=form, categories=sorted_categories)
 
 
 @bp.route('/logout')
@@ -95,6 +98,7 @@ def deactivate_session(response):
 ROWS = 24
 @bp.route('/users/search_results', methods=['GET','POST'])
 def search_results():
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     page = request.args.get("page", 1, type=int)
     start = (page-1) * ROWS
     end = start + ROWS
@@ -118,7 +122,8 @@ def search_results():
                             search_term2 = search_term,
                             len_users = len(all_users),
                             page=page,
-                            total_pages=total_pages)
+                            total_pages=total_pages,
+                            categories=sorted_categories)
 
 def search_users(search_term):
     users = User.get_all()

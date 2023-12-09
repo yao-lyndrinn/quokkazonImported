@@ -5,6 +5,7 @@ from .models.seller import Seller
 from .models.user import User
 from .models.product import Product
 from .models.purchase import Purchase
+from .models.category import Category
 import datetime
 
 bp = Blueprint('allpurchases', __name__)
@@ -17,12 +18,16 @@ def orders():
             current_user.id)
     else:
         orders = None
+        
+    categories = Category.get_all()
+    sorted_categories = sorted(categories, key=lambda x: x.name)
     # render the page by adding information to the index.html file
     return render_template('orders.html',
                            orders=orders,
                            is_seller=Seller.is_seller(current_user),
                            product_class=Product,
-                           user_class=User)
+                           user_class=User,
+                           categories=sorted_categories)
 
 # Let a seller mark a purchase as fulfilled at the current time within their own orders table
 @bp.route('/orders/fulfill/<int:uid>-<int:sid>-<int:pid>-<int:oid>', methods=['POST'])

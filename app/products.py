@@ -105,6 +105,8 @@ def product_detail(product_id):
             order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)            
     else: 
         my_product_feedback, has_purchased = False, False
+        
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     return render_template('productDetail.html',
                            product=product,
                            pfeedback=pfeedback,
@@ -120,7 +122,8 @@ def product_detail(product_id):
                            inventory=inventory,
                            inv_len = inv_len,
                            order_freq_graph=order_freq_graph,
-                           is_seller=sid)
+                           is_seller=sid,
+                           categories=sorted_categories)
 
 ROWS = 24
 @bp.route('/products', methods=['GET','POST'])
@@ -158,7 +161,7 @@ def products():
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
     
-    categories = Category.get_all()
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     
     return render_template('products.html',
                       items=paginated,
@@ -167,7 +170,7 @@ def products():
                       product_prices = product_prices,
                       page=page,
                       total_pages=total_pages,
-                      categories=categories,
+                      categories=sorted_categories,
                       is_seller=Seller.is_seller(current_user),
                       category="All Products")
 
@@ -210,7 +213,7 @@ def search_results():
         else:
             items = apply_sort(search_products(search_term, Product.get_all()), sort_by)
     
-    categories = Category.get_all()
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
 
     paginated = items[start:end]
     total_pages = len(items)//24 + 1
@@ -223,7 +226,7 @@ def search_results():
                             len_products = len(items),
                             page=page,
                             total_pages=total_pages,
-                            categories=categories,
+                            categories=sorted_categories,
                             is_seller=Seller.is_seller(current_user))
     
 def search_products(search_term, products):
@@ -244,7 +247,7 @@ def allowed_file(filename):
     
 @bp.route('/products/add_products', methods=['GET','POST'])
 def add_products():
-    categories=Category.get_all()
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     if request.method == 'POST':
         name = request.form["name"]
         description = request.form["description"]
@@ -267,11 +270,11 @@ def add_products():
         
         return redirect(url_for('inventory.inventory'))
                 
-    return render_template('add_products.html', categories=categories)
+    return render_template('add_products.html', categories=sorted_categories)
 
 @bp.route('/products/edit_product/<int:product_id>', methods=['GET','POST'])
 def edit_product(product_id):
-    categories=Category.get_all()
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     product = Product.get(product_id)
     if request.method == "POST":
         name = request.form["name"]
@@ -290,5 +293,5 @@ def edit_product(product_id):
         
         Product.edit(product_id, name, description, "product_images/" + filename, altTxt, updatedAt, category, current_user.id)
         return redirect(url_for('inventory.inventory'))
-    return render_template('editProduct.html',  categories=categories, product=product, product_id=product_id)
+    return render_template('editProduct.html',  categories=sorted_categories, product=product, product_id=product_id)
 

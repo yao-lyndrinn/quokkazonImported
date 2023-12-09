@@ -1,5 +1,6 @@
 import csv
 
+#Adding a category ID to each product, because each product belongs to one category
 input_file = '/home/ubuntu/quokkazon/db/data/working_cat.csv'
 output_file = '/home/ubuntu/quokkazon/db/data/finished_cat.csv'
 

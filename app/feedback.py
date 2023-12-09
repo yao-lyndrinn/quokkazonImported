@@ -11,6 +11,8 @@ from .models.feedback import ProductFeedback, SellerFeedback
 from flask import Blueprint
 bp = Blueprint('feedback', __name__)
 
+# note that for each page we render, we need is_seller and sorted_categories to get the right menu on the top. 
+
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
@@ -58,8 +60,9 @@ def my_feedback(uid):
     
 @bp.route('/myfeedback/add/<int:product_id>/<name>', methods=['POST','GET'])
 def product_submission_form(product_id,name):
-    if current_user.is_authenticated: 
-        # go to the feedback submission form for this product 
+    if current_user.is_authenticated:
+        # this link is only accessible on the detailed order and detailed product pages 
+        # if the user has purchased this product before 
         if Seller.get(current_user.id): 
             is_seller = True 
         else: 
@@ -72,13 +75,14 @@ def product_submission_form(product_id,name):
                                 type="product",
                                 categories=sorted_categories,
                                 humanize_time=humanize_time)
-
-    return redirect(url_for('users.login'))
+    # if the user is anonymous, go to the detailed products page 
+    return redirect(url_for('products.product_detail',product_id=product_id))
 
 @bp.route('/myfeedback/add/product', methods=['POST','GET'])
 def product_add_feedback(): 
     if request.method == 'POST': 
-        # submit feedback 
+        # this link is only accessible on the detailed order and product pages 
+        # if the user has purchased this product at least once before 
         if Seller.get(current_user.id): 
             is_seller = True
         else:
@@ -124,30 +128,37 @@ def product_feedback_edit(product_id):
                             is_seller=is_seller,
                             categories=sorted_categories,
                             humanize_time=humanize_time)
-    
-    return redirect(url_for('index.index'))      
+    # redirect to the detailed product page if the user is anonymous 
+    return redirect(url_for('products.product_detail',product_id=product_id))      
  
 @bp.route('/myfeedback/edit/product_rating', methods=['POST','GET'])
 def product_rating_edit():
     if request.method == "POST":
+        # this link is only accessible on the Product Feedback Editing Form 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         rating = int(request.form['rating'])
         pid = int(request.form['pid'])
         ProductFeedback.edit_rating(current_user.id, pid, rating, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))      
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))     
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index")) 
 
 @bp.route('/myfeedback/edit/product_review', methods=['POST','GET'])
 def product_review_edit():
     if request.method == "POST":
+        # this link is only accessible on the Product Feedback Editing Form 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         review = request.form['review']
         pid = int(request.form['pid'])
         ProductFeedback.edit_review(current_user.id, pid, review, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
-
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 @bp.route('/myfeedback/edit/product_image', methods=['POST','GET'])
 def product_image_edit():
     if request.method == 'POST': 
+        # this link is only accessible on the Product Feedback Editing Form 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # get image file and format properly 
         file = request.files['image']
@@ -157,70 +168,93 @@ def product_image_edit():
 
         pid = int(request.form['pid'])
         ProductFeedback.edit_image(current_user.id, pid, "product_images/" + filename, current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
-
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
 def product_remove_feedback(product_id):
-    # when a user removes their product feedback, also remove any associated upvotes 
     if current_user.is_authenticated: 
+        # this link is only accessible on the Product Feedback Editing Form 
+        # when a user removes their product feedback, also remove any associated upvotes 
         ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
+    # redirect to detailed products page if the user is anonymous and tried to access this form by url 
     return redirect(url_for('products.product_detail',product_id=product_id))
     
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():
-    if request.method == 'POST': 
+    if request.method == 'POST':
+        # this link is only accessible on the Product Feedback Editing Form 
+        # remove upvotes as well when a user deletes their review because their feedback is no longer helpful  
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ProductFeedback.remove_upvotes(current_user.id,pid)
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
-
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
     
 @bp.route('/myfeedback/delete/image', methods=['POST','GET'])
 def product_remove_image():
     if request.method == 'POST': 
+        # this link is only accessible on the Product Feedback Editing Form 
+        # remove the user's image for a product review 
         pid = int(request.form['pid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ProductFeedback.edit_image(current_user.id, pid,'',current_dateTime)
-    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
-
+        return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 @bp.route('/productfeedback/remove_upvote', methods=['POST','GET'])
 def remove_upvote_product_review():
     if request.method == "POST":
+        # this link is only accessible on the Product Feedback Editing Form 
+        # remove the user's upvote for a product review 
         reviewer =  int(request.form['reviewer'])
         product = int(request.form['reviewed'])
         page = request.form['page']
         ProductFeedback.remove_my_upvote(current_user.id,reviewer,product)
         if page == "myfeedback":
+            # accessed this function via the private feedback history page 
             return redirect(url_for('feedback.my_feedback',uid=current_user.id))
         elif page == "publicfeedback":
+            # accessed this function via a public feedback history page 
             uid = int(request.form['uid'])
             return redirect(url_for('feedback.my_feedback',uid=uid))
+        # accessed this function via a detailed product page 
         return redirect(url_for('products.product_detail',product_id=product))
-
-    return redirect(url_for('index.index'))
-
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 @bp.route('/productfeedback/upvote', methods=['POST','GET'])
 def upvote_product_review():
     if request.method == "POST":
+        # this link is only accessible on the Product Feedback Editing Form 
+        # upvote a product review 
         reviewer =  int(request.form['reviewer'])
         product = int(request.form['reviewed'])
         page = request.form['page']
         ProductFeedback.add_my_upvote(current_user.id,reviewer,product)
         if page == "myfeedback":
+            # accessed this function via the private feedback history page 
             return redirect(url_for('feedback.my_feedback',uid=current_user.id))
         elif page == "publicfeedback":
+            # accessed this function via a public feedback history page 
             uid = int(request.form['uid'])
             return redirect(url_for('feedback.my_feedback',uid=uid))
+        # accessed this function via a detailed product page 
         return redirect(url_for('products.product_detail',product_id=product))
-
-    return redirect(url_for('index.index'))
-
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 
 @bp.route('/myfeedback/edit/seller/<int:seller_id>', methods=['POST','GET'])
 def seller_feedback_edit(seller_id):
+    # edit feedback for a seller 
     if current_user.is_authenticated:
         if Seller.get(current_user.id): 
             is_seller = True 
@@ -234,46 +268,69 @@ def seller_feedback_edit(seller_id):
                             is_seller=is_seller,
                             categories=sorted_categories,
                             humanize_time=humanize_time)
-    return redirect(url_for('index.index'))
+    # redirect to the seller's public profile if the user is anonymous 
+    return redirect(url_for('feedback.public_profile',user_id=seller_id))
 
 @bp.route('/myfeedback/edit/seller_rating', methods=['POST','GET'])
 def seller_rating_edit():
+    # edit the rating for a seller 
     if request.method == 'POST': 
+        # this button will only appear on the Seller Feedback Editing Form 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         rating = int(request.form['rating'])
         sid = int(request.form['sid'])
         SellerFeedback.edit_rating(current_user.id, sid, rating, current_dateTime)
-    return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
+        return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
     
 @bp.route('/myfeedback/edit/seller_review', methods=['POST','GET'])
 def seller_review_edit():
+    # edit the review for a seller 
     if request.method == 'POST': 
+        # this button will only appear the Seller Feedback Editing Form 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         review = request.form['review']
         sid = int(request.form['sid'])
         SellerFeedback.edit_review(current_user.id, sid, review, current_dateTime)
-    return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
+        return redirect(url_for('feedback.seller_feedback_edit',seller_id=sid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
     
 @bp.route('/myfeedback/delete', methods=['POST','GET'])
 def seller_remove_feedback():
+    # remove my feedback entirely for a seller 
     if request.method == 'POST':
+        # this button will only appear on the seller's public profile page 
+        # and the detailed order page if the user has purchased from this seller before 
         sid = int(request.form['sid'])
         SellerFeedback.remove_upvotes(current_user.id, sid)
         SellerFeedback.remove_feedback(current_user.id,sid)
-    return redirect(url_for('feedback.public_profile',user_id=sid))
+        return redirect(url_for('feedback.public_profile',user_id=sid))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
     
 @bp.route('/myfeedback/delete/seller_review', methods=['POST','GET'])
 def seller_remove_review():
+    # only remove my review for the seller 
     if request.method == 'POST': 
+        # this button will only appear on the seller's public profile page 
+        # and the detailed order page if the user has purchased from this seller before 
         seller_id = int(request.form['sid'])
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         SellerFeedback.remove_upvotes(current_user.id, seller_id)
         SellerFeedback.edit_review(current_user.id, seller_id,'',current_dateTime)
-    return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
+        return redirect(url_for('feedback.seller_feedback_edit',seller_id=seller_id))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
     
 @bp.route('/myfeedback/add/seller', methods=['POST','GET'])
 def seller_add_feedback():
+    # add new feedback for this seller 
     if request.method == 'POST': 
+        # this button will only appear on the seller's public profile page 
+        # and the detailed order page if the user has purchased from this seller before 
+        # and the user currently does not have any feedback for this seller already 
         if Seller.get(current_user.id):
             is_seller = True
         else: 
@@ -290,8 +347,9 @@ def seller_add_feedback():
                             is_seller=is_seller,
                             categories=sorted_categories,
                             humanize_time=humanize_time)
-    return redirect(url_for('index.index'))
-
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 
 @bp.route('/myfeedback/add/<int:seller_id>', methods=['POST','GET'])
 def seller_submission_form(seller_id):
@@ -302,6 +360,7 @@ def seller_submission_form(seller_id):
             is_seller = False
         name = SellerFeedback.get_name(seller_id)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+        # render the seller feedback submission form 
         return render_template('myfeedback_add.html',
                                 seller_id=seller_id,
                                 is_seller = is_seller,
@@ -309,8 +368,9 @@ def seller_submission_form(seller_id):
                                 type="seller",
                                 categories=sorted_categories,
                                 humanize_time=humanize_time)
-    return redirect(url_for('index.index'))
-
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 
 @bp.route('/sellerfeedback/remove_upvote', methods=['POST','GET'])
 def remove_upvote_seller_review():
@@ -320,15 +380,20 @@ def remove_upvote_seller_review():
         SellerFeedback.remove_my_upvote(current_user.id,reviewer,seller)
         page = request.form['page']
         if page == "myfeedback":
+            # accessed this function via the private feedback history page 
             return redirect(url_for('feedback.my_feedback',uid=current_user.id))
         elif page == "publicfeedback":
+            # accessed this function via a public feedback history page 
             uid = int(request.form['uid'])
             return redirect(url_for('feedback.my_feedback',uid=uid))
         elif page=="myprofile":
+            # accessed this function via the private profile page 
             return redirect(url_for('profile.my_profile'))
+        # accessed this function through a public profile page 
         return redirect(url_for('feedback.public_profile',user_id=seller))
-    return redirect(url_for('index.index'))
-
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
+    
 @bp.route('/sellerfeedback/upvote', methods=['POST','GET'])
 def upvote_seller_review():
     if request.method == "POST":
@@ -337,32 +402,46 @@ def upvote_seller_review():
         SellerFeedback.add_my_upvote(current_user.id,reviewer,seller)
         page = request.form['page']
         if page == "myfeedback":
+            # accessed this function via the private feedback history page 
             return redirect(url_for('feedback.my_feedback',uid=current_user.id))
         elif page == "publicfeedback":
+            # accessed this function via a public feedback history page 
             uid = int(request.form['uid'])
             return redirect(url_for('feedback.my_feedback',uid=uid))
         elif page=="myprofile":
+            # accessed this function via the private profile page 
             return redirect(url_for('profile.my_profile'))
+        # accessed this function through a public profile page
         return redirect(url_for('feedback.public_profile',user_id=seller))
-    return redirect(url_for('index.index'))
+    # redirect to home page if the user did not access this page through the right buttons (i.e., just used url)
+    return redirect(url_for("index.index"))
         
 @bp.route('/public_profile/<int:user_id>', methods=['POST','GET'])
 def public_profile(user_id):
+    # variable that holds a summary of ratings if it exists 
     summary = None
-    is_seller = False
+    # if the current logged-in user viewing this page is a seller or not 
+    is_seller = False 
+    # get all feedback for the given user (empty if the user is not a seller)
     sfeedback = SellerFeedback.get_by_sid(user_id)
+    # get all feedback for the given user sorted by upvotes (empty if the user is not a seller)
     sorted_by_upvotes = SellerFeedback.sorted_by_upvotes(user_id)
+    # upvotes for reviews about this seller 
     supvotes = {}
     for item in sfeedback:
         supvotes[(item.uid,item.sid)] = SellerFeedback.upvote_count(item.uid,item.sid)[0][0]
+    # get top three most popular reviews 
     top3 = []
     count = 0
     for item in sorted_by_upvotes: 
         top3.append(item)
         count += 1 
         if count == 3: break
+    
+    # if the current user is logged in, get their upvotes (if any) for the reviews about this user (if the user is a seller)
     myupvotes = {}
     if current_user.is_authenticated: 
+        # if the current user is a seller 
         if Seller.get(current_user.id):
             is_seller = True
         # whether the current logged-in user has purchased from this seller before 
@@ -379,6 +458,7 @@ def public_profile(user_id):
     else: 
         has_purchased, my_seller_feedback = False, False
 
+    # check if user is a seller 
     user_is_seller = Seller.get(user_id)
     if user_is_seller is not None: 
         if Seller.has_products(user_id):
@@ -386,8 +466,10 @@ def public_profile(user_id):
         user_is_seller = True
     else: 
         user_is_seller = False 
-  
+    
+    # user's information 
     info = Seller.find(user_id)
+    # summary of the feedback that the user has left for products and sellers
     feedback_for_other_sellers = SellerFeedback.user_summary_ratings(user_id)
     feedback_for_products = ProductFeedback.user_summary_ratings(user_id)
     sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)

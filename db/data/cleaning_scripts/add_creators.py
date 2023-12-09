@@ -1,6 +1,7 @@
 import csv
 import random
 
+#Code to add creators with ids from the seller table to the products.csv
 input_file = '/home/ubuntu/quokkazon/db/data/Products2.csv'
 output_file = '/home/ubuntu/quokkazon/db/data/Products.csv'
 

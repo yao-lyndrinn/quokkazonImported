@@ -1,6 +1,6 @@
 import os, random, csv
 
-
+#Code to add random quokka images to each of the product entries in the products.csv
 image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
 image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
 

@@ -930,3 +930,11 @@ section {
     display: inline-block;
     width: 45vw;
 }
+
+#edit-image {
+  max-width: 100%;
+}
+
+.add-product-form {
+  max-width: 500px;
+}

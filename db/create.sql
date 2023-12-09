@@ -27,7 +27,8 @@ CREATE TABLE Products (
   altTxt VARCHAR(4096),
   CreatedAt timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
   UpdatedAt timestamp without time zone,
-  cid INTEGER NOT NULL REFERENCES Category(cid)
+  cid INTEGER NOT NULL REFERENCES Category(cid),
+  sid INTEGER NOT NULL REFERENCES Seller(sid)
 );
 
 CREATE TABLE Tag (

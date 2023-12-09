@@ -57,7 +57,6 @@ def product_detail(product_id):
             recent_list.pop()   
     session['recent'] = recent_list
     
-    #de
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)
@@ -65,6 +64,8 @@ def product_detail(product_id):
     seller_summary = {}
     order_freq_graph = None
     sid = None
+    
+    #retrieve seller information
     for seller in inventory: 
         # get the name of the seller 
         seller_names[seller.sid] = SellerFeedback.get_name(seller.sid)
@@ -73,6 +74,8 @@ def product_detail(product_id):
     pfeedback = ProductFeedback.get_by_pid(product_id)
     sorted_by_upvotes = ProductFeedback.sorted_by_upvotes(product_id)
     pupvotes = {}
+    
+    #retrieve feedback information and upvote information
     for item in pfeedback:
         pupvotes[(item.uid,item.pid)] = ProductFeedback.upvote_count(item.uid,item.pid)[0][0]
     count = 0
@@ -84,6 +87,7 @@ def product_detail(product_id):
     # get summary statistics for ratings 
     summary = ProductFeedback.summary_ratings(product_id)
    
+    #current user's feedback and upvotes
     myupvotes = {}
     if current_user.is_authenticated: 
         has_purchased = ProductFeedback.has_purchased(current_user.id,product_id)
@@ -125,10 +129,11 @@ def product_detail(product_id):
                            is_seller=sid,
                            categories=sorted_categories)
 
-ROWS = 24
+ROWS = 24 #number of items on each page
+#product page endpoint that shows all of the products
 @bp.route('/products', methods=['GET','POST'])
 def products():
-    
+    #pagination code
     page = request.args.get("page", 1, type=int)
     start = (page-1) * ROWS
     end = start + ROWS
@@ -138,10 +143,12 @@ def products():
     summary = defaultdict(list)
     items_stock = Stock.get_all_in_stock()
     
+    #make lists of product prices and summaries for items 
     for item in inventory:
         product_prices[item.pid].append(item.price)
         summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
                 
+    #sorting and filtering the products
     if request.method == 'GET':
         filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
         sort_by = request.args.get('sort_by') if request.args.get('sort_by') is not None else 'a-z'
@@ -174,31 +181,38 @@ def products():
                       is_seller=Seller.is_seller(current_user),
                       category="All Products")
 
-
+#endpoint for searches and search results
 @bp.route('/products/search_results', methods=['GET','POST'])
 def search_results():
+    #pagination code
     page = request.args.get("page", 1, type=int)
     start = (page-1) * ROWS
     end = start + ROWS
     
+    #the search term input by user
     search_term = request.args.get('search_term', '')
 
     inventory = Inventory.get_all()
     product_prices = defaultdict(list)
     summary = defaultdict(list)
     
+    #defining product prices and summary for products
     for item in inventory:
         product_prices[item.pid].append(item.price)
         summary[item.pid] = ProductFeedback.summary_ratings(item.pid)
+    
+    #if nothing is searched, redirect to main products page, otherwise set the search term
     if request.method == 'POST':
         search_term = request.form['search_term']
         session['search_term'] = search_term
         if not search_term:
             return redirect(url_for('products.products'))
-        
+    
+    #get search term from sessions
     if request.method == 'GET':
         search_term = session.get('search_term')  
     
+    #filtering and sorting on the search results page
     filter_by = request.args.get('filter_by') if request.args.get('filter_by') is not None else 'all'
     sort_by = request.args.get('sort_by') if request.args.get('sort_by') is not None else 'a-z'
     if sort_by == "top_reviews":
@@ -229,11 +243,12 @@ def search_results():
                             categories=sorted_categories,
                             is_seller=Seller.is_seller(current_user))
     
+#search results are products that have search term in their name and description
 def search_products(search_term, products):
     search_results = [product for product in products if (search_term.lower() in product.name.lower()) or (search_term.lower() in product.description.lower())]
     return search_results
 
-
+#apply letter sorting function for any page
 def apply_sort(items, sort_by):
     if sort_by == "a-z":
         sort_items = sorted(items, key=lambda x: x.name)
@@ -241,10 +256,7 @@ def apply_sort(items, sort_by):
         sort_items = sorted(items, key=lambda x: x.name, reverse=True)
     return sort_items
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
-
-    
+#endpoint for the add products form which inserts the form elements to the products table
 @bp.route('/products/add_products', methods=['GET','POST'])
 def add_products():
     sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
@@ -256,7 +268,7 @@ def add_products():
         pid = int(Product.newPID()[0][0]) + 1
         createdAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         updatedAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        # pid = Product.newPID()
+        
         file = request.files['image']
         filename = file.filename
         filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
@@ -272,6 +284,7 @@ def add_products():
                 
     return render_template('add_products.html', categories=sorted_categories)
 
+#endpoint for the edit products form. Updates the form values in the Products table according to pid and sid
 @bp.route('/products/edit_product/<int:product_id>', methods=['GET','POST'])
 def edit_product(product_id):
     sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
@@ -283,6 +296,7 @@ def edit_product(product_id):
         category = request.form["category"]
         updatedAt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
+        #users may choose not to change their image
         if request.files['image']:
             file = request.files['image']
             filename = file.filename

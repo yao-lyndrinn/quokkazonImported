@@ -58,6 +58,10 @@ def cart_add():
     if not quantity or not quantity.isdigit():
         quantity = 1
     saved_for_later = request.form["saved_for_later"]
+    #check in stock
+    if int(quantity) > Inventory.get(seller_id, product_id).num_for_sale:
+        flash("Not enough in stock.")
+        return redirect(url_for('cart.cart'))
     #check quantity is positive
     if int(quantity) >= 1:
     #add item to cart with specifications if already not in cart
@@ -101,6 +105,10 @@ def cart_update_quantity():
         quantity = 1
     seller_id = request.form['seller_id']
     product_id = request.form['product_id']
+    #check quantity not over stock
+    if int(quantity) > Inventory.get(seller_id, product_id).num_for_sale:
+        flash("Not enough in stock.")
+        return redirect(url_for('cart.cart'))
     #check quantity is positive
     if int(quantity) >= 1:
         CartItem.update_quantity(current_user.id, seller_id, product_id, quantity)
@@ -130,6 +138,7 @@ def cart_submit():
         for item in items: #enter new items into purchases table
             if item.saved_for_later == '0': #other functions check in the model, get_all_by_uid doesn't
                 #because it is what is used to render the whole cart page
+                CartItem.decrease_stock(item.sid, current_user.id, item.pid)
                 CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price * decimal.Decimal(multiplier), None)
         CartItem.submit(current_user.id)
         return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details

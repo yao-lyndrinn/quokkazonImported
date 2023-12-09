@@ -15,7 +15,7 @@
 
 <form action="{{ url_for('feedback.product_remove_feedback',product_id=item.pid) }}"
                 method="POST">
-                <input type="submit" value="Delete" style="background-color: darkred; color: #ffffff"/> 
+                <input type="submit" value="Delete Feedback" style="background-color: darkred; color: #ffffff"/> 
 </form>
 <br>
 
@@ -26,7 +26,7 @@
 <form action="{{ url_for('feedback.product_rating_edit') }}" method="POST">
     <input type="number" name="rating" id="rating" REQUIRED>
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
-    <input type="submit" value="Submit"> 
+    <input type="submit" value="Submit" style="background-color: #137a56; color: #ffffff"> 
     </form>
 </p>
 
@@ -36,29 +36,30 @@
 <form action="{{ url_for('feedback.product_review_edit') }}" method="POST" class="my_button">
  <textarea id="review" name="review" rows="4" cols="50" REQUIRED>{{item.review}}</textarea>
  <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
-<br><input type="submit" value="Submit"> 
-    </form>
-<form action="{{ url_for('feedback.product_remove_review') }}"
-method="POST">
+<br><input type="submit" value="Submit" style="background-color: #137a56; color: #ffffff"> 
+</form>
+<form action="{{ url_for('feedback.product_remove_review') }}" method="POST">
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
     <input type="submit" value="Delete Review" style="background-color: darkred; color: #ffffff"/> 
 </form>
-
-<form action="{{ url_for('feedback.product_remove_review') }}"
-method="POST">
+<br>
+<form action="{{ url_for('feedback.product_image_edit') }}" method="POST" enctype="multipart/form-data">
     <label for="image"><b>Image:</b></label><br>
+    <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
     <input type="file" id="image" name="image" accept="image/*" required><br>
-    <input type="submit" value ="Submit"/> 
-    <input type="submit" value="Delete Image" style="background-color: darkred; color: #ffffff"/> 
-
-    <br>
-    <label for="currentImage">Current Image:</label><br>
-    {% if item.image %}
-        <img id="edit-image" src="{{ url_for('static', filename=item.image) }}">
-    {% else %}
-        <p>No image attached to review.</p>
-    {% endif %}
+    <input type="submit" value ="Submit" style="background-color: #137a56; color: #ffffff"/> 
 </form>
+
+<form action="{{ url_for('feedback.product_remove_image') }}"method="POST">
+    <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
+    <input type="submit" value="Delete Image" style="background-color: darkred; color: #ffffff"/> 
+</form>
+<br>
+{% if item.image %}
+    <img id="edit-image" src="{{ url_for('static', filename=item.image) }}">
+{% else %}
+    <p>No image attached to review.</p>
+{% endif %}
 
 
 </body>

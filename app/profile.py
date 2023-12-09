@@ -9,6 +9,7 @@ from .models.seller import Seller
 from .models.feedback import SellerFeedback, ProductFeedback
 from .models.purchase import Purchase
 from .models.product import Product
+from .models.category import Category
 
 from humanize import naturaltime
 import datetime
@@ -34,7 +35,6 @@ def my_profile():
     supvotes = {}
     myupvotes = {}
     summary = None
-    order_count_graph, order_freq_graph = None, None
     if a is None: 
         is_seller = False
     else:
@@ -42,15 +42,22 @@ def my_profile():
 
         # Create a graph for top selling products by count for a particular seller
         order_counts = Purchase.get_order_counts_by_sid(current_user.id)
-        oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
-        oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top Selling Products', text_auto=True, color_discrete_sequence=['#8E7618'])
-        order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        if order_counts:
+            oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
+            oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top Selling Products', text_auto=True, color_discrete_sequence=['#8E7618'])
+            order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         # Create a graph for the total number orders over time for a particular seller across all products
         orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id)]
-        of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
-        of_fig = px.line(of_df, x='Month',y='Count',title='Total Number of Orders Per Month')
-        order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        plot_graph = False
+        for row in orders_freq:
+            if row[1] != 0:
+                plot_graph = True
+                break
+        if plot_graph:
+            of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
+            of_fig = px.line(of_df, x='Month',y='Count',title='Total Number of Orders Per Month')
+            order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         # Create a graph for the average seller rating over time by month
         num_ratings, sum, avg_ratings = 0, 0, []
@@ -95,6 +102,7 @@ def my_profile():
 
     feedback_for_other_sellers = SellerFeedback.user_summary_ratings(current_user.id)
     feedback_for_products = ProductFeedback.user_summary_ratings(current_user.id)
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     # The user information will be loaded from the current_user proxy
     return render_template('myprofile.html',
                             is_seller = is_seller,
@@ -110,7 +118,8 @@ def my_profile():
                            current_user=current_user,
                            feedback_for_other_sellers=feedback_for_other_sellers,
                            feedback_for_products=feedback_for_products,
-                           humanize_time=humanize_time)
+                           humanize_time=humanize_time,
+                           categories=sorted_categories)
 
 # Registers a user as a seller
 @bp.route('/register_seller')
@@ -125,6 +134,7 @@ def reg_seller():
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     if request.method == 'POST':
         # Retrieve form data
         firstname = request.form.get('firstname')
@@ -137,19 +147,19 @@ def edit_profile():
         #flash('Profile updated successfully!')
         return redirect(url_for('profile.my_profile'))
 
-    return render_template('edit_profile.html')
+    return render_template('edit_profile.html', categories=sorted_categories)
 
 
 # Allows for balance to be topped-up
 @bp.route('/top_up', methods=['GET', 'POST'])
 @login_required
 def top_up():
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     if request.method == 'POST':
         # Retrieve form data
         added_money = request.form.get("added_money")
-
-        User.top_up(current_user.id, current_user.balance, added_money)
-       # flash('Balance topped up successfully!')
-        return redirect(url_for('profile.my_profile'))
-
-    return render_template('top_up.html')
+        if User.top_up(current_user.id, current_user.balance, added_money):
+            return redirect(url_for('profile.my_profile'))
+        else:
+            return render_template('top_up.html',error=True)
+    return render_template('top_up.html',error=False, categories=sorted_categories)

@@ -13,7 +13,7 @@
 
 <form action="{{ url_for('feedback.product_add_feedback') }}" method="POST" enctype="multipart/form-data">
     <label id="rating">Rating:</label>
-    <input type="number" name="rating" id="rating" REQUIRED>
+    <input type="number" name="rating" id="rating" min="1" max="5" REQUIRED>
     <input type="hidden" id="pid" name="pid" value="{{product_id}}">
     <br>
     <label id="review">Review:</label>
@@ -30,7 +30,7 @@
 <h4>My Feedback for Seller {{seller_id}}: {{name}}</h4>
 <form action="{{ url_for('feedback.seller_add_feedback') }}" method="POST">
     <label id="rating">Rating:</label>
-    <input type="number" name="rating" id="rating" REQUIRED>
+    <input type="number" name="rating" id="rating" min="1" max="5" REQUIRED>
     <input type="hidden" id="sid" name="sid" value="{{seller_id}}">
     <br>
     <label id="review">Review:</label>

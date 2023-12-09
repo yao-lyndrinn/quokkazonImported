@@ -11,6 +11,7 @@ from .models.inventory import Inventory
 from .models.purchase import Purchase
 from .models.user import User
 from .models.feedback import ProductFeedback, SellerFeedback
+from .models.category import Category
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -39,9 +40,11 @@ def cart():
 
     else:
         return jsonify({}), 404
+
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     # render the page by adding information to the cart.html file
     return render_template('cart.html',
-                      items=items, totalprice=totalprice, seller_names = seller_names, product_names=product_names)
+                      items=items, totalprice=totalprice, seller_names = seller_names, product_names=product_names, categories = sorted_categories)
 
 
 @bp.route('/cart/add', methods=['POST'])
@@ -65,6 +68,7 @@ def cart_add():
 
 @bp.route('/cart/select/<int:product_id>', methods=['POST'])
 def cart_select(product_id):
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     # find the sellers for this product
     names = {}
     summary_feedback = {}
@@ -79,7 +83,7 @@ def cart_select(product_id):
     return render_template('sellerselection.html',
                       sellers=sellers,
                       names=names,
-                      summary_feedback=summary_feedback)
+                      summary_feedback=summary_feedback, categories=sorted_categories)
 
 @bp.route('/cart/remove/<int:product_id>/<int:seller_id>', methods=['POST'])
 def cart_remove(seller_id, product_id):
@@ -135,6 +139,7 @@ def cart_order(order_id):
         if item.date_fulfilled == None:
             all_fulfilled = False
     totalprice = Purchase.get_total_price_order(current_user.id, order_id)
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     seller_names = {}
     product_names = {}
     product_feedback_exists = {}
@@ -154,6 +159,7 @@ def cart_order(order_id):
             seller_feedback_exists[purchase.sid] = True
         else: 
             seller_feedback_exists[purchase.sid] = False
+    
     return render_template('buyerOrder.html', 
                            items = items, 
                            totalprice = totalprice,
@@ -161,12 +167,14 @@ def cart_order(order_id):
                            product_names = product_names,
                            product_feedback_exists = product_feedback_exists,
                            seller_feedback_exists = seller_feedback_exists,
-                           all_fulfilled = all_fulfilled)
+                           all_fulfilled = all_fulfilled,
+                           categories= sorted_categories)
 
 @bp.route('/cart/viewOrders')
 def cart_viewOrders(): #show list of past orders for user
     items = Purchase.get_unique_orders_by_uid(current_user.id)
-    return render_template('viewOrders.html', items = items)
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
+    return render_template('viewOrders.html', items = items, categories = sorted_categories)
 
 @bp.route('/cart/update_saved', methods=['POST'])
 def cart_update_saved():

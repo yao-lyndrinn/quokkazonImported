@@ -171,8 +171,8 @@
   </div>
 {% endif %}
 
-{% if not is_seller %}
-<p style="color:#804a03";><b>This user is not a seller.</b></p>
+{% if not user_is_seller %}
+<p style="color:#804a03";><b>{{first_name}} is not a seller.</b></p>
 {% endif %}
 </div>
 {% endblock %}

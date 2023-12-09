@@ -120,7 +120,23 @@ CREATE TABLE Cart(
   -- one line is identified by user, seller, and product which is for one quantity of item in that user’s cart
 );
 
+----------------------------------------------------------------------
+-- user constraints
 
+CREATE FUNCTION UserConstraints() RETURNS TRIGGER AS $$
+BEGIN
+  -- ensures that new messages have later timestamps 
+  IF NEW.balance < 0 THEN
+    RAISE EXCEPTION 'User balance must be nonnegative!';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER UserConstraints
+  BEFORE INSERT OR UPDATE ON Users  -- deletions are ok
+  FOR EACH ROW
+  EXECUTE PROCEDURE UserConstraints();
 ----------------------------------------------------------------------
 -- feedback constraints
 
@@ -212,9 +228,6 @@ BEGIN
   END IF;
   IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.uid <> p.uid) THEN
     RAISE EXCEPTION 'Different users cannot make the same order';
-  END IF;
-  IF EXISTS (SELECT * from Purchases AS p WHERE p.order_id = NEW.order_id AND NEW.time_purchased <> p.time_purchased) THEN
-    RAISE EXCEPTION 'The same order cannot include purchases made at different times';
   END IF;
   RETURN NEW;
 END;

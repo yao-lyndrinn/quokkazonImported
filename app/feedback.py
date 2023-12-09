@@ -91,10 +91,13 @@ def product_add_feedback():
         # get image file and format properly 
         file = request.files['image']
         filename = file.filename
-        filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
-        file.save(filepath)
+        if not filename: 
+            ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime, None)
+        else: 
+            filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
+            file.save(filepath)
+            ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime, "product_images/" + filename)
         
-        ProductFeedback.add_feedback(current_user.id,pid,rating,review,current_dateTime, "product_images/" + filename)
         pfeedback = ProductFeedback.get_by_uid_pid(current_user.id, pid)
         sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
         return render_template('myfeedback_edit.html',
@@ -163,7 +166,7 @@ def product_remove_feedback(product_id):
     if current_user.is_authenticated: 
         ProductFeedback.remove_upvotes(current_user.id,product_id)
         ProductFeedback.remove_feedback(current_user.id,product_id)
-    return redirect(url_for('feedback.my_feedback',uid=current_user.id))
+    return redirect(url_for('products.product_detail',product_id=product_id))
     
 @bp.route('/myfeedback/delete/product_review', methods=['POST','GET'])
 def product_remove_review():

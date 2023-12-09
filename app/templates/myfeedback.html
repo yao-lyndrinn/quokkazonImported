@@ -109,7 +109,7 @@
           <td>
             <form action="{{ url_for('feedback.product_feedback_edit', product_id=item.pid) }}"
                   method="POST">
-                  <input type="submit" value="Edit" style="background-color: #137a56; color: #ffffff"/> 
+                  <input type="submit" value="Edit" class="btn-gray-inventory"/> 
             </form>
         </td>
           {% endif %} 
@@ -181,7 +181,7 @@
           <td>
             <form action="{{ url_for('feedback.seller_feedback_edit', seller_id=item.sid) }}"
                   method="POST" >
-                  <input type="submit" value="Edit" style="background-color: #137a56; color: #ffffff"/> 
+                  <input type="submit" value="Edit" class="btn-gray-inventory"/> 
             </form>
         </td>
         {% endif %}

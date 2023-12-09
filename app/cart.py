@@ -3,6 +3,7 @@ from flask import render_template, flash
 from flask_login import current_user
 from flask import redirect, url_for, request
 import datetime
+import decimal
 from humanize import naturaltime
 
 from .models.cart import CartItem
@@ -17,11 +18,19 @@ bp = Blueprint('cart', __name__)
 
 @bp.route('/cart')
 def cart():
+    #check if holiday code has been applied
+    discount = request.args.get('discount', default=False, type=bool)
+    multiplier = 1
+    if discount:
+        multiplier = 0.75
     # find the items the current user has added to their cart
     if current_user.is_authenticated:
         items = CartItem.get_all_by_uid(
                         current_user.id)
-        totalprice = CartItem.get_total_price(current_user.id)
+        for item in items:
+            item.price = round(decimal.Decimal(multiplier) * item.price,2)
+        totalprice = round(CartItem.get_total_price(current_user.id) * multiplier,2)
+
     else:
         return jsonify({}), 404
     # render the page by adding information to the cart.html file
@@ -84,21 +93,26 @@ def cart_update_quantity():
 @bp.route('/cart/submit', methods=['POST'])
 def cart_submit():
     #get cart price
-    totalPrice = CartItem.get_total_price(current_user.id)
+    totalPrice = float(request.form["total"].strip("/"))
+    multiplier = 1
+    #check if these are discounted prices, or listed prices
+    discounted = CartItem.compare(current_user.id, totalPrice)
+    if discounted:
+        multiplier = 0.75
     if totalPrice == 0: #block empty orders
         flash("You can't submit an empty order!")
         return redirect(url_for('cart.cart'))
     #compare price with users balance
     if totalPrice < User.get_balance(current_user.id):
         neworder = CartItem.newOrderId(current_user.id)
-        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id) #increase for sellers
-        CartItem.decrease_balance(current_user.id) #subtract from buyer
+        CartItem.increase_balances(CartItem.get_all_sids(current_user.id), current_user.id, multiplier) #increase for sellers
+        CartItem.decrease_balance(current_user.id, totalPrice) #subtract from buyer
         items = CartItem.get_all_by_uid(
                             current_user.id)
         for item in items: #enter new items into purchases table
             if item.saved_for_later == '0': #other functions check in the model, get_all_by_uid doesn't
                 #because it is what is used to render the whole cart page
-                CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price, None)
+                CartItem.newPurchase(item.uid, item.sid, item.pid, neworder, item.quantity, item.price * decimal.Decimal(multiplier), None)
         CartItem.submit(current_user.id)
         return redirect(url_for('cart.cart_order', order_id = neworder)) #show order details
     else:
@@ -156,3 +170,14 @@ def cart_update_saved():
     else:
         CartItem.move_to_cart(current_user.id, seller_id, product_id)
     return redirect(url_for('cart.cart'))
+
+@bp.route('/cart/discount', methods=['POST'])
+def cart_discount():
+    code = request.form['code']
+    if code == "QUOLIDAY25":
+        #CartItem.discount(current_user.id)
+        flash("Code applied!")
+        return redirect(url_for('cart.cart', discount = True))
+    else:
+        flash("Code not recognized.")
+        return redirect(url_for('cart.cart'))

@@ -8,6 +8,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Re
 
 from .models.user import User
 from .models.category import Category
+from .models.seller import Seller
 
 
 from flask import Blueprint
@@ -123,7 +124,8 @@ def search_results():
                             len_users = len(all_users),
                             page=page,
                             total_pages=total_pages,
-                            categories=sorted_categories)
+                            categories=sorted_categories,
+                            is_seller= Seller.is_seller(current_user))
 
 def search_users(search_term):
     users = User.get_all()

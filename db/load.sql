@@ -30,10 +30,5 @@ SELECT pg_catalog.setval('public.users_id_seq',
 
 \COPY Messages FROM 'Messages.csv' WITH DELIMITER ',' NULL '' CSV
 
-\COPY Wishes FROM 'Wishes.csv' WITH DELIMITER ',' NULL '' CSV
-SELECT pg_catalog.setval('public.wishes_id_seq',
-                         (SELECT MAX(id)+1 FROM Wishes),
-                         false);
-
 \COPY Inventory FROM 'Inventory.csv' WITH DELIMITER ',' NULL '' CSV
 \COPY Cart FROM 'Cart.csv' WITH DELIMITER ',' NULL '' CSV

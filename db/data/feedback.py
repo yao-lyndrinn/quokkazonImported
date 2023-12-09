@@ -1,4 +1,4 @@
-import csv,random
+import csv,random,os
 from collections import defaultdict 
 from datetime import datetime 
 from faker import Faker
@@ -24,6 +24,9 @@ with open("Sample Reviews.csv",newline='') as file:
         pid,rating,review = row[0],row[1],row[3]
         sample_product_reviews[pid][int(rating)] = review
 
+# read in sample image data 
+image_folder = '/home/ubuntu/quokkazon/app/static/product_images'
+image_files = [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
 
 # generate the seller and product feedback CSVs 
 def get_csv_writer(f):
@@ -62,12 +65,17 @@ for uid,info in purchases.items():
             # leave_p_review = random.choice([True,False])
             leave_p_review = True
             if leave_p_review: 
+                # get a random image 
+                if random.choice([True,False]) == True: 
+                    image = "product_images/" + random.choice(image_files)
+                else: 
+                    image = None
                 length = random.randint(6,10)
                 product_reviews.append((uid,pid))
                 review = fake.sentence(nb_words=length)[:-1] + ". " + sample_product_reviews[pid][int(p_rating)] + " " + fake.sentence(nb_words=length)[:-1] + "." 
-                product_writer.writerow([uid,pid,p_rating,review,default_time,""])
+                product_writer.writerow([uid,pid,p_rating,review,default_time,image])
             else: 
-                product_writer.writerow([uid,pid,p_rating,"",default_time,""])
+                product_writer.writerow([uid,pid,p_rating,None,default_time,None])
         if len(seller_product_ratings[sid]) == 0: continue  
         # make sure that the user has not left a review for this seller already 
         if sid in seller_ratings: continue 

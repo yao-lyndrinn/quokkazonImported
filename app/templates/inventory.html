@@ -66,10 +66,11 @@
           <td>{{item.num_for_sale}}</td>
           <td>
               <form action="{{ url_for('inventory.edit', product_id=item.pid, oq=item.quantity, on=item.num_for_sale, op=item.price) }}">
-                    <input type="submit" value="Edit"/> 
+                    <input class="btn btn-gray-inventory" type="submit" value="Edit"/> 
               </form>
               {% if item.pid in products %}
-                <button><a href="{{ url_for('products.edit_product', product_id=item.pid) }}">Edit Product</a></button>
+                </br>
+                <a type="button" class="btn btn-gray-inventory" href="{{ url_for('products.edit_product', product_id=item.pid) }}">Edit Product</a>
               {% endif %}
           </td>
         </tr>

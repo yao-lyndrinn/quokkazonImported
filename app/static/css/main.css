@@ -36,6 +36,20 @@ a {
     background-color: #000 !important;
     color: #fff;
 }
+
+.btn-gray-inventory{
+  border: none;
+  color: white;
+  background-color: gray;
+}
+
+.btn-gray-inventory:hover {
+  color:white;
+  text-decoration: none;
+  background-color: rgb(70, 70, 70);
+}
+
+
 .quokka-brown{
   background-color: #422808;
   color: white;

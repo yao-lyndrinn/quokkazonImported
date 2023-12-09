@@ -71,8 +71,9 @@ def index():
 
     recent = session.get('recent')
     recently_viewed = []
-    for pid in recent:
-        recently_viewed.append(Product.get(pid))
+    if recent is not None:
+        for pid in recent:
+            recently_viewed.append(Product.get(pid))
     print("THESE ARE RECENT", recent)
     # render the page by adding information to the index.html file
     return render_template('index.html',

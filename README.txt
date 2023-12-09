@@ -10,7 +10,7 @@ Team members:
 - Lyndrinn Yao (Carts Guru) --> Main designer of carts table. For Milestone 3, Lyndrinn updated app/cart.py, app/models/cart.py, app/templates/cart.html, index.html, app/purchases.py, and wrote app/templates/sellerselection.html and app/templates/buyerorder.html. Features that have been added since the last milestone are the ability to view all sellers selling a product, add a product to the cart from a seller, update the quantity of an item in the cart, removing an item from the cart, displaying a calculated total price of items in the cart, and being able to submit the cart as an order, emptying the cart, updating the Purchases table and updating user balances accordingly.
 
 - Elise Zhang (Products Guru) --> 
-    - Main designer of products, tags, and categories table. For milestone 3, Elise wrote the app/products.py, app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
+    - Main designer of products, and categories table. For milestone 3, Elise wrote the app/products.py, app/models/stock.py, app/templates/products.html, app/templates/topProducts.html files, and put corresponding links into index.html.
     - For milestone 4 Elise has:
         - Created or updated: app/models/category.py, app/categories.py, app/products.py, app/carts.py, app/models/purchase.py, app/models/stock.py, app/static/css/main.css, app/templates/index.html, app/templates/productDetail.html, app/templates/products2.html, app/templates/searchResults2.html
         - Added a top products display on the home page,
@@ -21,6 +21,12 @@ Team members:
         - Allowed users to sort products by price
         - Made a product details page that displays product and seller information
         - Users can choose a seller to buy from and add the product to their cart
+    For final:
+        - Fixed all filtering and sorting functionalities
+        - Added a recently viewed section on the home page
+        - Finished allowing users to sort by category and filter/sort on top of that
+        - Added an edit products button for sellers that crated a product
+        - Contributed to the overall aesthetics of the site including form css, product cards, footer, and promotional sale banner
 
 Everyone worked together to customize the website. 
 https://gitlab.oit.duke.edu/query-quokkas/quokkazon 

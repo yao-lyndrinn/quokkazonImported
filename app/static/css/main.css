@@ -955,7 +955,7 @@ section {
 }
 
 .chart {
-    display: inline-block;
+    display: block;
     margin: 0 auto;
     height: 400px;
     width: 40vw;

@@ -25,32 +25,39 @@ bp = Blueprint('products', __name__)
 # List of month abbreviations for analytics graph
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+#converting time into a readable format
 def humanize_time(dt):
     return naturaltime(datetime.datetime.now() - dt)
 
+#activating a search session
 @bp.before_request
 def activate_session():
     if request.path in ['/products/search_results']:
         session.modified = True
 
+#deactivating a search session
 @bp.after_request
 def deactivate_session(response):
     if request.path in ['', '/products']:
         session['search_term'] = ''
     return response
 
+#function to create the product detail and pass in values
 @bp.route('/products/<int:product_id>',methods = ['GET','POST'])
 def product_detail(product_id):
+    #To create a recently viewed list without retrieving from database, save to session
     if 'recent' not in session:
         session['recent'] = []  # 
     recent_list = session['recent']
-    if len(recent_list) < 4:
-        recent_list.insert(0, product_id)
-    else:
-        recent_list.pop()
-        
+    #Don't want duplicate items, and I only want a maximum of 4 recently viewed items to display
+    if product_id not in recent_list:
+        if len(recent_list) < 4:
+            recent_list.insert(0, product_id)
+        else:
+            recent_list.pop()   
     session['recent'] = recent_list
     
+    #de
     product = Product.get(product_id)
     inventory = Inventory.get_all_by_pid(product_id)
     inv_len = len(inventory)

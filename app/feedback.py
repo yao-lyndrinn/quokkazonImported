@@ -103,9 +103,15 @@ def product_review_edit():
 def product_image_edit():
     if request.method == 'POST': 
         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        image = request.form['image']
+        # get image file and format properly 
+        file = request.files['image']
+        filename = file.filename
+        filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
+        file.save(filepath)
+
         pid = int(request.form['pid'])
-        ProductFeedback.edit_review(current_user.id, pid, image, current_dateTime)
+        print(filename)
+        ProductFeedback.edit_image(current_user.id, pid, "product_images/" + filename, current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
 @bp.route('/myfeedback/delete/<int:product_id>', methods=['POST','GET'])
@@ -124,14 +130,13 @@ def product_remove_review():
         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
-# @bp.route('/myfeedback/delete/image', methods=['POST','GET'])
-# def product_remove_review():
-#     if request.method == 'POST': 
-#         pid = int(request.form['pid'])
-#         current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#         ProductFeedback.remove_upvotes(current_user.id,pid)
-#         ProductFeedback.edit_review(current_user.id, pid,'',current_dateTime)
-#     return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
+@bp.route('/myfeedback/delete/image', methods=['POST','GET'])
+def product_remove_image():
+    if request.method == 'POST': 
+        pid = int(request.form['pid'])
+        current_dateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ProductFeedback.edit_image(current_user.id, pid,'',current_dateTime)
+    return redirect(url_for('feedback.product_feedback_edit',product_id=pid))
 
 @bp.route('/productfeedback/remove_upvote', methods=['POST','GET'])
 def remove_upvote_product_review():

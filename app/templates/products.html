@@ -52,11 +52,7 @@
           <img class = "card-image" src="{{url_for('static', filename=product.image)}}" alt="default" />
           <!-- <h5 class="card-title">Product ID: {{ product.pid }}</h5> -->
           <h6 class="card-subtitle mb-2 text-muted">
-            {% if product.pid in product_prices %}
             <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
-            {% else %}
-            <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
-            {% endif%}
           </h6>
           <p class="card-text">
             {% if product.pid in product_prices %}

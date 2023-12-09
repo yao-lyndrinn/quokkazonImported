@@ -35,13 +35,13 @@
             <a href="{{ url_for('products.product_detail', product_id=product.pid) }}">{{ product.name }}</a>
           </h6>
           <p class="card-text">
-            {% if product.pid in product_prices %}
-              {% for price in product_prices[product.pid] %}
-                ${{ price }}<br>
-              {% endfor %}
-            {% else %}
-              Not in stock
-            {% endif %}
+              {% if product.pid in product_prices %}
+                {% for price in product_prices[product.pid] %}
+                  ${{ price }}<br>
+                {% endfor %}
+              {% else %}
+                Not in stock
+              {% endif %}
             {% if product.pid in summary %}
             <p>Rating: {{summary[product.pid][0]}} by {{summary[product.pid][1]}} users</p>
           {% endif %}

@@ -28,7 +28,23 @@ class Product:
         FROM Products
         ''')
         return [Product(*row) for row in rows]
-    
+    @staticmethod
+    def get_az():
+        rows = app.db.execute('''
+        SELECT *
+        FROM Products
+        ORDER BY Products.name
+        ''')
+        return [Product(*row) for row in rows]
+    @staticmethod
+    def get_za():
+        rows = app.db.execute('''
+        SELECT *
+        FROM Products
+        ORDER BY Products.name DESC
+        ''')
+        return [Product(*row) for row in rows]
+    @staticmethod
     def get_all_by_cat(cid):
         rows = app.db.execute('''
         SELECT *
@@ -44,7 +60,7 @@ class Product:
             return product.name
         else:
             return None
-        
+    @staticmethod
     def newPID():
         rows = app.db.execute("""
         SELECT MAX(pid)
@@ -68,7 +84,7 @@ class Product:
         sid=sid
         )
         return 
-    
+    @staticmethod
     def get_all_by_sid(sid):
         rows = app.db.execute('''
         SELECT pid

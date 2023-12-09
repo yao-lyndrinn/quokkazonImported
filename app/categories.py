@@ -64,7 +64,7 @@ def category_products(category_id):
     total_pages = len(items)//24 + 1
     
     #retrieving categories from category table
-    categories = Category.get_all()
+    sorted_categories = sorted(Category.get_all(), key=lambda x: x.name)
     
     return render_template('products.html', items=paginated,
                       inventory=inventory, 
@@ -72,7 +72,7 @@ def category_products(category_id):
                       product_prices = product_prices,
                       page=page,
                       total_pages=total_pages,
-                      categories=categories,
+                      categories=sorted_categories,
                       category=category,
                       is_seller=Seller.is_seller(current_user))
     

@@ -23,11 +23,17 @@ def cart():
     multiplier = 1
     if discount:
         multiplier = 0.75
+    seller_names = {}
+    product_names = {}
     # find the items the current user has added to their cart
     if current_user.is_authenticated:
         items = CartItem.get_all_by_uid(
                         current_user.id)
         for item in items:
+            # get the name of the seller 
+            seller_names[item.sid] = SellerFeedback.get_name(item.sid)
+            # get the name of the product 
+            product_names[item.pid] = ProductFeedback.get_product_name(item.pid)[0][0]
             item.price = round(decimal.Decimal(multiplier) * item.price,2)
         totalprice = round(CartItem.get_total_price(current_user.id) * multiplier,2)
 
@@ -35,14 +41,16 @@ def cart():
         return jsonify({}), 404
     # render the page by adding information to the cart.html file
     return render_template('cart.html',
-                      items=items, totalprice=totalprice)
+                      items=items, totalprice=totalprice, seller_names = seller_names, product_names=product_names)
 
 
 @bp.route('/cart/add', methods=['POST'])
 def cart_add():
     product_id = request.form["product_id"]
     seller_id = request.form["seller_id"]
-    quantity = request.form["quantity"]
+    quantity = request.form.get("quantity", "")
+    if not quantity or not quantity.isdigit():
+        quantity = 1
     saved_for_later = request.form["saved_for_later"]
     #check quantity is positive
     if int(quantity) >= 1:

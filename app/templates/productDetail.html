@@ -84,8 +84,7 @@
                             <input type="hidden" name="saved_for_later" value="0"/>
   
                             <label style="color: black;" or ="quantity">Quantity:</label>
-                            <input type="number" name="quantity" id="quantity"/>
-                            
+                            <input type="number" name="quantity" id="quantity" value = "1"/>
                             <input type="submit" value="Add to Cart"/>
                         </form>
                         <form action="{{ url_for('cart.cart_add')}}" method="POST">

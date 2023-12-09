@@ -24,7 +24,7 @@
 <p><b>Current Rating</b>: {{item.rating}} <br>  
 <em>New Rating:</em><br>
 <form action="{{ url_for('feedback.product_rating_edit') }}" method="POST">
-    <input type="number" name="rating" id="rating" REQUIRED>
+    <input type="number" name="rating" id="rating" min="1" max="5" REQUIRED>
     <input type="hidden" id="pid" name="pid" value="{{item.pid}}">
     <input type="submit" value="Submit" style="background-color: #137a56; color: #ffffff"> 
     </form>
@@ -80,7 +80,7 @@
 <p><b>Current Rating</b>: {{item.rating}} <br>  
 <em>New Rating:</em><br>
 <form action="{{ url_for('feedback.seller_rating_edit') }}" method="POST">
-    <input type="number" name="rating" id="rating" REQUIRED>
+    <input type="number" name="rating" id="rating" min="1" max="5" REQUIRED>
     <input type="hidden" id="sid" name="sid" value="{{item.sid}}">
     <input type="submit" value="Submit"> 
     </form>

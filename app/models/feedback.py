@@ -289,6 +289,8 @@ class SellerFeedback:
         WHERE f.sid = :sid
         ''', sid=sid)
         num = info[0][0]
+        if info[0][1] is None: 
+            return (None,0)
         avg = round(info[0][1],1)
         return (avg,num)
     

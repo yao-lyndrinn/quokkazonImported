@@ -20,7 +20,6 @@
   {% if current_user.is_authenticated and is_seller %}
     <a href="{{ url_for('products.add_products') }}" type="button" class="btn btn-dark">Add products</a>
   {% endif %}
-  <!--<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Home</a>-->
 </div>
 
 {% if current_user.is_authenticated %}

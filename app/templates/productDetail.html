@@ -29,6 +29,13 @@
     </div>
     <div class="item-info-parent">
         <div class="main-info">
+          {% if is_seller and not order_freq_graph %}
+          <div style="display: inline-block; float: right;">
+            <form action="{{ url_for('inventory.add', product_id=product.pid) }}" method="POST">
+              <input type="submit" value="Add to Inventory"/> 
+            </form>
+          </div>
+          {% endif %}
             <h4 style="color:black; text-align: left; margin-left: 25px;">{{product.name}}</h4>
             {% if summary[0]%}
             <div class="star-rating">
@@ -51,7 +58,7 @@
               ★★★★★
             </div>
             {% endif %}            
-            
+
             <div class="select-items">
                 <div class="description">
                     <p>Description: {{product.description}}</p>
@@ -105,6 +112,7 @@
             </div>
             <br>
             {% if order_freq_graph %}
+              <!--If the product is in the seller's inventory, show a graph depicting its order frequency over time-->
               <div id='orderFreqGraph' class='chart'></div>
             {% endif %}
         </div>

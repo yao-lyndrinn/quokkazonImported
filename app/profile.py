@@ -18,6 +18,7 @@ import plotly.express as px
 import json
 from .models.user import User
 
+# List of month abbreviations for analytics graph
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 def humanize_time(dt):
@@ -39,19 +40,19 @@ def my_profile():
     else:
         is_seller = True
 
-        # Graph for top selling products by count
+        # Create a graph for top selling products by count for a particular seller
         order_counts = Purchase.get_order_counts_by_sid(current_user.id)
         oc_df = pd.DataFrame(order_counts[:min(len(order_counts), 10)], columns=['ID','Product','Count sold'])
         oc_fig = px.bar(oc_df, x='Product', y='Count sold', title='Top selling products', text_auto=True, color_discrete_sequence=['#8E7618'])
         order_count_graph = json.dumps(oc_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-        # Graph for orders over time
+        # Create a graph for the total number orders over time for a particular seller across all products
         orders_freq = [[f'{MONTHS[row[0]-1]} {row[1]}',row[2]] for row in Purchase.get_num_orders_per_month(current_user.id)]
         of_df = pd.DataFrame(orders_freq, columns=['Month','Count'])
         of_fig = px.line(of_df, x='Month',y='Count',title='Total number of orders per month')
         order_freq_graph = json.dumps(of_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-        # Graph for average seller rating over time
+        # Create a graph for the average seller rating over time by month
         num_ratings, sum, avg_ratings = 0, 0, []
         ratings_freq = SellerFeedback.get_seller_ratings(current_user.id)
         m = ratings_freq[0][0]

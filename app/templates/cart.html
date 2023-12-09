@@ -9,8 +9,8 @@
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
-      <th scope="col">Seller ID</th>
-      <th scope="col">Product ID</th>
+      <th scope="col">Seller</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Save for Later?</th>
@@ -21,8 +21,8 @@
     {% for item in items %}
     {% if item.saved_for_later == "0" %}
       <tr>
-        <td>{{item.sid}}</td>
-        <td>{{item.pid}}</td>
+        <td><a href="{{ url_for('feedback.public_profile', user_id=item.sid)}}">{{seller_names[item.sid]}}</a></td>
+        <td><a href="{{ url_for('products.product_detail',product_id=item.pid) }}">{{product_names[item.pid]}}</a></td>
         <td>{{item.quantity}} <form action="{{ url_for('cart.cart_update_quantity')}}"
           method="POST">
           Change Quantity: <input type="number" name="quantity">
@@ -53,8 +53,8 @@
 <table class='table table-hover table-bordered container'>
   <thead class="quokka-brown">
     <tr>
-      <th scope="col">Seller ID</th>
-      <th scope="col">Product ID</th>
+      <th scope="col">Seller</th>
+      <th scope="col">Product</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Move to Cart?</th>
       <th scope="col">Remove</th>
@@ -64,8 +64,8 @@
     {% for item in items %}
     {% if item.saved_for_later == "1"%}
       <tr>
-        <td>{{item.sid}}</td>
-        <td>{{item.pid}}</td>
+        <td><a href="{{ url_for('feedback.public_profile', user_id=item.sid)}}">{{seller_names[item.sid]}}</a></td>
+        <td><a href="{{ url_for('products.product_detail',product_id=item.pid) }}">{{product_names[item.pid]}}</a></td>
         <td>{{item.price}}</td>
         <td><form action="{{ url_for('cart.cart_update_saved')}}"
           method="POST">

@@ -80,6 +80,7 @@ def my_profile():
                     y += 1
             rt_df = pd.DataFrame(avg_ratings, columns=['Month','Rating'])
             rt_fig = px.line(rt_df, x='Month',y='Rating',title='Average Rating Over Time')
+            rt_fig.update_traces(line=dict(color='red'))
             ratings_graph = json.dumps(rt_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     sfeedback = SellerFeedback.get_by_sid(current_user.id)

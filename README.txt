@@ -62,5 +62,5 @@ https://gitlab.oit.duke.edu/query-quokkas/quokkazon
 We populate the database through the gen.py script: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/db/generated/gen.py?ref_type=heads
 NOTE: We also used ChatGPT to create quokka themed products
 
-Link to 316 Quokkazon video: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/Milestone_4_Demo_final.mp4?ref_type=heads
-Or use this link: https://www.youtube.com/watch?v=ZExKCehaD2w
+Link to 316 Quokkazon video: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/316%20Quokkazon%20-%20SD%20480p.mov?ref_type=heads
+Or use this link: https://youtu.be/45tWUnUHVaw 

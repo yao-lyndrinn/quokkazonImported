@@ -21,6 +21,19 @@ class Product:
         WHERE pid = :pid
         ''', pid=pid)
         return Product(*(rows[0])) if rows is not None else None
+    
+    #Returns one product entry by name
+    @staticmethod
+    def get_by_name(name):
+        rows = app.db.execute('''
+        SELECT *
+        FROM Products
+        WHERE name = :name
+        ''', name=name)
+        if rows:
+            return Product(*(rows[0]))
+        else:
+            return None
 
     #Returns all product entries
     @staticmethod

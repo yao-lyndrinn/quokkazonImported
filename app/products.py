@@ -281,8 +281,13 @@ def add_products():
         filename = file.filename
         filepath = os.path.join('/home/ubuntu/quokkazon/app/static/product_images', filename)
         file.save(filepath)
-                
-        Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt, category, current_user.id)
+        
+        
+        if Product.get_by_name(name):
+            flash(name + 'is already an available product')
+            return redirect(url_for('inventory.inventory'))
+        else:
+            Product.add_product(pid, name, description, "product_images/" + filename, altTxt, createdAt, updatedAt, category, current_user.id)
         
         if Inventory.add(pid, current_user.id, 0, 0, 0):
             return redirect(url_for('inventory.edit', product_id=pid, oq=0, on=0, op=0))

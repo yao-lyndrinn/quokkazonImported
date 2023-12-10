@@ -55,6 +55,9 @@ For milestone 3, Phillip wrote app/allpurchases.py and app/templates/allpurchase
         - Finished allowing users to sort by category and filter/sort on top of that
         - Added an edit products button for sellers that crated a product
         - Contributed to the overall aesthetics of the site including form css, product cards, footer, and promotional sale banner
+        - Fixed pagination errors
+        - Fixed some card display errors
+        
 
 Everyone worked together to customize the website, debug, and verify the functionality of features. 
 https://gitlab.oit.duke.edu/query-quokkas/quokkazon 

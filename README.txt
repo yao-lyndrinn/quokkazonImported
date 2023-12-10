@@ -57,7 +57,8 @@ For milestone 3, Phillip wrote app/allpurchases.py and app/templates/allpurchase
         - Contributed to the overall aesthetics of the site including form css, product cards, footer, and promotional sale banner
         - Fixed pagination errors
         - Fixed some card display errors
-        
+        - worked with others on some of their guru features
+
 
 Everyone worked together to customize the website, debug, and verify the functionality of features. 
 https://gitlab.oit.duke.edu/query-quokkas/quokkazon 
@@ -66,4 +67,5 @@ We populate the database through the gen.py script: https://gitlab.oit.duke.edu/
 NOTE: We also used ChatGPT to create quokka themed products
 
 Link to 316 Quokkazon video: https://gitlab.oit.duke.edu/query-quokkas/quokkazon/-/blob/main/316%20Quokkazon%20-%20SD%20480p.mov?ref_type=heads
-Or use this link: https://youtu.be/45tWUnUHVaw 
+Or use this link: https://www.youtube.com/watch?v=Sg1VDMfSGR0&ab_channel=EliseZhang
+

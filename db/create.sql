@@ -217,9 +217,6 @@ CREATE TRIGGER InventoryConstraints
 CREATE FUNCTION PurchaseConstraints() RETURNS TRIGGER AS $$
 BEGIN
   -- constraints the values in date_fulfilled, quantity, and price at time of purchase
-  IF NEW.date_fulfilled IS NOT NULL AND NEW.date_fulfilled < NEW.time_purchased THEN
-    RAISE EXCEPTION 'Fulfillment date cannot be before time of purchase';
-  END IF;
   IF NEW.quantity < 0 THEN
     RAISE EXCEPTION 'Quantity of an purchase cannot be less than 0.';
   END IF;
